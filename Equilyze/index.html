@@ -7590,8 +7590,9 @@ function _renderPathChart(paths, days, pv) {
     const p75 = paths.map((_, di) => _getPathPercentile(paths, di, 0.75));
     const p95 = paths.map((_, di) => _getPathPercentile(paths, di, 0.95));
 
-    const sampleDs = paths.slice(0, 30).map(path => ({
+    const sampleDs = paths.slice(0, 30).map((path, idx) => ({
         data: path,
+        label: '',
         borderColor: 'rgba(139,92,246,0.08)',
         borderWidth: 1,
         pointRadius: 0,
@@ -7619,14 +7620,14 @@ function _renderPathChart(paths, days, pv) {
             plugins: {
                 legend: {
                     display: true,
-                    labels: { filter: item => !item.text.startsWith('undefined'), font: { size: 10 }, color: '#8b8fa8', boxWidth: 16 }
+                    labels: { filter: item => item.text && !String(item.text).startsWith('undefined'), font: { size: 10 }, color: '#8b8fa8', boxWidth: 16 }
                 },
                 tooltip: {
                     callbacks: {
-                        label: (ctx) => ctx.dataset.label && !ctx.dataset.label.startsWith('undefined')
+                        label: (ctx) => ctx.dataset.label
                             ? `${ctx.dataset.label}: ₺${Math.round(ctx.raw).toLocaleString('tr-TR')}` : null,
                     },
-                    filter: item => item.dataset.label && !item.dataset.label.startsWith('undefined')
+                    filter: item => item.dataset.label
                 }
             },
             scales: {
@@ -7641,7 +7642,9 @@ function _renderPathChart(paths, days, pv) {
 }
 
 function _getPathPercentile(paths, dayIndex, pct) {
-    const vals = paths.map(p => p[Math.min(dayIndex, p.length - 1)]).sort((a, b) => a - b);
+    if (!paths || paths.length === 0) return 0;
+    const vals = paths.map(p => p[Math.min(dayIndex, p.length - 1)]).filter(v => v != null).sort((a, b) => a - b);
+    if (vals.length === 0) return 0;
     return vals[Math.floor(pct * vals.length)] ?? vals[vals.length - 1];
 }
 
@@ -7729,8 +7732,12 @@ function _renderScenarioCompare(mode, varData, cvar, pv) {
     const compare = document.getElementById('mcScenarioCompare');
     compare.style.display = 'block';
     const modeName = { stressed: 'Stres Testi', extreme: 'Black Swan' }[mode];
+    // Normal-mode VaR referansı (RiskMetricsEngine ile hızlı hesaplama)
+    const refEngine = new RiskMetricsEngine(pv, DEFAULT_POSITIONS);
+    const refMetrics = refEngine.calculateAll();
+    const normalVaR = Math.abs(refMetrics.var95Dollar);
     const bars = [
-        { label: 'Normal Piyasa VaR (%95)', val: pv * 0.05, max: pv * 0.6, color: '#10b981' },
+        { label: 'Normal Piyasa VaR (%95)', val: normalVaR, max: pv * 0.6, color: '#10b981' },
         { label: `${modeName} VaR (%95)`, val: varData[0.95].absolute, max: pv * 0.6, color: '#f59e0b' },
         { label: `${modeName} CVaR (%95)`, val: cvar[0.95].absolute, max: pv * 0.6, color: '#ef4444' },
     ];
@@ -7756,7 +7763,6 @@ function _renderInterpretation(result, days, mode, cl, pv) {
     const isProfit = stats.mean > pv;
     const modeDesc = { normal: 'normal piyasa koşullarında', stressed: 'stres testi senaryosunda', extreme: 'black swan senaryosunda' }[mode];
 
-    const warnClass = parseFloat(cvarPct) > 25 ? 'mc-interp-warn' : 'mc-interp-good';
     const warnText  = parseFloat(cvarPct) > 25
         ? `⚠️ CVaR değeri %${cvarPct} seviyesinde olup portföyünüzde ciddi konsantrasyon riski bulunuyor.`
         : `✅ CVaR değeri %${cvarPct} ile kabul edilebilir sınırlarda kalıyor.`;
