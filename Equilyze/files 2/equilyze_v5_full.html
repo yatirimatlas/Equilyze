@@ -31,11 +31,11 @@
     --color-success: #10b981;
     --color-info: #3b82f6;
 
-    --bg-primary: #0a0f12;
-    --bg-secondary: #0e1419;
-    --bg-tertiary: #151c22;
-    --bg-card: rgba(255,255,255,0.04);
-    --bg-hover: rgba(255,255,255,0.06);
+    --bg-primary: #0a0f0d;
+    --bg-secondary: #111815;
+    --bg-tertiary: #1a211e;
+    --bg-card: #141a17;
+    --bg-hover: rgba(255,255,255,0.03);
 
     --text-primary: #f0fdf4;
     --text-secondary: #a3b3a8;
@@ -65,30 +65,17 @@
     --bg-primary: #f0fdf4;
     --bg-secondary: #ffffff;
     --bg-tertiary: #ecfdf5;
-    --bg-card: rgba(255,255,255,0.85);
+    --bg-card: #ffffff;
     --bg-hover: rgba(16,185,129,0.04);
     --text-primary: #052e16;
     --text-secondary: #166534;
     --text-muted: #4ade80;
     --border-color: rgba(16,185,129,0.15);
     --border-hover: rgba(16,185,129,0.35);
-    --border-subtle: rgba(0,0,0,0.08);
+    --border-subtle: rgba(0,0,0,0.06);
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
     --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
     --shadow-lg: 0 8px 40px rgba(0,0,0,0.10);
-}
-[data-theme="light"] body {
-    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 40%, #e0f2fe 100%);
-}
-[data-theme="light"] .widget {
-    border-color: rgba(0,0,0,0.08);
-}
-[data-theme="light"] .insight-bar,
-[data-theme="light"] .survival-score-card,
-[data-theme="light"] .backtest-module,
-[data-theme="light"] .psych-report {
-    background: rgba(255,255,255,0.75);
-    border-color: rgba(0,0,0,0.08);
 }
 
 /* ── RESET & BASE ── */
@@ -96,11 +83,12 @@
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
     font-family: var(--font-sans);
-    background: radial-gradient(ellipse at 20% 50%, #0a1628 0%, #0a0f12 45%, #000000 100%);
+    background: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
     transition: background 0.3s, color 0.3s;
+    /* Mobile: reserve bottom nav space */
     padding-bottom: 0;
 }
 img, svg { display: block; }
@@ -445,7 +433,7 @@ input, select, textarea { font-family: var(--font-sans); }
 }
 .hero-scroll {
     position: absolute;
-    bottom: 12px;
+    bottom: 32px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1;
@@ -806,15 +794,12 @@ input, select, textarea { font-family: var(--font-sans); }
 .widget {
     grid-column: span 4;
     background: var(--bg-card);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    transition: border-color 0.2s;
 }
 .widget:hover { border-color: var(--border-hover); }
-.widget-half { grid-column: span 6; }
 .widget-wide { grid-column: span 8; }
 .widget-medium { grid-column: span 8; }
 .widget-header {
@@ -1729,7 +1714,7 @@ input, select, textarea { font-family: var(--font-sans); }
     .api-connections { grid-template-columns: 1fr; }
     .dashboard-grid { grid-template-columns: 1fr; gap: 12px; }
     .dashboard-row { grid-template-columns: repeat(2,1fr); }
-    .widget, .widget-wide, .widget-medium, .widget-half { grid-column: span 1; }
+    .widget, .widget-wide, .widget-medium { grid-column: span 1; }
     .portfolio-stat-card { padding: 14px; }
     .psc-value { font-size: 1rem; }
     
@@ -1782,1092 +1767,6 @@ input, select, textarea { font-family: var(--font-sans); }
     .swan-scenarios { grid-template-columns: 1fr; }
     .progress-categories { display: none; }
     .question-dots { display: none; }
-}
-
-/* ═══════════════════════════════════════════
-   LAYER 4: ZERO-TOUCH SECURITY
-   ═══════════════════════════════════════════ */
-
-/* Read-Only Certified Seal */
-.read-only-seal {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px 24px;
-    background: linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(6,182,212,0.04) 100%);
-    border: 1.5px solid rgba(16,185,129,0.25);
-    border-radius: var(--radius-xl);
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-}
-.read-only-seal::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(from 0deg, transparent 0%, rgba(16,185,129,0.06) 25%, transparent 50%);
-    animation: sealRotate 8s linear infinite;
-    pointer-events: none;
-}
-@keyframes sealRotate {
-    to { transform: rotate(360deg); }
-}
-.seal-shield {
-    width: 64px; height: 64px;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 6px 24px rgba(16,185,129,0.3);
-    position: relative;
-    z-index: 1;
-    animation: sealPulse 3s ease-in-out infinite;
-}
-@keyframes sealPulse {
-    0%,100% { box-shadow: 0 6px 24px rgba(16,185,129,0.3); }
-    50% { box-shadow: 0 8px 32px rgba(16,185,129,0.5); }
-}
-.seal-content { position: relative; z-index: 1; flex: 1; }
-.seal-title {
-    font-size: 1.125rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.seal-certified {
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    padding: 3px 8px;
-    background: rgba(16,185,129,0.15);
-    color: var(--color-primary);
-    border-radius: 4px;
-    border: 1px solid rgba(16,185,129,0.3);
-}
-.seal-desc { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.6; }
-
-/* Security Features Grid */
-.security-features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-}
-.security-feature {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 16px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    transition: all 0.2s;
-}
-.security-feature:hover { border-color: var(--border-hover); }
-.sf-icon {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-}
-.sf-icon.green { background: rgba(16,185,129,0.12); }
-.sf-icon.blue { background: rgba(6,182,212,0.12); }
-.sf-icon.purple { background: rgba(139,92,246,0.12); }
-.sf-label { font-size: 0.8125rem; font-weight: 600; }
-.sf-sub { font-size: 0.7rem; color: var(--text-muted); }
-
-/* Withdrawal Confirm */
-.withdrawal-confirm {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 18px;
-    background: rgba(245,158,11,0.06);
-    border: 1.5px solid rgba(245,158,11,0.2);
-    border-radius: var(--radius-md);
-    margin-bottom: 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.withdrawal-confirm:hover { border-color: rgba(245,158,11,0.4); }
-.withdrawal-confirm.checked {
-    background: rgba(16,185,129,0.06);
-    border-color: rgba(16,185,129,0.3);
-}
-.wc-checkbox {
-    width: 22px; height: 22px;
-    border: 2px solid var(--border-hover);
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.2s;
-    background: transparent;
-}
-.withdrawal-confirm.checked .wc-checkbox {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-}
-.wc-text { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
-.wc-text strong { color: var(--text-primary); }
-
-/* ═══════════════════════════════════════════
-   LAYER 2: RISK ALERTS WIDGET
-   ═══════════════════════════════════════════ */
-
-.risk-alerts-widget {
-    border-color: rgba(245,158,11,0.2);
-    background: linear-gradient(160deg, rgba(245,158,11,0.03) 0%, var(--bg-card) 40%);
-}
-.risk-alert-list { display: flex; flex-direction: column; gap: 0; }
-.risk-alert-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border-subtle);
-    animation: alertFadeIn 0.4s ease;
-}
-.risk-alert-item:last-child { border-bottom: none; }
-@keyframes alertFadeIn {
-    from { opacity: 0; transform: translateX(-8px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-.ra-icon {
-    width: 34px; height: 34px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-}
-.ra-icon.volatility { background: rgba(245,158,11,0.15); }
-.ra-icon.sharpe { background: rgba(239,68,68,0.15); }
-.ra-icon.correlation { background: rgba(139,92,246,0.15); }
-.ra-icon.drawdown { background: rgba(6,182,212,0.15); }
-.ra-content { flex: 1; }
-.ra-title { font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; }
-.ra-desc { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5; }
-.ra-time { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
-.ra-severity {
-    font-size: 0.625rem;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 4px;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-.ra-severity.high { background: rgba(239,68,68,0.12); color: var(--color-danger); }
-.ra-severity.medium { background: rgba(245,158,11,0.12); color: var(--color-warning); }
-.ra-severity.low { background: rgba(16,185,129,0.12); color: var(--color-success); }
-
-/* Risk Profile Alignment Warning */
-.risk-alignment-warning {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 20px;
-    background: rgba(239,68,68,0.06);
-    border: 1.5px solid rgba(239,68,68,0.25);
-    border-radius: var(--radius-lg);
-    margin-bottom: 16px;
-    animation: warningPulse 3s ease-in-out infinite;
-}
-@keyframes warningPulse {
-    0%,100% { border-color: rgba(239,68,68,0.25); }
-    50% { border-color: rgba(239,68,68,0.5); }
-}
-.raw-icon {
-    width: 44px; height: 44px;
-    background: rgba(239,68,68,0.12);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem;
-    flex-shrink: 0;
-}
-.raw-content { flex: 1; }
-.raw-title { font-size: 0.9375rem; font-weight: 700; color: var(--color-danger); margin-bottom: 4px; }
-.raw-desc { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; }
-.raw-score {
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: var(--color-danger);
-    font-family: var(--font-mono);
-    flex-shrink: 0;
-}
-
-/* ═══════════════════════════════════════════
-   LAYER 1: BENCHMARK COMPARISON WIDGET
-   ═══════════════════════════════════════════ */
-
-.benchmark-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
-.bench-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-secondary); }
-.bench-dot { width: 10px; height: 10px; border-radius: 3px; }
-.bench-dot.portfolio { background: var(--color-primary); }
-.bench-dot.sp500 { background: #3b82f6; }
-.bench-dot.gold { background: #f59e0b; }
-.bench-dot.btc { background: #f97316; }
-.bench-perf {
-    font-size: 0.75rem;
-    font-weight: 600;
-    font-family: var(--font-mono);
-    margin-left: 4px;
-}
-.bench-perf.positive { color: var(--color-success); }
-.bench-perf.negative { color: var(--color-danger); }
-
-/* ═══════════════════════════════════════════
-   LAYER 3: SENTIMENT TRACKING
-   ═══════════════════════════════════════════ */
-
-.sentiment-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-}
-.sentiment-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 12px 8px;
-    background: var(--bg-tertiary);
-    border: 1.5px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-}
-.sentiment-option:hover { border-color: var(--border-hover); }
-.sentiment-option.selected { border-color: var(--color-primary); background: rgba(16,185,129,0.08); }
-.sentiment-option input { display: none; }
-.sentiment-emoji { font-size: 1.5rem; }
-.sentiment-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); }
-.sentiment-option.selected .sentiment-label { color: var(--color-primary); }
-
-/* Screenshot Upload */
-.screenshot-upload {
-    border: 2px dashed var(--border-hover);
-    border-radius: var(--radius-md);
-    padding: 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.screenshot-upload:hover {
-    border-color: var(--color-primary);
-    background: rgba(16,185,129,0.04);
-}
-.screenshot-upload-icon { font-size: 1.5rem; margin-bottom: 8px; }
-.screenshot-upload-text { font-size: 0.8125rem; color: var(--text-secondary); }
-.screenshot-upload-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
-
-/* ═══════════════════════════════════════════
-   LAYER 5: STRATEGIC ROADMAP
-   ═══════════════════════════════════════════ */
-
-.section-roadmap { background: var(--bg-secondary); }
-.roadmap-container { max-width: 900px; margin: 0 auto; }
-
-.roadmap-timeline {
-    position: relative;
-    padding-left: 40px;
-}
-.roadmap-timeline::before {
-    content: '';
-    position: absolute;
-    left: 16px; top: 0; bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, var(--color-primary), var(--color-secondary), var(--color-elite));
-    border-radius: 2px;
-}
-.roadmap-phase {
-    position: relative;
-    margin-bottom: 28px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
-    padding: 24px 28px;
-    transition: all 0.3s;
-}
-.roadmap-phase:hover { border-color: var(--border-hover); transform: translateX(4px); box-shadow: var(--shadow-md); }
-.roadmap-phase:last-child { margin-bottom: 0; }
-.phase-dot {
-    position: absolute;
-    left: -32px; top: 28px;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--color-primary);
-    border: 3px solid var(--bg-secondary);
-    box-shadow: 0 0 0 2px var(--color-primary);
-}
-.phase-dot.active { background: var(--color-secondary); box-shadow: 0 0 0 2px var(--color-secondary), 0 0 12px rgba(6,182,212,0.4); }
-.phase-dot.elite { background: var(--color-elite); box-shadow: 0 0 0 2px var(--color-elite); }
-.phase-dot.future { background: var(--text-muted); box-shadow: 0 0 0 2px var(--text-muted); }
-.phase-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
-.phase-number {
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    padding: 3px 10px;
-    border-radius: 4px;
-    text-transform: uppercase;
-}
-.phase-number.p1 { background: rgba(16,185,129,0.12); color: var(--color-primary); }
-.phase-number.p2 { background: rgba(6,182,212,0.12); color: var(--color-secondary); }
-.phase-number.p3 { background: rgba(139,92,246,0.12); color: var(--color-elite); }
-.phase-number.p4 { background: rgba(245,158,11,0.12); color: var(--color-accent); }
-.phase-duration {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    display: flex; align-items: center; gap: 6px;
-}
-.phase-title { font-size: 1.0625rem; font-weight: 700; margin-bottom: 6px; }
-.phase-desc { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
-.phase-tech {
-    display: flex; gap: 6px; flex-wrap: wrap;
-}
-.tech-tag {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    padding: 4px 10px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-subtle);
-    border-radius: 20px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-}
-
-/* Expense Table */
-.expense-section { margin-top: 40px; }
-.expense-table-wrap {
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-}
-.expense-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.875rem;
-}
-.expense-table thead th {
-    padding: 14px 20px;
-    text-align: left;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    background: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border-subtle);
-}
-.expense-table tbody td {
-    padding: 14px 20px;
-    color: var(--text-secondary);
-    border-bottom: 1px solid var(--border-subtle);
-}
-.expense-table tbody tr:last-child td { border-bottom: none; }
-.expense-table tbody tr:hover { background: var(--bg-hover); }
-.expense-icon { font-size: 1.1rem; margin-right: 8px; }
-
-/* ═══════════════════════════════════════════
-   CUSTOM SHOCK PARAMS (LAYER 2)
-   ═══════════════════════════════════════════ */
-
-.custom-shock-panel {
-    background: var(--bg-tertiary);
-    border: 1px solid rgba(245,158,11,0.2);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    margin-top: 20px;
-}
-.custom-shock-title {
-    font-size: 0.875rem;
-    font-weight: 700;
-    margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
-}
-.custom-shock-inputs {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 16px;
-}
-.csi-group { display: flex; flex-direction: column; gap: 6px; }
-.csi-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
-.csi-input {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    padding: 9px 12px;
-    color: var(--text-primary);
-    font-size: 0.875rem;
-    font-family: var(--font-mono);
-    outline: none;
-    transition: border-color 0.2s;
-}
-.csi-input:focus { border-color: var(--color-accent); }
-
-/* ═══════════════════════════════════════════
-   AI STRATEGY ASSISTANT
-   ═══════════════════════════════════════════ */
-
-.ai-agent-fab {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 6px 24px rgba(16,185,129,0.4);
-    z-index: 9999;
-    cursor: pointer;
-    transition: all 0.3s;
-    animation: fabPulse 3s ease-in-out infinite;
-}
-.ai-agent-fab:hover { transform: scale(1.1); box-shadow: 0 8px 32px rgba(16,185,129,0.6); }
-@keyframes fabPulse {
-    0%,100% { box-shadow: 0 6px 24px rgba(16,185,129,0.4); }
-    50% { box-shadow: 0 8px 32px rgba(16,185,129,0.6), 0 0 40px rgba(16,185,129,0.15); }
-}
-.ai-agent-panel {
-    position: fixed;
-    bottom: 90px; right: 24px;
-    width: 380px; max-height: 520px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-hover);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
-    z-index: 9998;
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-    animation: agentSlide 0.3s ease;
-}
-.ai-agent-panel.open { display: flex; }
-@keyframes agentSlide {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.ai-header {
-    padding: 16px 20px;
-    background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05));
-    border-bottom: 1px solid var(--border-subtle);
-    display: flex; align-items: center; justify-content: space-between;
-}
-.ai-header-left { display: flex; align-items: center; gap: 10px; }
-.ai-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem;
-}
-.ai-header-title { font-size: 0.9375rem; font-weight: 700; }
-.ai-header-sub { font-size: 0.6875rem; color: var(--color-primary); font-weight: 600; }
-.ai-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; }
-.ai-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    display: flex; flex-direction: column; gap: 12px;
-    max-height: 340px;
-}
-.ai-msg {
-    max-width: 85%;
-    padding: 10px 14px;
-    border-radius: 14px;
-    font-size: 0.8125rem;
-    line-height: 1.6;
-}
-.ai-msg.bot {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-subtle);
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-}
-.ai-msg.user {
-    background: rgba(16,185,129,0.12);
-    border: 1px solid rgba(16,185,129,0.2);
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-}
-.ai-typing { display: flex; gap: 4px; padding: 8px 14px; }
-.ai-typing span {
-    width: 6px; height: 6px;
-    background: var(--text-muted);
-    border-radius: 50%;
-    animation: typingDot 1.5s ease-in-out infinite;
-}
-.ai-typing span:nth-child(2) { animation-delay: 0.2s; }
-.ai-typing span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes typingDot {
-    0%,100% { opacity: 0.3; transform: translateY(0); }
-    50% { opacity: 1; transform: translateY(-4px); }
-}
-.ai-input-bar {
-    padding: 12px 16px;
-    border-top: 1px solid var(--border-subtle);
-    display: flex; gap: 8px;
-}
-.ai-input {
-    flex: 1;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-subtle);
-    border-radius: 20px;
-    padding: 8px 16px;
-    color: var(--text-primary);
-    font-size: 0.8125rem;
-    outline: none;
-    transition: border-color 0.2s;
-}
-.ai-input:focus { border-color: var(--color-primary); }
-.ai-send {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: var(--color-primary);
-    border: none;
-    color: white;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.ai-send:hover { background: var(--color-primary-dark); }
-
-/* ═══════════════════════════════════════════
-   CORRELATION HEATMAP 2.0 (TIME-SERIES)
-   ═══════════════════════════════════════════ */
-
-.corr-timeseries-wrap {
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border-subtle);
-}
-.corr-ts-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.corr-ts-title { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
-.corr-ts-pair {
-    font-size: 0.625rem; font-weight: 600; padding: 2px 8px;
-    background: var(--bg-tertiary); border: 1px solid var(--border-subtle);
-    border-radius: 10px; color: var(--text-muted); font-family: var(--font-mono);
-}
-.corr-ts-alert {
-    font-size: 0.7rem;
-    padding: 6px 12px;
-    background: rgba(245,158,11,0.08);
-    border: 1px solid rgba(245,158,11,0.2);
-    border-radius: var(--radius-sm);
-    color: var(--color-warning);
-    margin-top: 10px;
-    display: flex; align-items: center; gap: 6px;
-    font-weight: 500;
-}
-
-/* ═══════════════════════════════════════════
-   SLIPPAGE ANALYSIS
-   ═══════════════════════════════════════════ */
-
-.slippage-widget {
-    border-color: rgba(139,92,246,0.2);
-    background: linear-gradient(160deg, rgba(139,92,246,0.03), var(--bg-card) 40%);
-}
-.slippage-metrics { display: flex; flex-direction: column; gap: 12px; }
-.slip-metric {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-sm);
-}
-.slip-metric-label { display: flex; align-items: center; gap: 8px; }
-.slip-metric-icon { font-size: 1rem; }
-.slip-metric-name { font-size: 0.8125rem; font-weight: 600; }
-.slip-metric-sub { font-size: 0.6875rem; color: var(--text-muted); }
-.slip-metric-value {
-    font-size: 1rem; font-weight: 800;
-    font-family: var(--font-mono);
-}
-.slip-metric-value.warning { color: var(--color-warning); }
-.slip-metric-value.ok { color: var(--color-success); }
-.slip-metric-value.bad { color: var(--color-danger); }
-
-/* ═══════════════════════════════════════════
-   WHAT-IF SIMULATOR
-   ═══════════════════════════════════════════ */
-
-.whatif-controls {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-}
-.whatif-btn {
-    width: 28px; height: 28px;
-    border-radius: 6px;
-    border: 1px solid var(--border-subtle);
-    background: var(--bg-tertiary);
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.whatif-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
-.whatif-btn.remove:hover { border-color: rgba(239,68,68,0.4); color: var(--color-danger); background: rgba(239,68,68,0.08); }
-.whatif-btn.add:hover { border-color: rgba(16,185,129,0.4); color: var(--color-success); background: rgba(16,185,129,0.08); }
-.whatif-result {
-    padding: 10px 14px;
-    background: rgba(6,182,212,0.06);
-    border: 1px solid rgba(6,182,212,0.2);
-    border-radius: var(--radius-sm);
-    margin-top: 10px;
-    display: none;
-    font-size: 0.8125rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-.whatif-result.show { display: block; animation: alertFadeIn 0.3s ease; }
-.whatif-result strong { color: var(--text-primary); }
-
-/* ═══════════════════════════════════════════
-   AMBIENT RISK LIGHTING
-   ═══════════════════════════════════════════ */
-
-.ambient-glow {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none;
-    z-index: 9990;
-    opacity: 0;
-    transition: opacity 1s ease;
-}
-.ambient-glow.active { opacity: 1; }
-.ambient-glow.risk-high {
-    box-shadow: inset 0 0 120px rgba(239,68,68,0.06), inset 0 0 300px rgba(239,68,68,0.02);
-    animation: ambientPulseRed 4s ease-in-out infinite;
-}
-.ambient-glow.risk-low {
-    box-shadow: inset 0 0 120px rgba(16,185,129,0.04), inset 0 0 300px rgba(16,185,129,0.015);
-    animation: ambientPulseGreen 5s ease-in-out infinite;
-}
-@keyframes ambientPulseRed {
-    0%,100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-@keyframes ambientPulseGreen {
-    0%,100% { opacity: 0.4; }
-    50% { opacity: 0.8; }
-}
-
-/* ═══════════════════════════════════════════
-   RWA (REAL WORLD ASSETS)
-   ═══════════════════════════════════════════ */
-
-.rwa-section {
-    padding: 16px 0;
-    border-top: 1px solid var(--border-subtle);
-    margin-top: 8px;
-}
-.rwa-title {
-    font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 6px;
-}
-.rwa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.rwa-option {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 14px;
-    background: var(--bg-tertiary);
-    border: 1.5px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.rwa-option:hover { border-color: var(--border-hover); }
-.rwa-option.selected { border-color: var(--color-elite); background: rgba(139,92,246,0.06); }
-.rwa-icon { font-size: 1.3rem; }
-.rwa-label { font-size: 0.8125rem; font-weight: 600; }
-.rwa-sub { font-size: 0.6875rem; color: var(--text-muted); }
-
-/* ═══════════════════════════════════════════
-   METHODOLOGY TRANSPARENCY
-   ═══════════════════════════════════════════ */
-
-.methodology-card {
-    margin-top: 16px;
-    padding: 16px 20px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    border-left: 3px solid var(--color-info);
-}
-.methodology-title {
-    font-size: 0.8125rem; font-weight: 700; margin-bottom: 8px;
-    display: flex; align-items: center; gap: 8px;
-    color: var(--color-info);
-}
-.methodology-text {
-    font-size: 0.75rem; color: var(--text-secondary); line-height: 1.7;
-}
-.methodology-tag {
-    display: inline-block;
-    font-size: 0.625rem; font-weight: 600;
-    padding: 2px 8px;
-    background: rgba(59,130,246,0.1);
-    border: 1px solid rgba(59,130,246,0.2);
-    border-radius: 4px;
-    color: var(--color-info);
-    margin-top: 8px;
-    font-family: var(--font-mono);
-}
-
-/* ═══════════════════════════════════════════
-   INSIGHT BAR (Action-Oriented Summary)
-   ═══════════════════════════════════════════ */
-
-.insight-bar {
-    grid-column: 1 / -1;
-    padding: 18px 24px;
-    background: linear-gradient(135deg,
-        rgba(16,185,129,0.06),
-        rgba(6,182,212,0.04),
-        rgba(139,92,246,0.03));
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(16,185,129,0.15);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    position: relative;
-    overflow: hidden;
-    animation: insightGlow 4s ease-in-out infinite;
-}
-.insight-bar::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-elite));
-    opacity: 0.6;
-}
-@keyframes insightGlow {
-    0%,100% { box-shadow: 0 0 30px rgba(16,185,129,0.04); }
-    50% { box-shadow: 0 0 40px rgba(16,185,129,0.08); }
-}
-.insight-icon {
-    width: 44px; height: 44px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem;
-    flex-shrink: 0;
-    background: rgba(16,185,129,0.1);
-    border: 1px solid rgba(16,185,129,0.2);
-}
-.insight-icon.warning { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); }
-.insight-icon.danger { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); }
-.insight-body { flex: 1; }
-.insight-title {
-    font-size: 0.75rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--color-primary); margin-bottom: 4px;
-}
-.insight-text {
-    font-size: 0.875rem; line-height: 1.6;
-    color: var(--text-primary);
-}
-.insight-text strong { color: var(--color-primary); }
-.insight-text em { color: var(--color-warning); font-style: normal; font-weight: 600; }
-.insight-cta {
-    flex-shrink: 0;
-    padding: 8px 18px;
-    border-radius: 20px;
-    background: rgba(16,185,129,0.1);
-    border: 1px solid rgba(16,185,129,0.25);
-    color: var(--color-primary);
-    font-size: 0.75rem; font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-.insight-cta:hover { background: rgba(16,185,129,0.2); }
-
-/* ═══════════════════════════════════════════
-   INFO TOOLTIPS ON METRICS
-   ═══════════════════════════════════════════ */
-
-.metric-info {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-.info-icon {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-subtle);
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 0.5625rem; font-weight: 800;
-    color: var(--text-muted);
-    cursor: help;
-    transition: all 0.2s;
-    flex-shrink: 0;
-}
-.info-icon:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-    background: rgba(16,185,129,0.08);
-}
-.info-tooltip {
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-hover);
-    border-radius: var(--radius-sm);
-    padding: 10px 14px;
-    font-size: 0.6875rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    width: 220px;
-    box-shadow: var(--shadow-md);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s;
-    z-index: 100;
-    pointer-events: none;
-}
-.info-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: var(--border-hover);
-}
-.info-icon:hover + .info-tooltip,
-.metric-info:hover .info-tooltip {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* ═══════════════════════════════════════════
-   QUICK SCENARIO CARDS
-   ═══════════════════════════════════════════ */
-
-.quick-scenarios {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 14px;
-}
-.quick-scenario-card {
-    padding: 14px 16px;
-    background: var(--bg-card);
-    border: 1.5px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all 0.25s;
-    text-align: center;
-}
-.quick-scenario-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-.quick-scenario-card.crisis { border-left: 3px solid var(--color-danger); }
-.quick-scenario-card.bull { border-left: 3px solid var(--color-success); }
-.quick-scenario-card.tightening { border-left: 3px solid var(--color-warning); }
-.quick-scenario-card:hover.crisis { background: rgba(239,68,68,0.04); }
-.quick-scenario-card:hover.bull { background: rgba(16,185,129,0.04); }
-.quick-scenario-card:hover.tightening { background: rgba(245,158,11,0.04); }
-.qs-emoji { font-size: 1.5rem; margin-bottom: 6px; }
-.qs-name { font-size: 0.8125rem; font-weight: 700; margin-bottom: 4px; }
-.qs-desc { font-size: 0.6875rem; color: var(--text-muted); line-height: 1.5; }
-
-/* ═══════════════════════════════════════════
-   PSYCHOLOGICAL ANALYSIS REPORT
-   ═══════════════════════════════════════════ */
-
-.psych-report {
-    grid-column: 1 / -1;
-    padding: 20px 24px;
-    background: linear-gradient(160deg,
-        rgba(139,92,246,0.04), var(--bg-card) 40%);
-    border: 1px solid rgba(139,92,246,0.15);
-    border-radius: var(--radius-lg);
-}
-.psych-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.psych-title { font-size: 0.9375rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-.psych-period { font-size: 0.6875rem; color: var(--text-muted); font-weight: 600; padding: 4px 10px; background: var(--bg-tertiary); border-radius: 10px; }
-.psych-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-.psych-stat {
-    padding: 14px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-sm);
-    text-align: center;
-}
-.psych-stat-emoji { font-size: 1.5rem; margin-bottom: 6px; }
-.psych-stat-label { font-size: 0.6875rem; color: var(--text-muted); margin-bottom: 4px; }
-.psych-stat-value { font-size: 1.125rem; font-weight: 800; font-family: var(--font-mono); }
-.psych-stat-value.negative { color: var(--color-danger); }
-.psych-stat-value.positive { color: var(--color-success); }
-.psych-stat-value.warning { color: var(--color-warning); }
-.psych-insight {
-    padding: 14px 18px;
-    background: rgba(139,92,246,0.06);
-    border: 1px solid rgba(139,92,246,0.15);
-    border-radius: var(--radius-sm);
-    font-size: 0.8125rem;
-    line-height: 1.7;
-    color: var(--text-secondary);
-    border-left: 3px solid var(--color-elite);
-}
-.psych-insight strong { color: var(--text-primary); }
-
-/* ═══════════════════════════════════════════
-   ASSET COLOR CODING
-   ═══════════════════════════════════════════ */
-
-.asset-crypto { border-left: 3px solid #06b6d4; }
-.asset-crypto .pos-dir { background: rgba(6,182,212,0.15); color: #06b6d4; }
-.asset-bist { border-left: 3px solid #f59e0b; }
-.asset-bist .pos-dir { background: rgba(245,158,11,0.15); color: #f59e0b; }
-.asset-rwa { border-left: 3px solid #d97706; }
-.asset-rwa .pos-dir { background: rgba(217,119,6,0.15); color: #d97706; }
-
-/* ═══════════════════════════════════════════
-   SURVIVAL SCORE
-   ═══════════════════════════════════════════ */
-
-.survival-score-card {
-    display: flex; align-items: center; gap: 16px;
-    padding: 14px 20px;
-    background: linear-gradient(135deg, rgba(239,68,68,0.04), rgba(245,158,11,0.03), var(--bg-card));
-    border: 1px solid rgba(239,68,68,0.12);
-    border-radius: var(--radius-lg);
-    backdrop-filter: blur(12px);
-}
-.survival-ring {
-    width: 64px; height: 64px;
-    position: relative;
-    flex-shrink: 0;
-}
-.survival-ring svg { transform: rotate(-90deg); }
-.survival-ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 5; }
-.survival-ring-fill { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
-.survival-ring-fill.low { stroke: var(--color-danger); }
-.survival-ring-fill.mid { stroke: var(--color-warning); }
-.survival-ring-fill.high { stroke: var(--color-success); }
-.survival-number {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%,-50%);
-    font-size: 1.125rem; font-weight: 900;
-    font-family: var(--font-mono);
-}
-.survival-body { flex: 1; }
-.survival-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 2px; }
-.survival-status { font-size: 0.8125rem; font-weight: 600; }
-.survival-status.danger { color: var(--color-danger); }
-.survival-status.warning { color: var(--color-warning); }
-.survival-status.ok { color: var(--color-success); }
-.survival-action {
-    font-size: 0.6875rem; color: var(--text-muted); margin-top: 4px;
-    display: flex; align-items: center; gap: 4px;
-}
-
-/* ═══════════════════════════════════════════
-   SHADOW BACKTEST
-   ═══════════════════════════════════════════ */
-
-.backtest-module {
-    grid-column: 1 / -1;
-    border: 1px solid rgba(139,92,246,0.15);
-    background: linear-gradient(160deg, rgba(139,92,246,0.03), var(--bg-card) 40%);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    backdrop-filter: blur(12px);
-}
-.backtest-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border-subtle);
-    display: flex; align-items: center; justify-content: space-between;
-}
-.backtest-title { font-size: 0.9375rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-.backtest-body { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.backtest-rule {
-    padding: 16px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-subtle);
-}
-.backtest-rule-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
-.backtest-rule-text {
-    font-size: 0.8125rem; line-height: 1.7;
-    padding: 10px 14px;
-    background: rgba(139,92,246,0.06);
-    border: 1px solid rgba(139,92,246,0.15);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-}
-.backtest-result {
-    padding: 16px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-subtle);
-}
-.backtest-compare { display: flex; gap: 12px; margin-top: 10px; }
-.backtest-col { flex: 1; text-align: center; padding: 12px; border-radius: var(--radius-sm); }
-.backtest-col.before { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15); }
-.backtest-col.after { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.15); }
-.backtest-col-label { font-size: 0.6875rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
-.backtest-col-value { font-size: 1.25rem; font-weight: 900; font-family: var(--font-mono); }
-.backtest-col-value.bad { color: var(--color-danger); }
-.backtest-col-value.good { color: var(--color-success); }
-.backtest-btn {
-    margin-top: 14px;
-    width: 100%;
-    padding: 10px;
-    border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, var(--color-elite), #6d28d9);
-    border: none;
-    color: white;
-    font-weight: 700;
-    font-size: 0.8125rem;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-.backtest-btn:hover { opacity: 0.85; }
-
-/* Responsive for new components */
-@media (max-width: 768px) {
-    .read-only-seal { flex-direction: column; text-align: center; padding: 16px; }
-    .seal-shield { width: 52px; height: 52px; }
-    .security-features-grid { grid-template-columns: 1fr; }
-    .sentiment-grid { grid-template-columns: repeat(2, 1fr); }
-    .roadmap-timeline { padding-left: 32px; }
-    .roadmap-phase { padding: 18px 16px; }
-    .phase-dot { left: -24px; }
-    .risk-alignment-warning { flex-direction: column; text-align: center; }
-    .expense-table { font-size: 0.8rem; }
-    .expense-table thead th, .expense-table tbody td { padding: 10px 12px; }
-    .ai-agent-panel { width: calc(100vw - 32px); right: 16px; bottom: 80px; }
-    .ai-agent-fab { bottom: 16px; right: 16px; width: 48px; height: 48px; }
-    .rwa-grid { grid-template-columns: 1fr; }
-    .insight-bar { flex-direction: column; text-align: center; }
-    .insight-cta { width: 100%; }
-    .quick-scenarios { grid-template-columns: 1fr; }
-    .psych-grid { grid-template-columns: repeat(2, 1fr); }
-    .info-tooltip { width: 180px; }
 }
 
 /* ── SCROLLBAR ── */
@@ -3170,144 +2069,6 @@ input, select, textarea { font-family: var(--font-sans); }
     .mc-kpi-grid { grid-template-columns: 1fr; }
 }
 
-/* ═══════════════════════════════════════════
-   LANGUAGE TOGGLE
-   ═══════════════════════════════════════════ */
-.lang-toggle {
-    display: flex; align-items: center; gap: 4px;
-    background: var(--bg-tertiary); border: 1px solid var(--border-color);
-    border-radius: 20px; padding: 3px; margin-right: 4px;
-}
-.lang-btn {
-    padding: 4px 10px; border-radius: 16px; border: none;
-    background: transparent; color: var(--text-muted); font-size: 0.75rem;
-    font-weight: 600; cursor: pointer; transition: all 0.2s;
-    font-family: var(--font-sans); letter-spacing: 0.02em;
-}
-.lang-btn.active {
-    background: var(--color-primary); color: #fff;
-    box-shadow: 0 2px 8px rgba(16,185,129,0.3);
-}
-
-/* ═══════════════════════════════════════════
-   CRYPTO MARKET WIDGET
-   ═══════════════════════════════════════════ */
-.crypto-indicators { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.crypto-ind-card {
-    background: var(--bg-tertiary); border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md); padding: 14px; text-align: center;
-    transition: border-color 0.2s;
-}
-.crypto-ind-card:hover { border-color: var(--border-hover); }
-.crypto-ind-icon { font-size: 1.5rem; margin-bottom: 6px; }
-.crypto-ind-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-.crypto-ind-value { font-size: 1.25rem; font-weight: 700; font-family: var(--font-mono); }
-.crypto-ind-sub { font-size: 0.7rem; color: var(--text-secondary); margin-top: 4px; }
-.fear-greed-bar { height: 6px; background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981); border-radius: 3px; margin-top: 8px; position: relative; }
-.fear-greed-marker {
-    position: absolute; top: -3px; width: 12px; height: 12px;
-    background: #fff; border-radius: 50%; border: 2px solid var(--color-primary);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: left 0.5s ease;
-}
-
-/* ═══════════════════════════════════════════
-   EDUCATION / GLOSSARY SECTION
-   ═══════════════════════════════════════════ */
-.section-education { background: var(--bg-primary); }
-.edu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.edu-card {
-    background: var(--bg-card); border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg); padding: 24px; transition: all 0.3s;
-    cursor: pointer; position: relative; overflow: hidden;
-}
-.edu-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-.edu-card-icon { font-size: 2rem; margin-bottom: 12px; }
-.edu-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-.edu-card p { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.7; }
-.edu-level {
-    display: inline-block; font-size: 0.6rem; font-weight: 700;
-    padding: 2px 8px; border-radius: 4px; letter-spacing: 0.06em;
-    text-transform: uppercase; margin-top: 12px;
-}
-.edu-level.beginner { background: rgba(16,185,129,0.1); color: var(--color-primary); }
-.edu-level.intermediate { background: rgba(6,182,212,0.1); color: var(--color-secondary); }
-.edu-level.advanced { background: rgba(139,92,246,0.1); color: var(--color-elite); }
-
-/* ═══════════════════════════════════════════
-   SOCIAL PROOF / TESTIMONIALS
-   ═══════════════════════════════════════════ */
-.section-social-proof { background: var(--bg-secondary); }
-.trust-badges { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; margin-bottom: 40px; }
-.trust-badge-item {
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    padding: 16px 24px; background: var(--bg-card); border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg); min-width: 140px;
-}
-.trust-badge-icon { font-size: 1.75rem; }
-.trust-badge-text { font-size: 0.8125rem; font-weight: 600; text-align: center; }
-.trust-badge-sub { font-size: 0.7rem; color: var(--text-muted); text-align: center; }
-.testimonials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-.testimonial-card {
-    background: var(--bg-card); border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xl); padding: 28px; position: relative;
-}
-.testimonial-card::before {
-    content: '"'; position: absolute; top: 16px; left: 24px;
-    font-size: 3rem; color: var(--color-primary); opacity: 0.2;
-    font-family: Georgia, serif; line-height: 1;
-}
-.testimonial-text { font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px; padding-top: 8px; }
-.testimonial-author { display: flex; align-items: center; gap: 12px; }
-.testimonial-avatar {
-    width: 40px; height: 40px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem; font-weight: 700;
-}
-.testimonial-name { font-size: 0.875rem; font-weight: 600; }
-.testimonial-role { font-size: 0.75rem; color: var(--text-muted); }
-
-/* ═══════════════════════════════════════════
-   FAQ SECTION
-   ═══════════════════════════════════════════ */
-.section-faq { background: var(--bg-primary); }
-.faq-container { max-width: 760px; margin: 0 auto; }
-.faq-item {
-    background: var(--bg-card); border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden;
-    transition: border-color 0.2s;
-}
-.faq-item:hover { border-color: var(--border-hover); }
-.faq-item.open { border-color: rgba(16,185,129,0.3); }
-.faq-question {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 22px; cursor: pointer; gap: 12px;
-    font-size: 0.9375rem; font-weight: 600; color: var(--text-primary);
-    background: none; border: none; width: 100%; text-align: left;
-    font-family: var(--font-sans); transition: color 0.2s;
-}
-.faq-question:hover { color: var(--color-primary); }
-.faq-arrow {
-    flex-shrink: 0; transition: transform 0.3s;
-    color: var(--text-muted);
-}
-.faq-item.open .faq-arrow { transform: rotate(180deg); color: var(--color-primary); }
-.faq-answer {
-    max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease;
-    padding: 0 22px;
-}
-.faq-item.open .faq-answer { max-height: 300px; padding: 0 22px 20px; }
-.faq-answer p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.75; }
-
-/* ── Responsive for new sections ── */
-@media (max-width: 768px) {
-    .crypto-indicators { grid-template-columns: 1fr; }
-    .trust-badges { gap: 12px; }
-    .trust-badge-item { min-width: 100px; padding: 12px 16px; }
-    .edu-grid { grid-template-columns: 1fr; }
-    .testimonials-grid { grid-template-columns: 1fr; }
-    .lang-toggle { margin-right: 0; }
-}
-
 </style>
 </head>
 <body>
@@ -3325,17 +2086,13 @@ input, select, textarea { font-family: var(--font-sans); }
                 <span>Equilyze</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="#risk-test" class="nav-link" data-i18n="nav-risk">Risk Testi</a>
+                <a href="#risk-test" class="nav-link">Risk Testi</a>
                 <a href="#dashboard" class="nav-link">Dashboard</a>
                 <a href="#macro-engine" class="nav-link">Macro Shock</a>
                 <a href="#journal" class="nav-link">Trading Journal</a>
-                <a href="#waitlist" class="nav-link" data-i18n="nav-pricing">Erken Erişim</a>
+                <a href="#pricing" class="nav-link">Fiyatlar</a>
             </div>
             <div class="nav-actions">
-                <div class="lang-toggle" id="langToggle">
-                    <button class="lang-btn active" data-lang="tr" onclick="setLanguage('tr')">TR</button>
-                    <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
-                </div>
                 <button class="theme-toggle" id="themeToggle" aria-label="Tema Değiştir">
                     <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
@@ -3373,22 +2130,22 @@ input, select, textarea { font-family: var(--font-sans); }
                     Risk Profilinizi <span class="gradient-text">Öğrenin</span>,<br>
                     Portföyünüzü <span class="gradient-text">Analiz Edin</span>
                 </h1>
-                <p class="hero-subtitle" data-i18n="hero-subtitle">
-                    15 soruluk Risk Testi, Monte Carlo Simülasyonu, Macro Shock Engine, Trading Journal ve canlı API entegrasyonu ile 
+                <p class="hero-subtitle">
+                    15 soruluk Risk Testi, Macro Shock Engine, Trading Journal ve canlı API entegrasyonu ile 
                     veriye dayalı yatırım kararları alın.
                 </p>
                 <div class="hero-stats">
                     <div class="hero-stat">
-                        <span class="stat-num">🔒</span>
-                        <span class="stat-label">Salt-Okunur API</span>
+                        <span class="stat-num" data-count="50000">0</span>
+                        <span class="stat-label">Analiz Edilen İşlem</span>
                     </div>
                     <div class="hero-stat">
-                        <span class="stat-num">📋</span>
-                        <span class="stat-label">KVKK Uyumlu</span>
+                        <span class="stat-num" data-count="10000">0</span>
+                        <span class="stat-label">Aktif Kullanıcı</span>
                     </div>
                     <div class="hero-stat">
-                        <span class="stat-num">🧮</span>
-                        <span class="stat-label">GBM Monte Carlo</span>
+                        <span class="stat-num">₺<span data-count="2.5">0</span>M</span>
+                        <span class="stat-label">Takip Edilen Portföy</span>
                     </div>
                 </div>
                 <div class="hero-ctas">
@@ -3426,7 +2183,7 @@ input, select, textarea { font-family: var(--font-sans); }
             <div class="section-header">
                 <span class="section-badge badge-green">ÜCRETSİZ</span>
                 <h2 class="section-title">Yatırımcı <span class="gradient-text">Risk Profili</span> Testi</h2>
-                <p class="section-desc">15 soruluk kapsamlı test ile yatırımcı kişiliğinizi keşfedin, risk toleransınızı objektif ölçün.</p>
+                <p class="section-desc">15 soruluk kapsamlı test ile yatırımcı kişiliğinizi keşfedin, kişiselleştirilmiş tavsiyeler alın.</p>
             </div>
             
             <div class="risk-test-container" id="riskTestContainer">
@@ -3489,11 +2246,11 @@ input, select, textarea { font-family: var(--font-sans); }
                         <div class="result-description" id="resultDescription"></div>
                         <div class="result-traits" id="resultTraits"></div>
                         <div class="recommendations">
-                            <h4>📋 Profil Analizi</h4>
+                            <h4>💡 Size Özel Tavsiyeler</h4>
                             <ul id="recommendationsList"></ul>
                         </div>
                         <div class="asset-allocation">
-                            <h4>📊 Varlık Dağılımı (Demo)</h4>
+                            <h4>📊 Önerilen Varlık Dağılımı</h4>
                             <div class="allocation-visual" id="allocationChart"></div>
                         </div>
                     </div>
@@ -3528,60 +2285,6 @@ input, select, textarea { font-family: var(--font-sans); }
 
             <!-- API Panel -->
             <div class="api-panel" id="apiPanel">
-                <!-- Read-Only Certified Seal -->
-                <div class="read-only-seal" data-i18n-group="seal">
-                    <div class="seal-shield">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            <polyline points="9 12 11 14 15 10" stroke-width="2.5"/>
-                        </svg>
-                    </div>
-                    <div class="seal-content">
-                        <div class="seal-title">
-                            Read-Only Certified
-                            <span class="seal-certified">✓ VERIFIED</span>
-                        </div>
-                        <p class="seal-desc" data-i18n="seal-desc">API anahtarlarınız yalnızca <strong>okuma yetkisi</strong> ile çalışır. Platformumuz hiçbir koşulda hesabınızda işlem yapma, para çekme veya transfer gerçekleştirme yetkisine sahip değildir.</p>
-                    </div>
-                </div>
-
-                <!-- Security Features Grid -->
-                <div class="security-features-grid">
-                    <div class="security-feature">
-                        <div class="sf-icon green">🔒</div>
-                        <div>
-                            <div class="sf-label">256-bit SSL</div>
-                            <div class="sf-sub" data-i18n="sf-ssl">Uçtan uca şifreleme</div>
-                        </div>
-                    </div>
-                    <div class="security-feature">
-                        <div class="sf-icon blue">🔑</div>
-                        <div>
-                            <div class="sf-label" data-i18n="sf-readonly">Sadece Okuma API</div>
-                            <div class="sf-sub" data-i18n="sf-readonly-sub">İşlem yetkisi yok</div>
-                        </div>
-                    </div>
-                    <div class="security-feature">
-                        <div class="sf-icon purple">🚫</div>
-                        <div>
-                            <div class="sf-label" data-i18n="sf-notrade">İşlem Yapılamaz</div>
-                            <div class="sf-sub" data-i18n="sf-notrade-sub">Alım/Satım/Transfer kapalı</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Withdrawal Confirmation Checkbox -->
-                <div class="withdrawal-confirm" id="withdrawalConfirm" onclick="toggleWithdrawalConfirm()">
-                    <div class="wc-checkbox" id="wcCheckbox">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display:none" id="wcCheck">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                    </div>
-                    <div class="wc-text" data-i18n="wc-text">
-                        <strong>Withdrawal (Para Çekme) İzni Kapalı:</strong> API anahtarımda para çekme, transfer ve işlem yapma yetkilerinin tamamen kapalı olduğunu teyit ediyorum.
-                    </div>
-                </div>
-
                 <div class="api-header">
                     <div>
                         <h3>🔌 API Bağlantıları</h3>
@@ -3595,22 +2298,6 @@ input, select, textarea { font-family: var(--font-sans); }
                     </span>
                 </div>
                 <div class="api-connections">
-                    <div class="api-card" data-exchange="okx">
-                        <div class="api-logo" style="background:rgba(255,255,255,0.05);border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                            <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
-                                <rect width="40" height="40" rx="8" fill="#121212"/>
-                                <rect x="10" y="10" width="8" height="8" rx="1" fill="white"/>
-                                <rect x="22" y="10" width="8" height="8" rx="1" fill="white"/>
-                                <rect x="10" y="22" width="8" height="8" rx="1" fill="white"/>
-                                <rect x="22" y="22" width="8" height="8" rx="1" fill="white"/>
-                            </svg>
-                        </div>
-                        <div class="api-info">
-                            <h4>OKX</h4>
-                            <span class="api-status disconnected" id="status-okx">Bağlı Değil</span>
-                        </div>
-                        <button class="btn btn-sm btn-outline" onclick="connectAPI('okx')">Bağlan</button>
-                    </div>
                     <div class="api-card" data-exchange="binance">
                         <div class="api-logo binance-logo">
                             <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
@@ -3662,19 +2349,6 @@ input, select, textarea { font-family: var(--font-sans); }
 
             <!-- Dashboard Widgets -->
             <div class="dashboard-grid" id="dashboardGrid">
-
-                <!-- Insight Bar (Action-Oriented Summary) -->
-                <div class="insight-bar" id="insightBar">
-                    <div class="insight-icon warning" id="insightIcon">⚠️</div>
-                    <div class="insight-body">
-                        <div class="insight-title" data-i18n="insight-title">Günlük Durum Raporu</div>
-                        <div class="insight-text" id="insightText" data-i18n="insight-text">
-                            ÖRNEK PORTFÖY: BTC ve ETH pozisyonlarınız <em>yüksek korelasyonla</em> (0.85) hareket ediyor — bu yoğunlaşma riskinizi artırabilir.
-                        </div>
-                    </div>
-                    <button class="insight-cta" data-i18n="insight-cta" onclick="document.getElementById('correlationMatrix').scrollIntoView({behavior:'smooth'})">Detaya Git →</button>
-                </div>
-
                 <!-- Portfolio Summary Row -->
                 <div class="dashboard-row portfolio-summary-row">
                     <div class="portfolio-stat-card">
@@ -3684,9 +2358,9 @@ input, select, textarea { font-family: var(--font-sans); }
                             </svg>
                         </div>
                         <div>
-                            <div class="psc-label">ÖRNEK PORTFÖY — Toplam Değer</div>
+                            <div class="psc-label">Toplam Portföy</div>
                             <div class="psc-value">₺847,250</div>
-                            <div class="psc-change positive">+₺12,840 bugün (demo)</div>
+                            <div class="psc-change positive">+₺12,840 bugün</div>
                         </div>
                     </div>
                     <div class="portfolio-stat-card">
@@ -3729,26 +2403,6 @@ input, select, textarea { font-family: var(--font-sans); }
                     </div>
                 </div>
 
-                <!-- Survival Score -->
-                <div class="survival-score-card" style="grid-column: 1 / -1;" id="survivalScoreCard">
-                    <div class="survival-ring">
-                        <svg width="64" height="64" viewBox="0 0 64 64">
-                            <circle class="survival-ring-bg" cx="32" cy="32" r="28"/>
-                            <circle class="survival-ring-fill low" cx="32" cy="32" r="28"
-                                stroke-dasharray="175.9" stroke-dashoffset="109" id="survivalRing"/>
-                        </svg>
-                        <span class="survival-number" id="survivalNumber" style="color:var(--color-danger)">38</span>
-                    </div>
-                    <div class="survival-body">
-                        <div class="survival-label" data-i18n="survival-label">Hayatta Kalma Skoru</div>
-                        <div class="survival-status danger" id="survivalStatus" data-i18n="survival-status-low">⚠️ Kritik — Siyah Kuğu senaryosunda portföy %45 eriyor</div>
-                        <div class="survival-action">
-                            <span data-i18n="survival-action">Monte Carlo + Black Swan ortalaması</span>
-                        </div>
-                    </div>
-                    <button class="insight-cta" onclick="toggleAIAgent()" data-i18n="survival-rebalance">🧠 AI Rebalans Öner</button>
-                </div>
-
                 <!-- Portfolio Chart Widget -->
                 <div class="widget widget-wide" data-widget="chart">
                     <div class="widget-header">
@@ -3773,22 +2427,18 @@ input, select, textarea { font-family: var(--font-sans); }
                     </div>
                     <div class="widget-content">
                         <div class="positions-list">
-                            <div class="position-item long asset-crypto">
+                            <div class="position-item long">
                                 <div class="pos-dir">A</div>
                                 <div class="position-info">
                                     <span class="position-symbol">BTC/USDT</span>
                                     <span class="position-exchange">Binance</span>
-                                    <div class="whatif-controls">
-                                        <button class="whatif-btn remove" title="Satış Simülasyonu" onclick="whatIfRemove('BTC/USDT',0.85)">−</button>
-                                        <button class="whatif-btn add" title="Artırma Simülasyonu" onclick="whatIfAdd('BTC/USDT',0.85)">+</button>
-                                    </div>
                                 </div>
                                 <div class="position-details">
                                     <span class="position-size">0.35 BTC</span>
                                     <span class="position-pnl positive">+₺8,420</span>
                                 </div>
                             </div>
-                            <div class="position-item long asset-crypto">
+                            <div class="position-item long">
                                 <div class="pos-dir">A</div>
                                 <div class="position-info">
                                     <span class="position-symbol">ETH/USDT</span>
@@ -3810,22 +2460,18 @@ input, select, textarea { font-family: var(--font-sans); }
                                     <span class="position-pnl negative">-₺890</span>
                                 </div>
                             </div>
-                            <div class="position-item long asset-bist">
+                            <div class="position-item long">
                                 <div class="pos-dir">A</div>
                                 <div class="position-info">
                                     <span class="position-symbol">THYAO</span>
                                     <span class="position-exchange">MetaTrader</span>
-                                    <div class="whatif-controls">
-                                        <button class="whatif-btn remove" title="Satış Simülasyonu" onclick="whatIfRemove('THYAO',0.72)">−</button>
-                                        <button class="whatif-btn add" title="Artırma Simülasyonu" onclick="whatIfAdd('THYAO',0.72)">+</button>
-                                    </div>
                                 </div>
                                 <div class="position-details">
                                     <span class="position-size">500 Lot</span>
                                     <span class="position-pnl positive">+₺5,600</span>
                                 </div>
                             </div>
-                            <div class="position-item long asset-bist">
+                            <div class="position-item long">
                                 <div class="pos-dir">A</div>
                                 <div class="position-info">
                                     <span class="position-symbol">GARAN</span>
@@ -3837,47 +2483,11 @@ input, select, textarea { font-family: var(--font-sans); }
                                 </div>
                             </div>
                         </div>
-                        <!-- What-If Result -->
-                        <div class="whatif-result" id="whatifResult"></div>
-                        <!-- RWA Section -->
-                        <div class="rwa-section">
-                            <div class="rwa-title">🏛️ <span data-i18n="rwa-title">Manuel Varlık Ekle (RWA)</span></div>
-                            <div class="rwa-grid">
-                                <div class="rwa-option" onclick="selectRWA(this,'realestate')">
-                                    <span class="rwa-icon">🏠</span>
-                                    <div>
-                                        <div class="rwa-label" data-i18n="rwa-estate">Tokenize Emlak</div>
-                                        <div class="rwa-sub">Real Estate Token</div>
-                                    </div>
-                                </div>
-                                <div class="rwa-option" onclick="selectRWA(this,'gold')">
-                                    <span class="rwa-icon">🥇</span>
-                                    <div>
-                                        <div class="rwa-label" data-i18n="rwa-gold">Tokenize Altın</div>
-                                        <div class="rwa-sub">Gold Token (PAXG)</div>
-                                    </div>
-                                </div>
-                                <div class="rwa-option" onclick="selectRWA(this,'commodity')">
-                                    <span class="rwa-icon">🛢️</span>
-                                    <div>
-                                        <div class="rwa-label" data-i18n="rwa-commodity">Tokenize Emtia</div>
-                                        <div class="rwa-sub">Commodity Token</div>
-                                    </div>
-                                </div>
-                                <div class="rwa-option" onclick="selectRWA(this,'bond')">
-                                    <span class="rwa-icon">📜</span>
-                                    <div>
-                                        <div class="rwa-label" data-i18n="rwa-bond">Tokenize Tahvil</div>
-                                        <div class="rwa-sub">Bond Token</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
                 <!-- P&L Heatmap Widget -->
-                <div class="widget widget-half" data-widget="heatmap">
+                <div class="widget" data-widget="heatmap">
                     <div class="widget-header">
                         <h4>P&L Isı Haritası</h4>
                         <div class="heatmap-legend">
@@ -3892,7 +2502,7 @@ input, select, textarea { font-family: var(--font-sans); }
                 </div>
 
                 <!-- Risk Metrics Widget -->
-                <div class="widget widget-half" data-widget="risk">
+                <div class="widget" data-widget="risk">
                     <div class="widget-header">
                         <h4>Risk Metrikleri</h4>
                         <div class="risk-indicator" id="riskIndicator">
@@ -3903,41 +2513,26 @@ input, select, textarea { font-family: var(--font-sans); }
                     <div class="widget-content">
                         <div class="risk-metrics">
                             <div class="risk-metric">
-                                <span class="metric-label metric-info">Portföy Beta
-                                    <span class="info-icon">i</span>
-                                    <span class="info-tooltip" data-i18n="tip-beta">Beta, portföyünüzün piyasaya kıyasla ne kadar hareketli olduğunu gösterir. 1'in üstü = piyasadan daha agresif. 1'in altı = daha defansif.</span>
-                                </span>
+                                <span class="metric-label">Portföy Beta</span>
                                 <div class="metric-bar-wrap">
                                     <div class="metric-bar"><div class="metric-fill" style="width:42.5%;background:var(--color-primary)"></div></div>
-                                    <span class="metric-value" id="metricBeta">0.85</span>
+                                    <span class="metric-value">0.85</span>
                                 </div>
                             </div>
                             <div class="risk-metric">
-                                <span class="metric-label metric-info">Value at Risk (95%)
-                                    <span class="info-icon">i</span>
-                                    <span class="info-tooltip" data-i18n="tip-var">VaR, en kötü %5 senaryoda portföyünüzün kaybedebileceği maksimum tutardır. Düşük bir VaR daha iyi risk yönetimi anlamına gelir.</span>
-                                </span>
+                                <span class="metric-label">Value at Risk (95%)</span>
                                 <span class="metric-value negative">-₺18,450</span>
                             </div>
                             <div class="risk-metric">
-                                <span class="metric-label metric-info">Maksimum Drawdown
-                                    <span class="info-icon">i</span>
-                                    <span class="info-tooltip" data-i18n="tip-drawdown">En yüksek noktadan en düşük noktaya portföyünüzün yaşadığı en büyük düşüş yüzdesidir. -%15'in üstü tehlikeli kabul edilir.</span>
-                                </span>
+                                <span class="metric-label">Maksimum Drawdown</span>
                                 <span class="metric-value negative">-12.4%</span>
                             </div>
                             <div class="risk-metric">
-                                <span class="metric-label metric-info">Sharpe Oranı
-                                    <span class="info-icon">i</span>
-                                    <span class="info-tooltip" data-i18n="tip-sharpe">Aldığınız riske karşılık ne kadar getiri kazandığınızı gösterir. 1'in üstü iyidir — aldığınız riske değiyor demektir!</span>
-                                </span>
+                                <span class="metric-label">Sharpe Oranı</span>
                                 <span class="metric-value positive">1.45</span>
                             </div>
                             <div class="risk-metric">
-                                <span class="metric-label metric-info">Sortino Oranı
-                                    <span class="info-icon">i</span>
-                                    <span class="info-tooltip" data-i18n="tip-sortino">Sharpe'a benzer ama sadece aşağı yönlü riski hesaba katar. Yüksek Sortino = sadece düşüşlere karşı iyi korunuyorsunuz.</span>
-                                </span>
+                                <span class="metric-label">Sortino Oranı</span>
                                 <span class="metric-value positive">1.92</span>
                             </div>
                         </div>
@@ -3958,19 +2553,6 @@ input, select, textarea { font-family: var(--font-sans); }
                                 <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
                             </svg>
                             <span>BTC ve ETH pozisyonlarınız yüksek pozitif korelasyon gösteriyor (0.85). Risk yoğunlaşması mevcut!</span>
-                        </div>
-                        <!-- Correlation Heatmap 2.0: Time-Series -->
-                        <div class="corr-timeseries-wrap">
-                            <div class="corr-ts-header">
-                                <div class="corr-ts-title">
-                                    📈 <span data-i18n="corr-ts-title">Korelasyon Zaman Serisi</span>
-                                    <span class="corr-ts-pair">BTC ↔ S&P 500</span>
-                                </div>
-                            </div>
-                            <canvas id="corrTimeseriesChart" style="width:100%;height:100px;"></canvas>
-                            <div class="corr-ts-alert" data-i18n="corr-ts-alert">
-                                ⚠️ BTC ve S&P 500 arasındaki korelasyon son 30 günde 0.40’tan 0.85’e çıktı — yanıltıcı güvene dikkat!
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -4010,40 +2592,9 @@ input, select, textarea { font-family: var(--font-sans); }
                     </div>
                 </div>
 
-                <!-- Crypto Market Indicators Widget -->
-                <div class="widget widget-medium" data-widget="crypto-indicators">
-                    <div class="widget-header">
-                        <h4 data-i18n="crypto-widget-title">Kripto Piyasa Göstergeleri</h4>
-                        <span class="live-dot"><span class="dot-pulse"></span><span data-i18n="live">Canlı</span></span>
-                    </div>
-                    <div class="widget-content">
-                        <div class="crypto-indicators">
-                            <div class="crypto-ind-card">
-                                <div class="crypto-ind-icon">😨</div>
-                                <div class="crypto-ind-label" data-i18n="fear-greed">Fear & Greed Index</div>
-                                <div class="crypto-ind-value" id="fearGreedValue" style="color: var(--color-warning);">62</div>
-                                <div class="crypto-ind-sub" id="fearGreedLabel" data-i18n="greed">Açgözlülük</div>
-                                <div class="fear-greed-bar">
-                                    <div class="fear-greed-marker" id="fearGreedMarker" style="left: 60%;"></div>
-                                </div>
-                            </div>
-                            <div class="crypto-ind-card">
-                                <div class="crypto-ind-icon">₿</div>
-                                <div class="crypto-ind-label">BTC Dominance</div>
-                                <div class="crypto-ind-value" style="color: var(--color-secondary);">54.2%</div>
-                                <div class="crypto-ind-sub positive">+0.8% (7g)</div>
-                            </div>
-                            <div class="crypto-ind-card">
-                                <div class="crypto-ind-icon">📊</div>
-                                <div class="crypto-ind-label" data-i18n="market-trend">Piyasa Trendi</div>
-                                <div class="crypto-ind-value positive">▲ Boğa</div>
-                                <div class="crypto-ind-sub" data-i18n="market-trend-sub">200 gün MA üstünde</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Monte Carlo Simulation Widget -->
+                <!-- ═══════════════════════════════════════
+                     MONTE CARLO SİMÜLASYONU — ELITE
+                     ═══════════════════════════════════════ -->
                 <div class="widget widget-full mc-widget" id="monteCarloWidget" data-widget="montecarlo">
                     <div class="widget-header mc-header">
                         <div class="mc-header-left">
@@ -4204,228 +2755,7 @@ input, select, textarea { font-family: var(--font-sans); }
 
                             <!-- Interpretation Box -->
                             <div class="mc-interpretation" id="mcInterpretation"></div>
-                            <!-- Methodology Transparency -->
-                            <div class="methodology-card">
-                                <div class="methodology-title">
-                                    📚 <span data-i18n="meth-title">Metodoloji ve Veri Kaynağı</span>
-                                </div>
-                                <div class="methodology-text" data-i18n="meth-text">
-                                    Bu simülasyon, son 10 yılın piyasa verisi kullanılarak Geometrik Brownian Motion (GBM) algoritması ile hesaplanmıştır. Veri kaynağı olarak CoinGecko API ve Yahoo Finance API kullanılmaktadır. Sonuçlar tahmin niteliğinde olup, yatırım tavsiyesi değildir.
-                                </div>
-                                <span class="methodology-tag">GBM · 10Y Dataset · 10,000 Iterasyonlar</span>
-                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Risk Profile Alignment Warning (Layer 2) -->
-                <div class="risk-alignment-warning" style="grid-column: 1 / -1;" id="riskAlignmentWarning">
-                    <div class="raw-icon">⚠️</div>
-                    <div class="raw-content">
-                        <div class="raw-title" data-i18n="raw-title">Profil-Portföy Uyumsuzluğu Tespit Edildi</div>
-                        <div class="raw-desc" data-i18n="raw-desc">Risk testiniz <strong>"Muhafazakâr"</strong> profil gösterdi, ancak portföyünüzde <strong>kaldıraçlı altcoin pozisyonları</strong> bulunuyor. Risk seviyeniz profilinizle çelişiyor.</div>
-                    </div>
-                    <div class="raw-score">78</div>
-                </div>
-
-                <!-- Risk Alerts Widget (Layer 2) -->
-                <div class="widget widget-half risk-alerts-widget" data-widget="risk-alerts" style="grid-column: span 4;">
-                    <div class="widget-header">
-                        <h4 data-i18n="ra-widget-title">🔔 Risk Alarmları</h4>
-                        <span class="ra-severity high">4 Aktif</span>
-                    </div>
-                    <div class="widget-content">
-                        <div class="risk-alert-list">
-                            <div class="risk-alert-item">
-                                <div class="ra-icon volatility">🔥</div>
-                                <div class="ra-content">
-                                    <div class="ra-title" data-i18n="ra-vol-title">Portföy Volatiliten %20 Arttı</div>
-                                    <div class="ra-desc" data-i18n="ra-vol-desc">Son 7 günde portföy volatilitesi normal seviyenin üzerine çıktı. Pozisyon boyutlarınızı gözden geçirin.</div>
-                                    <div class="ra-time">12 dakika önce</div>
-                                </div>
-                                <span class="ra-severity high">YÜKSEK</span>
-                            </div>
-                            <div class="risk-alert-item">
-                                <div class="ra-icon sharpe">📉</div>
-                                <div class="ra-content">
-                                    <div class="ra-title" data-i18n="ra-sharpe-title">Sharpe Oranın Düşüşe Geçti</div>
-                                    <div class="ra-desc" data-i18n="ra-sharpe-desc">Sharpe oranınız 1.82'den 1.24'e geriledi. Riske göre düzeltilmiş getiri azalıyor.</div>
-                                    <div class="ra-time">1 saat önce</div>
-                                </div>
-                                <span class="ra-severity high">YÜKSEK</span>
-                            </div>
-                            <div class="risk-alert-item">
-                                <div class="ra-icon correlation">⚠️</div>
-                                <div class="ra-content">
-                                    <div class="ra-title" data-i18n="ra-corr-title">Korelasyon Yoğunlaşması</div>
-                                    <div class="ra-desc" data-i18n="ra-corr-desc">BTC-ETH korelasyonu 0.94'e yükseldi. Portföyünüz aşırı yoğunlaşmış: benzer hareket eden varlıklar riskinizi artırıyor.</div>
-                                    <div class="ra-time">3 saat önce</div>
-                                </div>
-                                <span class="ra-severity medium">ORTA</span>
-                            </div>
-                            <div class="risk-alert-item">
-                                <div class="ra-icon drawdown">📊</div>
-                                <div class="ra-content">
-                                    <div class="ra-title" data-i18n="ra-dd-title">Maximum Drawdown Uyarısı</div>
-                                    <div class="ra-desc" data-i18n="ra-dd-desc">Portföyünüz -%8.5 drawdown seviyesine ulaştı. Drawdown eşiğinize yaklaşıyorsunuz.</div>
-                                    <div class="ra-time">5 saat önce</div>
-                                </div>
-                                <span class="ra-severity medium">ORTA</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Benchmark Comparison Widget (Layer 1) -->
-                <div class="widget widget-wide" data-widget="benchmark" style="grid-column: span 8;">
-                    <div class="widget-header">
-                        <h4 data-i18n="bench-title">📈 Benchmark Karşılaştırması</h4>
-                        <div class="chart-timeframes">
-                            <button class="tf-btn active" onclick="setBenchTf(this,'1M')">1A</button>
-                            <button class="tf-btn" onclick="setBenchTf(this,'3M')">3A</button>
-                            <button class="tf-btn" onclick="setBenchTf(this,'6M')">6A</button>
-                            <button class="tf-btn" onclick="setBenchTf(this,'1Y')">1Y</button>
-                        </div>
-                    </div>
-                    <div class="widget-content">
-                        <canvas id="benchmarkChart" style="width:100%;height:200px;"></canvas>
-                        <div class="benchmark-legend">
-                            <div class="bench-item">
-                                <span class="bench-dot portfolio"></span>
-                                <span>Portföyüm</span>
-                                <span class="bench-perf positive">+12.4%</span>
-                            </div>
-                            <div class="bench-item">
-                                <span class="bench-dot sp500"></span>
-                                <span>S&P 500</span>
-                                <span class="bench-perf positive">+8.2%</span>
-                            </div>
-                            <div class="bench-item">
-                                <span class="bench-dot gold"></span>
-                                <span>Altın</span>
-                                <span class="bench-perf positive">+5.7%</span>
-                            </div>
-                            <div class="bench-item">
-                                <span class="bench-dot btc"></span>
-                                <span>Bitcoin</span>
-                                <span class="bench-perf positive">+18.3%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slippage Analysis Widget (Elite) -->
-                <div class="widget widget-half slippage-widget" data-widget="slippage" style="grid-column: span 4;">
-                    <div class="widget-header">
-                        <h4 data-i18n="slip-title">💧 Likidite & Kayma Analizi</h4>
-                        <span class="elite-badge-sm">ELITE</span>
-                    </div>
-                    <div class="widget-content">
-                        <div class="slippage-metrics">
-                            <div class="slip-metric">
-                                <div class="slip-metric-label">
-                                    <span class="slip-metric-icon">₿</span>
-                                    <div>
-                                        <div class="slip-metric-name">BTC/USDT</div>
-                                        <div class="slip-metric-sub" data-i18n="slip-btc-sub">Piyasa derinliği yeterli</div>
-                                    </div>
-                                </div>
-                                <span class="slip-metric-value ok">%0.08</span>
-                            </div>
-                            <div class="slip-metric">
-                                <div class="slip-metric-label">
-                                    <span class="slip-metric-icon">Ξ</span>
-                                    <div>
-                                        <div class="slip-metric-name">ETH/USDT</div>
-                                        <div class="slip-metric-sub" data-i18n="slip-eth-sub">Orta derinlik</div>
-                                    </div>
-                                </div>
-                                <span class="slip-metric-value warning">%0.35</span>
-                            </div>
-                            <div class="slip-metric">
-                                <div class="slip-metric-label">
-                                    <span class="slip-metric-icon">🏦</span>
-                                    <div>
-                                        <div class="slip-metric-name">THYAO</div>
-                                        <div class="slip-metric-sub" data-i18n="slip-thyao-sub">Düşük likidite riski</div>
-                                    </div>
-                                </div>
-                                <span class="slip-metric-value bad">%1.2</span>
-                            </div>
-                        </div>
-                        <div class="corr-ts-alert" data-i18n="slip-warning" style="margin-top:14px;">
-                            ⚠️ Şu anki piyasa koşullarında tüm pozisyonlarınızı kapatmaya kalksanız %1.2 slippage yaşayabilirsiniz.
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- Shadow Backtest Module -->
-                <div class="backtest-module" id="backtestModule">
-                    <div class="backtest-header">
-                        <div class="backtest-title">
-                            🔮 <span data-i18n="backtest-title">Shadow Backtest</span>
-                            <span class="elite-badge-sm">ELITE</span>
-                        </div>
-                        <button class="backtest-btn" style="width:auto;margin:0;padding:8px 16px;" onclick="runShadowBacktest()" data-i18n="backtest-run">▶ Backtest'i Çalıştır</button>
-                    </div>
-                    <div class="backtest-body">
-                        <div class="backtest-rule">
-                            <div class="backtest-rule-title" data-i18n="backtest-rule-title">Kodsuz Kural Oluşturucu</div>
-                            <div class="backtest-rule-text" data-i18n="backtest-rule-text">
-                                IF portfolio.volatility > 25%<br>
-                                THEN reduce(highestCorrelatedAsset, 20%)<br>
-                                AND increase(cash, equivalent)
-                            </div>
-                        </div>
-                        <div class="backtest-result">
-                            <div class="backtest-rule-title" data-i18n="backtest-result-title">Önce / Sonra Karşılaştırması</div>
-                            <div class="backtest-compare">
-                                <div class="backtest-col before">
-                                    <div class="backtest-col-label" data-i18n="backtest-before">Önceki Max Drawdown</div>
-                                    <div class="backtest-col-value bad">-34.2%</div>
-                                </div>
-                                <div class="backtest-col after">
-                                    <div class="backtest-col-label" data-i18n="backtest-after">Kural Uygulandıktan Sonra</div>
-                                    <div class="backtest-col-value good">-18.7%</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Psychological Analysis Report -->
-                <div class="psych-report" id="psychReport">
-                    <div class="psych-header">
-                        <div class="psych-title">
-                            🧠 <span data-i18n="psych-title">Aylık Psikolojik Analiz Raporu</span>
-                        </div>
-                        <span class="psych-period" data-i18n="psych-period">📅 Mart 2026</span>
-                    </div>
-                    <div class="psych-grid">
-                        <div class="psych-stat">
-                            <div class="psych-stat-emoji">😱</div>
-                            <div class="psych-stat-label">FOMO</div>
-                            <div class="psych-stat-value negative">7 işlem</div>
-                        </div>
-                        <div class="psych-stat">
-                            <div class="psych-stat-emoji">😨</div>
-                            <div class="psych-stat-label" data-i18n="psych-fear">Korku</div>
-                            <div class="psych-stat-value warning">4 işlem</div>
-                        </div>
-                        <div class="psych-stat">
-                            <div class="psych-stat-emoji">😎</div>
-                            <div class="psych-stat-label" data-i18n="psych-patience">Sabırlı</div>
-                            <div class="psych-stat-value positive">12 işlem</div>
-                        </div>
-                        <div class="psych-stat">
-                            <div class="psych-stat-emoji">🤑</div>
-                            <div class="psych-stat-label" data-i18n="psych-greed">Açgözlük</div>
-                            <div class="psych-stat-value warning">3 işlem</div>
-                        </div>
-                    </div>
-                    <div class="psych-insight" data-i18n="psych-insight">
-                        📊 <strong>AI İçgörü:</strong> Bu ay en çok <strong>"FOMO"</strong> anında işlem kapatmışsın ve bu sana toplamda <strong style="color:var(--color-danger)">₺5,240</strong> kaybettirmiş. İstatistiklerin, bu duygudayken <strong>%70 daha fazla hata</strong> yaptığını söylüyor. “Sabırlı” duygusundaki işlemlerin ise <strong style="color:var(--color-success)">₺8,920</strong> kâr getirmiş.
                     </div>
                 </div>
 
@@ -4474,12 +2804,6 @@ input, select, textarea { font-family: var(--font-sans); }
                             <p>+15% kur artışı</p>
                             <span class="scenario-tag">Yüksek Etki</span>
                         </div>
-                        <div class="scenario-card" onclick="runShockScenario('tcmb', this)">
-                            <div class="scenario-icon">🏦</div>
-                            <h4>TCMB Faiz Şoku</h4>
-                            <p>Sürpriz faiz indirimi</p>
-                            <span class="scenario-tag">Yüksek Etki</span>
-                        </div>
                     </div>
                     <div class="shock-result" id="shockResult" style="display: none;">
                         <div class="shock-result-header">
@@ -4508,44 +2832,6 @@ input, select, textarea { font-family: var(--font-sans); }
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Custom Shock Test (Layer 2) -->
-                <div class="custom-shock-panel">
-                    <!-- Quick Scenario Cards -->
-                    <div class="quick-scenarios">
-                        <div class="quick-scenario-card crisis" onclick="runQuickScenario('crisis')">
-                            <div class="qs-emoji">📉</div>
-                            <div class="qs-name" data-i18n="qs-crisis">Büyük Bunalım</div>
-                            <div class="qs-desc" data-i18n="qs-crisis-desc">Her şey %20 düşerse ne olur?</div>
-                        </div>
-                        <div class="quick-scenario-card bull" onclick="runQuickScenario('bull')">
-                            <div class="qs-emoji">🚀</div>
-                            <div class="qs-name" data-i18n="qs-bull">Boğa Koşusu</div>
-                            <div class="qs-desc" data-i18n="qs-bull-desc">BTC $150k olursa ne olur?</div>
-                        </div>
-                        <div class="quick-scenario-card tightening" onclick="runQuickScenario('tightening')">
-                            <div class="qs-emoji">🏦</div>
-                            <div class="qs-name" data-i18n="qs-tight">TCMB Sıkılaştırma</div>
-                            <div class="qs-desc" data-i18n="qs-tight-desc">Faiz %50'ye çıkarsa ne olur?</div>
-                        </div>
-                    </div>
-                    <div class="custom-shock-title">🎯 <span data-i18n="custom-shock-title">Kendi Senaryonuzu Oluşturun</span></div>
-                    <div class="custom-shock-inputs">
-                        <div class="csi-group">
-                            <label class="csi-label">USD/TRY Değişim (%)</label>
-                            <input type="number" class="csi-input" id="customUsdTry" placeholder="ör: +15" value="15">
-                        </div>
-                        <div class="csi-group">
-                            <label class="csi-label">BTC Değişim (%)</label>
-                            <input type="number" class="csi-input" id="customBtc" placeholder="ör: -10" value="-10">
-                        </div>
-                        <div class="csi-group">
-                            <label class="csi-label">Faiz Değişimi (bp)</label>
-                            <input type="number" class="csi-input" id="customRate" placeholder="ör: +50" value="50">
-                        </div>
-                    </div>
-                    <button class="btn btn-sm btn-primary" onclick="runCustomShock()" data-i18n="custom-shock-btn">⚡ Simülasyonu Çalıştır</button>
                 </div>
                 
                 <!-- Economic Calendar -->
@@ -4809,8 +3095,8 @@ input, select, textarea { font-family: var(--font-sans); }
                     <ul class="feature-list">
                         <li>Psikoloji tabanlı sorular</li>
                         <li>3 profil tipi analizi</li>
-                        <li>Profil bazlı içgörüler</li>
-                        <li>Demo varlık dağılımı</li>
+                        <li>Kişiselleştirilmiş tavsiyeler</li>
+                        <li>Varlık dağılım önerisi</li>
                     </ul>
                     <span class="feature-badge free">ÜCRETSİZ</span>
                 </div>
@@ -4876,7 +3162,7 @@ input, select, textarea { font-family: var(--font-sans); }
                     <ul class="feature-list">
                         <li>Sınırsız işlem kaydı</li>
                         <li>Otomatik istatistik</li>
-                        <li>Hata/pattern etiketleme</li>
+                        <li>Hata/patter etiketleme</li>
                         <li>CSV dışa aktarım</li>
                     </ul>
                     <span class="feature-badge free">ÜCRETSİZ</span>
@@ -4897,325 +3183,82 @@ input, select, textarea { font-family: var(--font-sans); }
                     </ul>
                     <span class="feature-badge elite">ELITE</span>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon purple-icon">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                        </svg>
-                    </div>
-                    <h3 data-i18n="feat-mc-title">Monte Carlo Simülasyonu</h3>
-                    <p data-i18n="feat-mc-desc">Geometric Brownian Motion ile portföyünüzün gelecekteki olası değerlerini 10.000+ senaryo üzerinden simüle edin.</p>
-                    <ul class="feature-list">
-                        <li data-i18n="feat-mc-1">10.000+ portföy yolu simülasyonu</li>
-                        <li data-i18n="feat-mc-2">VaR & CVaR hesaplama</li>
-                        <li data-i18n="feat-mc-3">Stres testi & Black Swan modu</li>
-                        <li data-i18n="feat-mc-4">Olasılık tablosu & AI yorumlama</li>
-                        <li data-i18n="feat-mc-5">CSV rapor indirme</li>
-                    </ul>
-                    <span class="feature-badge elite">ELITE</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Education / Glossary Section -->
-    <section class="section section-education" id="education">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge badge-green">ÜCRETSİZ</span>
-                <h2 class="section-title" data-i18n="edu-title">Yatırım <span class="gradient-text">Rehberi</span></h2>
-                <p class="section-desc" data-i18n="edu-desc">Yeni başlayanlardan deneyimli trader'lara — temel kavramları öğrenin.</p>
-            </div>
-            <div class="edu-grid">
-                <div class="edu-card">
-                    <div class="edu-card-icon">📖</div>
-                    <h3 data-i18n="edu-1-title">Trading Temelleri</h3>
-                    <p data-i18n="edu-1-desc">Long/Short nedir? Kaldıraç nasıl çalışır? Stop-loss ve take-profit kavramlarını öğrenin.</p>
-                    <span class="edu-level beginner" data-i18n="beginner">Başlangıç</span>
-                </div>
-                <div class="edu-card">
-                    <div class="edu-card-icon">📊</div>
-                    <h3 data-i18n="edu-2-title">Risk Yönetimi</h3>
-                    <p data-i18n="edu-2-desc">Position sizing, risk/ödül oranı, drawdown, Sharpe ve Sortino oranlarını anlayın.</p>
-                    <span class="edu-level intermediate" data-i18n="intermediate">Orta Seviye</span>
-                </div>
-                <div class="edu-card">
-                    <div class="edu-card-icon">₿</div>
-                    <h3 data-i18n="edu-3-title">Kripto 101</h3>
-                    <p data-i18n="edu-3-desc">Bitcoin, Ethereum, DeFi, NFT ve staking gibi kripto kavramlarına giriş yapın.</p>
-                    <span class="edu-level beginner" data-i18n="beginner">Başlangıç</span>
-                </div>
-                <div class="edu-card">
-                    <div class="edu-card-icon">🏛️</div>
-                    <h3 data-i18n="edu-4-title">BIST & Türk Piyasası</h3>
-                    <p data-i18n="edu-4-desc">Borsa İstanbul'da yatırım, SPK düzenlemeleri, temettü stratejileri hakkında bilgi edinin.</p>
-                    <span class="edu-level intermediate" data-i18n="intermediate">Orta Seviye</span>
-                </div>
-                <div class="edu-card">
-                    <div class="edu-card-icon">🧠</div>
-                    <h3 data-i18n="edu-5-title">Trading Psikolojisi</h3>
-                    <p data-i18n="edu-5-desc">FOMO, öç işlemi, aşırı güven ve kayıptan kaçınma gibi davranışsal tuzakları keşfedin.</p>
-                    <span class="edu-level advanced" data-i18n="advanced">İleri Seviye</span>
-                </div>
-                <div class="edu-card">
-                    <div class="edu-card-icon">📉</div>
-                    <h3 data-i18n="edu-6-title">Monte Carlo & VaR</h3>
-                    <p data-i18n="edu-6-desc">Portföy risk analizi, Value at Risk, Conditional VaR ve simülasyon yöntemlerini öğrenin.</p>
-                    <span class="edu-level advanced" data-i18n="advanced">İleri Seviye</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Waitlist Section -->
-    <section class="section section-waitlist" id="waitlist">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge">ERKEN ERİŞİM</span>
-                <h2 class="section-title">Erken Erişim <span class="gradient-text">Bekleme Listesi</span></h2>
-                <p class="section-desc">İlk 6 ay her şey ücretsiz. Ön kaydınızı yaptırın, lansmanda öncelikli erişim kazanın.</p>
-            </div>
-            <div class="waitlist-container">
-                <div class="waitlist-benefits">
-                    <div class="waitlist-benefit">
-                        <span class="benefit-icon">🎯</span>
-                        <div>
-                            <strong>Öncelikli Erişim</strong>
-                            <span>İlk kullanıcılar arasında olun</span>
-                        </div>
-                    </div>
-                    <div class="waitlist-benefit">
-                        <span class="benefit-icon">💰</span>
-                        <div>
-                            <strong>6 Ay Ücretsiz</strong>
-                            <span>Lansman sonrası her şey dahil</span>
-                        </div>
-                    </div>
-                    <div class="waitlist-benefit">
-                        <span class="benefit-icon">📊</span>
-                        <div>
-                            <strong>Geri Bildirim Hakkı</strong>
-                            <span>Ürün yol haritasına katkı verin</span>
-                        </div>
-                    </div>
-                </div>
-                <form class="waitlist-form" id="waitlistForm" action="https://formsubmit.co/yatirimatlasitr@gmail.com" method="POST">
-                    <input type="hidden" name="_subject" value="Equilyze Bekleme Listesi">
-                    <input type="text" name="_honey" style="display:none">
-                    <input type="hidden" name="_captcha" value="true">
-                    <div class="waitlist-form-group">
-                        <input type="email" name="email" class="waitlist-input" placeholder="E-posta adresiniz" required>
-                        <button type="submit" class="btn btn-primary waitlist-submit">Ön Kaydol</button>
-                    </div>
-                    <div class="waitlist-form-hint">KVKK aydınlatma metnini okudum, kabul ediyorum. (Hukuki inceleme bekliyor)</div>
-                    <div class="waitlist-form-hint" style="margin-top:4px;font-size:0.7rem;">Bu form yalnızca talep sinyali toplar — henüz bir ücretlendirme veya ödeme taahhüdü içermez.</div>
-                    <div class="waitlist-micro-survey" id="microSurvey" style="margin-top:16px;">
-                        <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:10px;">🌟 2 soruluk mikro anket (opsiyonel):</p>
-                        <div style="margin-bottom:10px;">
-                            <label style="font-size:0.8125rem;color:var(--text-secondary);">En çok hangi özellik ilginizi çekiyor?</label>
-                            <select name="feature_interest" style="width:100%;margin-top:4px;padding:8px;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);">
-                                <option value="">Seçiniz</option>
-                                <option value="risk_test">Risk Profili Testi</option>
-                                <option value="monte_carlo">Monte Carlo Simülasyonu</option>
-                                <option value="api_entegrasyon">Borsa API Entegrasyonu</option>
-                                <option value="shock_test">Makro Şok Testleri</option>
-                                <option value="journal">Trading Journal</option>
-                                <option value="korrelasyon">Korelasyon Analizi</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="font-size:0.8125rem;color:var(--text-secondary);">Bunun için aylık ne ödersiniz?</label>
-                            <select name="price_signal" style="width:100%;margin-top:4px;padding:8px;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);">
-                                <option value="">Seçiniz</option>
-                                <option value="0">Ücretsiz olmalı</option>
-                                <option value="100">100 TL'ye kadar</option>
-                                <option value="250">250 TL'ye kadar</option>
-                                <option value="500">500 TL'ye kadar</option>
-                                <option value="1000">1.000 TL'ye kadar</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
     </section>
 
     <!-- Pricing Section -->
-    <!-- Strategic Roadmap (Layer 5) -->
-    <section class="section section-roadmap" id="roadmap">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge badge-pro">STRATEJİ</span>
-                <h2 class="section-title" data-i18n="roadmap-title">Geliştirme <span class="gradient-text">Yol Haritası</span></h2>
-                <p class="section-desc" data-i18n="roadmap-desc">Equilyze'ı "Yatırım Karar Destek Ekosistemi"ne dönüştürecek stratejik plan.</p>
-            </div>
-            <div class="roadmap-container">
-                <div class="roadmap-timeline">
-                    <!-- Phase 1 -->
-                    <div class="roadmap-phase">
-                        <div class="phase-dot active"></div>
-                        <div class="phase-header">
-                            <span class="phase-number p1">FAZ 1</span>
-                            <span class="phase-duration">⏱ 1 Ay</span>
-                        </div>
-                        <div class="phase-title" data-i18n="phase-1-title">UI/UX İyileştirmeleri</div>
-                        <div class="phase-desc" data-i18n="phase-1-desc">Dashboard ve Veri Analitiği katmanı: P&L Isı Haritası 2.0, Dinamik Korelasyon Analizi, Benchmark Karşılaştırması ve Zero&#8209;Touch Güvenlik İletişimi.</div>
-                        <div class="phase-tech">
-                            <span class="tech-tag">React/Vue</span>
-                            <span class="tech-tag">Chart.js</span>
-                            <span class="tech-tag">CSS Animations</span>
-                        </div>
-                    </div>
-                    <!-- Phase 2 -->
-                    <div class="roadmap-phase">
-                        <div class="phase-dot"></div>
-                        <div class="phase-header">
-                            <span class="phase-number p2">FAZ 2</span>
-                            <span class="phase-duration">⏱ 2 Ay</span>
-                        </div>
-                        <div class="phase-title" data-i18n="phase-2-title">Gelişmiş Quant Analitiği</div>
-                        <div class="phase-desc" data-i18n="phase-2-desc">Risk yönetimi ve simülasyon motoru: Kişiselleştirilmiş Şok Testleri, Otomatik Stres Testi raporları, Risk Profil Uyumu ve VaR/CVaR modelleri.</div>
-                        <div class="phase-tech">
-                            <span class="tech-tag">Python</span>
-                            <span class="tech-tag">Pandas</span>
-                            <span class="tech-tag">VaR Models</span>
-                            <span class="tech-tag">REST API</span>
-                        </div>
-                    </div>
-                    <!-- Phase 3 -->
-                    <div class="roadmap-phase">
-                        <div class="phase-dot elite"></div>
-                        <div class="phase-header">
-                            <span class="phase-number p3">FAZ 3</span>
-                            <span class="phase-duration">⏱ 1.5 Ay</span>
-                        </div>
-                        <div class="phase-title" data-i18n="phase-3-title">Journal & Psikoloji</div>
-                        <div class="phase-desc" data-i18n="phase-3-desc">Behavioral Finance katmanı: Duygu Analizi (Sentiment Tracking), Görsel Kanıt sistemi, performans-duygu korelasyonu ve otomatik psikolojik içgörüler.</div>
-                        <div class="phase-tech">
-                            <span class="tech-tag">PostgreSQL</span>
-                            <span class="tech-tag">NLP</span>
-                            <span class="tech-tag">TradingView API</span>
-                        </div>
-                    </div>
-                    <!-- Phase 4 -->
-                    <div class="roadmap-phase">
-                        <div class="phase-dot future"></div>
-                        <div class="phase-header">
-                            <span class="phase-number p4">FAZ 4</span>
-                            <span class="phase-duration">⏱ 1 Ay</span>
-                        </div>
-                        <div class="phase-title" data-i18n="phase-4-title">Mobil Web (PWA)</div>
-                        <div class="phase-desc" data-i18n="phase-4-desc">Responsive Design, Push Notifications ile risk alarmları, offline erişim ve mobil-first deneyim optimizasyonu.</div>
-                        <div class="phase-tech">
-                            <span class="tech-tag">PWA</span>
-                            <span class="tech-tag">Service Workers</span>
-                            <span class="tech-tag">Push API</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Expense Table -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Early Access Section -->
     <section class="section section-pricing" id="pricing">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge">ERKEN ERİŞİM</span>
-                <h2 class="section-title">İlk 6 Ay <span class="gradient-text">Tamamen Ücretsiz</span></h2>
-                <p class="section-desc">Henüz geliştirme aşamasındayız. Bekleme listesine katılın, lansmanda her şey dahil ücretsiz erişim kazanın.</p>
+                <span class="section-badge">FİYATLANDIRMA</span>
+                <h2 class="section-title">Planınızı <span class="gradient-text">Seçin</span></h2>
+                <p class="section-desc">Ücretsiz başlayın, büyüdükçe yükseltin.</p>
             </div>
-            <div class="pricing-grid" style="max-width:500px;margin:0 auto;">
-                <div class="pricing-card popular">
-                    <div class="popular-badge">ERKEN ERİŞİM</div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
                     <div class="pricing-header">
-                        <h3>Erken Erişim Paketi</h3>
-                        <p class="pricing-subtitle">İlk 6 ay — tüm özellikler açık</p>
+                        <h3>Free</h3>
+                        <p class="pricing-subtitle">Yolculuğa başlamak için</p>
                         <div class="pricing-price">
                             <span class="price-amount">0</span>
-                            <div class="price-meta"><span class="price-currency">TL</span><span class="price-period">/ay (ilk 6 ay)</span></div>
+                            <div class="price-meta"><span class="price-currency">TL</span><span class="price-period">/ay</span></div>
                         </div>
                     </div>
                     <ul class="pricing-features">
-                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Risk Profili Testi</li>
-                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Monte Carlo Simülasyonu</li>
-                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Borsa API Entegrasyonu</li>
-                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Makro Şok Testleri</li>
-                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Trading Journal</li>
-                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Korelasyon Matrisi</li>
-                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Sınırsız İşlem Kaydı</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Risk Profili Testi (Temel)</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Trading Journal (50 işlem)</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Temel Dashboard</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Haftalık P&L Grafiği</li>
+                        <li class="no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>API Entegrasyonu</li>
+                        <li class="no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Macro Shock Engine</li>
+                        <li class="no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Black Swan Testi</li>
                     </ul>
-                    <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:8px;">6 ay sonra fiyatlandırma duyurulacaktır. Ödeme altyapısı henüz mevcut değildir.</div>
-                    <a href="#waitlist" class="btn btn-primary btn-full" style="margin-top:12px;">Bekleme Listesine Katıl</a>
+                    <button class="btn btn-outline btn-full">Ücretsiz Başla</button>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="section section-faq" id="faq">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge">SSS</span>
-                <h2 class="section-title" data-i18n="faq-title">Sıkça Sorulan <span class="gradient-text">Sorular</span></h2>
-                <p class="section-desc" data-i18n="faq-desc">Merak ettiklerinize hızlı cevaplar.</p>
-            </div>
-            <div class="faq-container">
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">
-                        <span data-i18n="faq-q1">Equilyze nedir ve ne işe yarar?</span>
-                        <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p data-i18n="faq-a1">Equilyze, Türkiye'nin ilk kapsamlı trading ve portföy analiz platformudur. Risk profili testi, canlı dashboard, Monte Carlo simülasyonu, Macro Shock Engine ve Trading Journal gibi araçlarla yatırımcıların veriye dayalı kararlar almasını sağlar.</p>
+                <div class="pricing-card popular">
+                    <div class="popular-badge">POPÜLER</div>
+                    <div class="pricing-header">
+                        <h3>Pro</h3>
+                        <p class="pricing-subtitle">Aktif trader'lar için</p>
+                        <div class="pricing-price">
+                            <span class="price-old">799</span>
+                            <span class="price-amount">449</span>
+                            <div class="price-meta"><span class="price-currency">TL</span><span class="price-period">/ay</span></div>
+                        </div>
                     </div>
+                    <ul class="pricing-features">
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><strong>Sınırsız</strong> İşlem Kaydı</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>API Entegrasyonu (3 borsa)</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Canlı Dashboard</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>P&L Isı Haritası</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Macro Shock Engine</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Dinamik Risk Profili</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Ekonomik Takvim</li>
+                        <li class="no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Black Swan Testi</li>
+                    </ul>
+                    <button class="btn btn-primary btn-full">Pro'ya Geç</button>
                 </div>
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">
-                        <span data-i18n="faq-q2">Verilerim güvende mi?</span>
-                        <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p data-i18n="faq-a2">Evet. Tüm veriler 256-bit SSL ile şifrelenir. API bağlantıları yalnızca okuma yetkisi kullanır — hesabınızdan işlem yapma yetkimiz yoktur. KVKK uyumlu çalışıyoruz.</p>
+                <div class="pricing-card elite">
+                    <div class="elite-badge-card">ELITE</div>
+                    <div class="pricing-header">
+                        <h3>Elite</h3>
+                        <p class="pricing-subtitle">Kurumsal / Profesyonel</p>
+                        <div class="pricing-price">
+                            <span class="price-amount">999</span>
+                            <div class="price-meta"><span class="price-currency">TL</span><span class="price-period">/ay</span></div>
+                        </div>
                     </div>
-                </div>
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">
-                        <span data-i18n="faq-q3">Hangi borsaları destekliyorsunuz?</span>
-                        <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p data-i18n="faq-a3">Şu anda Binance, MetaTrader 5 ve TradingView API entegrasyonlarını destekliyoruz. Yakında Paribu, BtcTurk ve BIST entegrasyonları da eklenecektir.</p>
-                    </div>
-                </div>
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">
-                        <span data-i18n="faq-q4">Monte Carlo simülasyonu nedir?</span>
-                        <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p data-i18n="faq-a4">Monte Carlo simülasyonu, portföyünüzün gelecekteki olası değerlerini binlerce farklı senaryo üzerinden hesaplar. Geometric Brownian Motion modeli kullanarak VaR (Value at Risk), CVaR ve olasılık dağılımı hesaplar.</p>
-                    </div>
-                </div>
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">
-                        <span data-i18n="faq-q5">Ücretsiz planda neler var?</span>
-                        <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p data-i18n="faq-a5">Ücretsiz planda Risk Profili Testi, 50 işleme kadar Trading Journal, temel dashboard ve haftalık P&L grafiği bulunur. Hiçbir kredi kartı gerekmez.</p>
-                    </div>
-                </div>
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">
-                        <span data-i18n="faq-q6">Kripto ve borsa yatırımcıları için uygun mu?</span>
-                        <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p data-i18n="faq-a6">Kesinlikle! Equilyze hem kripto (Bitcoin, Ethereum vb.) hem de geleneksel borsa (BIST, forex) yatırımcıları için tasarlandı. Tüm varlık türlerini tek panelde analiz edebilirsiniz.</p>
-                    </div>
+                    <ul class="pricing-features">
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><strong>Tüm Pro Özellikleri</strong></li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Black Swan Stres Testi</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Korelasyon Matrisi</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Alt Hesap Yönetimi</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Davranışsal Mentorluk</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Öncelikli Destek</li>
+                        <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Özel PDF Raporlama</li>
+                    </ul>
+                    <button class="btn btn-elite btn-full">Elite'e Geç</button>
                 </div>
             </div>
         </div>
@@ -5250,10 +3293,11 @@ input, select, textarea { font-family: var(--font-sans); }
                     <a href="#journal">Trading Journal</a>
                 </div>
                 <div class="footer-links">
-                    <h4>Erken Erişim</h4>
-                    <a href="#waitlist">Bekleme Listesi</a>
-                    <a href="#pricing">İlk 6 Ay Ücretsiz</a>
-                    <a href="#risk-test">Risk Testi</a>
+                    <h4>Planlar</h4>
+                    <a href="#pricing">Free</a>
+                    <a href="#pricing">Pro — 449 TL/ay</a>
+                    <a href="#pricing">Elite — 999 TL/ay</a>
+                    <a href="#pricing">Kurumsal</a>
                 </div>
                 <div class="footer-links">
                     <h4>Şirket</h4>
@@ -5377,42 +3421,6 @@ input, select, textarea { font-family: var(--font-sans); }
                 <div class="form-group">
                     <label>Notlar</label>
                     <textarea id="tradeNote" rows="3" placeholder="İşlem gözlemlerinizi yazın..."></textarea>
-                </div>
-                <!-- Sentiment Tracking (Layer 3) -->
-                <div class="form-group">
-                    <label data-i18n="sentiment-label">😊 Nasıl Hissediyordun?</label>
-                    <div class="sentiment-grid" id="sentimentGrid">
-                        <label class="sentiment-option" onclick="selectSentiment(this)">
-                            <input type="radio" name="sentiment" value="fomo">
-                            <span class="sentiment-emoji">🤯</span>
-                            <span class="sentiment-label">FOMO</span>
-                        </label>
-                        <label class="sentiment-option" onclick="selectSentiment(this)">
-                            <input type="radio" name="sentiment" value="fear">
-                            <span class="sentiment-emoji">😰</span>
-                            <span class="sentiment-label" data-i18n="sent-fear">Korku</span>
-                        </label>
-                        <label class="sentiment-option" onclick="selectSentiment(this)">
-                            <input type="radio" name="sentiment" value="patience">
-                            <span class="sentiment-emoji">🧘</span>
-                            <span class="sentiment-label" data-i18n="sent-patience">Sabır</span>
-                        </label>
-                        <label class="sentiment-option" onclick="selectSentiment(this)">
-                            <input type="radio" name="sentiment" value="excitement">
-                            <span class="sentiment-emoji">🔥</span>
-                            <span class="sentiment-label" data-i18n="sent-excitement">Heyecan</span>
-                        </label>
-                    </div>
-                </div>
-                <!-- Screenshot Upload (Layer 3) -->
-                <div class="form-group">
-                    <label data-i18n="screenshot-label">📸 Grafik Ekran Görüntüsü</label>
-                    <div class="screenshot-upload" id="screenshotUpload" onclick="document.getElementById('screenshotInput').click()">
-                        <div class="screenshot-upload-icon">📎</div>
-                        <div class="screenshot-upload-text" data-i18n="screenshot-text">Sürükle-bırak veya tıklayarak ekran görüntüsü ekleyin</div>
-                        <div class="screenshot-upload-sub" data-i18n="screenshot-sub">PNG, JPG — Maks 5MB</div>
-                    </div>
-                    <input type="file" id="screenshotInput" accept="image/*" style="display:none" onchange="handleScreenshot(this)">
                 </div>
                 <input type="hidden" id="tradeEditId">
             </div>
@@ -6015,199 +4023,6 @@ function connectAPI(exchange) {
 }
 
 // ─────────────────────────────────────────────
-// LAYER 4: WITHDRAWAL CONFIRM
-// ─────────────────────────────────────────────
-function toggleWithdrawalConfirm() {
-    const el = document.getElementById('withdrawalConfirm');
-    const check = document.getElementById('wcCheck');
-    el.classList.toggle('checked');
-    if (el.classList.contains('checked')) {
-        check.style.display = 'block';
-        showToast('Withdrawal izni kapalı olarak teyit edildi ✓', 'success');
-    } else {
-        check.style.display = 'none';
-    }
-}
-
-// ─────────────────────────────────────────────
-// LAYER 3: SENTIMENT TRACKING
-// ─────────────────────────────────────────────
-function selectSentiment(el) {
-    document.querySelectorAll('.sentiment-option').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
-    el.querySelector('input').checked = true;
-}
-
-function handleScreenshot(input) {
-    if (input.files && input.files[0]) {
-        const file = input.files[0];
-        if (file.size > 5 * 1024 * 1024) {
-            showToast('Dosya boyutu 5MB\'dan büyük olamaz', 'error');
-            return;
-        }
-        const upload = document.getElementById('screenshotUpload');
-        upload.innerHTML = `
-            <div class="screenshot-upload-icon">✅</div>
-            <div class="screenshot-upload-text">${file.name}</div>
-            <div class="screenshot-upload-sub">${(file.size / 1024).toFixed(1)} KB — Yüklendi</div>
-        `;
-        showToast('Ekran görüntüsü eklendi', 'success');
-    }
-}
-
-// ─────────────────────────────────────────────
-// LAYER 2: CUSTOM SHOCK TEST
-// ─────────────────────────────────────────────
-function runCustomShock() {
-    const usdTry = parseFloat(document.getElementById('customUsdTry').value) || 0;
-    const btc = parseFloat(document.getElementById('customBtc').value) || 0;
-    const rate = parseFloat(document.getElementById('customRate').value) || 0;
-
-    // Simple simulation formula
-    const portfolioValue = 847250;
-    const usdExposure = 0.35; // 35% USD-denominated
-    const btcExposure = 0.25; // 25% BTC exposure
-    const rateImpact = rate * -0.002; // interest rate inverse impact
-
-    const totalImpact = (usdTry/100 * usdExposure * -0.5) + (btc/100 * btcExposure) + rateImpact;
-    const impactAmount = portfolioValue * totalImpact;
-    const impactPct = (totalImpact * 100).toFixed(2);
-
-    // Show result in shock result panel
-    const shockResult = document.getElementById('shockResult');
-    const shockName = document.getElementById('shockScenarioName');
-    const shockLoading = document.getElementById('shockLoading');
-    const impactMetrics = document.getElementById('impactMetrics');
-
-    document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('active'));
-    shockResult.style.display = 'block';
-    shockName.textContent = `Özel Senaryo: USD/TRY ${usdTry>0?'+':''}${usdTry}%, BTC ${btc>0?'+':''}${btc}%, Faiz ${rate>0?'+':''}${rate}bp`;
-    shockLoading.style.display = 'flex';
-    impactMetrics.style.opacity = '0';
-
-    setTimeout(() => {
-        shockLoading.style.display = 'none';
-        document.getElementById('shockImpact').textContent = `${impactAmount >= 0 ? '+' : ''}₺${Math.abs(impactAmount).toLocaleString('tr-TR', {maximumFractionDigits: 0})}`;
-        document.getElementById('shockImpact').className = `value ${impactAmount >= 0 ? 'positive' : 'negative'}`;
-        document.getElementById('shockPercent').textContent = `${impactPct > 0 ? '+' : ''}${impactPct}%`;
-        document.getElementById('shockPercent').className = `value ${impactPct >= 0 ? 'positive' : 'negative'}`;
-        document.getElementById('volatilityIncrease').textContent = `+${Math.abs(Math.round(usdTry * 1.5 + Math.abs(btc) * 1.2))}%`;
-        document.getElementById('shockWarning').textContent = Math.abs(totalImpact) > 0.05 ? '🌩️ Fırtına' : '⛅ Normal';
-        impactMetrics.style.opacity = '1';
-        showToast('Özel senaryo simülasyonu tamamlandı', 'info');
-    }, 800);
-}
-
-// ─────────────────────────────────────────────
-// LAYER 1: BENCHMARK COMPARISON CHART
-// ─────────────────────────────────────────────
-const benchData = {
-    '1M': {
-        portfolio: [100, 103, 101, 106, 108, 110, 112.4],
-        sp500:     [100, 101, 102, 104, 105, 107, 108.2],
-        gold:      [100, 101, 100, 102, 103, 104, 105.7],
-        btc:       [100, 105, 98, 108, 112, 115, 118.3]
-    },
-    '3M': {
-        portfolio: [100, 104, 98, 106, 110, 115, 112.4],
-        sp500:     [100, 102, 103, 105, 108, 110, 108.2],
-        gold:      [100, 99, 101, 103, 104, 106, 105.7],
-        btc:       [100, 110, 95, 112, 120, 125, 118.3]
-    },
-    '6M': {
-        portfolio: [100, 95, 102, 108, 104, 110, 112.4],
-        sp500:     [100, 98, 101, 104, 106, 107, 108.2],
-        gold:      [100, 101, 103, 102, 104, 105, 105.7],
-        btc:       [100, 85, 105, 115, 110, 120, 118.3]
-    },
-    '1Y': {
-        portfolio: [100, 90, 95, 105, 98, 108, 112.4],
-        sp500:     [100, 95, 98, 102, 105, 106, 108.2],
-        gold:      [100, 102, 103, 101, 103, 105, 105.7],
-        btc:       [100, 75, 90, 110, 100, 115, 118.3]
-    }
-};
-let currentBenchTf = '1M';
-
-function setBenchTf(btn, tf) {
-    btn.closest('.chart-timeframes').querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentBenchTf = tf;
-    drawBenchmarkChart(benchData[tf]);
-}
-
-function drawBenchmarkChart(data) {
-    const canvas = document.getElementById('benchmarkChart');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = 200 * dpr;
-    canvas.style.height = '200px';
-    ctx.scale(dpr, dpr);
-
-    const W = rect.width, H = 200;
-    ctx.clearRect(0, 0, W, H);
-
-    const allValues = [...data.portfolio, ...data.sp500, ...data.gold, ...data.btc];
-    const min = Math.min(...allValues) - 2;
-    const max = Math.max(...allValues) + 2;
-    const pad = { t: 15, b: 20, l: 10, r: 10 };
-    const chartW = W - pad.l - pad.r;
-    const chartH = H - pad.t - pad.b;
-
-    // Grid
-    ctx.save();
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i <= 4; i++) {
-        const y = pad.t + (chartH / 4) * i;
-        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
-    }
-    ctx.restore();
-
-    const colors = { portfolio: '#10b981', sp500: '#3b82f6', gold: '#f59e0b', btc: '#f97316' };
-
-    Object.entries(data).forEach(([key, values]) => {
-        const step = chartW / (values.length - 1);
-        const pts = values.map((v, i) => ({
-            x: pad.l + i * step,
-            y: pad.t + chartH - ((v - min) / (max - min || 1)) * chartH
-        }));
-
-        ctx.save();
-        ctx.strokeStyle = colors[key];
-        ctx.lineWidth = key === 'portfolio' ? 2.5 : 1.5;
-        ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
-        if (key !== 'portfolio') {
-            ctx.setLineDash([4, 4]);
-            ctx.globalAlpha = 0.7;
-        }
-        ctx.beginPath();
-        pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-        ctx.stroke();
-        ctx.restore();
-
-        // End dot
-        const last = pts[pts.length - 1];
-        ctx.save();
-        ctx.fillStyle = colors[key];
-        ctx.beginPath();
-        ctx.arc(last.x, last.y, key === 'portfolio' ? 4 : 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    });
-}
-
-// Init benchmark chart
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => drawBenchmarkChart(benchData['1M']), 500);
-    window.addEventListener('resize', () => drawBenchmarkChart(benchData[currentBenchTf]));
-});
-
-// ─────────────────────────────────────────────
 // PORTFOLIO CHART
 // ─────────────────────────────────────────────
 let chartData = {
@@ -6404,10 +4219,6 @@ const shockData = {
     currency: {
         name: 'Dolar/TL (+15%)',
         impact: '+₺31,250', percent: '+3.7%', volatility: '+32%', warning: '⚡ Dikkat'
-    },
-    tcmb: {
-        name: 'TCMB Sürpriz Faiz İndirimi (-500bp)',
-        impact: '-₺52,800', percent: '-6.2%', volatility: '+55%', warning: '🌩️ Fırtına'
     }
 };
 
@@ -7320,563 +5131,6 @@ const mcStyle = document.createElement('style');
 mcStyle.textContent = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
 document.head.appendChild(mcStyle);
 
-// ─────────────────────────────────────────────
-// FAQ ACCORDION
-// ─────────────────────────────────────────────
-function toggleFaq(item) {
-    const wasOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-    if (!wasOpen) item.classList.add('open');
-}
-
-// ─────────────────────────────────────────────
-// i18n — LANGUAGE SYSTEM (TR / EN)
-// ─────────────────────────────────────────────
-let currentLang = localStorage.getItem('equilyze-lang') || 'tr';
-
-const translations = {
-    en: {
-        // Hero
-        'hero-subtitle': 'Make data-driven investment decisions with 15-question Risk Test, Monte Carlo Simulation, Macro Shock Engine, Trading Journal and live API integration.',
-        // Crypto widget
-        'crypto-widget-title': 'Crypto Market Indicators',
-        'live': 'Live',
-        'fear-greed': 'Fear & Greed Index',
-        'greed': 'Greed',
-        'market-trend': 'Market Trend',
-        'market-trend-sub': 'Above 200-day MA',
-        // Education
-        'edu-title': 'Investment <span class="gradient-text">Guide</span>',
-        'edu-desc': 'From beginners to experienced traders — learn the fundamentals.',
-        'edu-1-title': 'Trading Basics',
-        'edu-1-desc': 'What is Long/Short? How does leverage work? Learn stop-loss and take-profit concepts.',
-        'edu-2-title': 'Risk Management',
-        'edu-2-desc': 'Understand position sizing, risk/reward ratio, drawdown, Sharpe and Sortino ratios.',
-        'edu-3-title': 'Crypto 101',
-        'edu-3-desc': 'Get started with crypto concepts like Bitcoin, Ethereum, DeFi, NFT and staking.',
-        'edu-4-title': 'BIST & Turkish Market',
-        'edu-4-desc': 'Learn about investing in Borsa Istanbul, CMA regulations, and dividend strategies.',
-        'edu-5-title': 'Trading Psychology',
-        'edu-5-desc': 'Discover behavioral traps like FOMO, revenge trading, overconfidence and loss aversion.',
-        'edu-6-title': 'Monte Carlo & VaR',
-        'edu-6-desc': 'Learn portfolio risk analysis, Value at Risk, Conditional VaR and simulation methods.',
-        'beginner': 'Beginner',
-        'intermediate': 'Intermediate',
-        'advanced': 'Advanced',
-        // Social Proof
-'waitlist-title': 'Early Access <span class="gradient-text">Waitlist</span>',
-        'waitlist-desc': 'First 6 months completely free. Join the waitlist, get priority access at launch.',
-        // Features - Monte Carlo
-        'feat-mc-title': 'Monte Carlo Simulation',
-        'feat-mc-desc': 'Simulate your portfolio\'s possible future values through 10,000+ scenarios using Geometric Brownian Motion.',
-        'feat-mc-1': '10,000+ portfolio path simulation',
-        'feat-mc-2': 'VaR & CVaR calculation',
-        'feat-mc-3': 'Stress test & Black Swan mode',
-        'feat-mc-4': 'Probability table & AI interpretation',
-        'feat-mc-5': 'CSV report download',
-        // FAQ
-        'faq-title': 'Frequently Asked <span class="gradient-text">Questions</span>',
-        'faq-desc': 'Quick answers to your questions.',
-        'faq-q1': 'What is Equilyze and what does it do?',
-        'faq-a1': 'Equilyze is Turkey\'s first comprehensive trading and portfolio analysis platform. It enables investors to make data-driven decisions with tools like risk profile testing, live dashboard, Monte Carlo simulation, Macro Shock Engine, and Trading Journal.',
-        'faq-q2': 'Is my data secure?',
-        'faq-a2': 'Yes. All data is encrypted with 256-bit SSL. API connections use read-only permissions only — we have no authority to execute trades on your account. We operate GDPR compliant.',
-        'faq-q3': 'Which exchanges do you support?',
-        'faq-a3': 'We currently support Binance, MetaTrader 5, and TradingView API integrations. Paribu, BtcTurk, and BIST integrations will be added soon.',
-        'faq-q4': 'What is Monte Carlo simulation?',
-        'faq-a4': 'Monte Carlo simulation calculates the possible future values of your portfolio across thousands of different scenarios. It uses the Geometric Brownian Motion model to compute VaR (Value at Risk), CVaR and probability distributions.',
-        'faq-q5': 'What\'s included in the free plan?',
-        'faq-a5': 'The free plan includes Risk Profile Test, Trading Journal (up to 50 trades), basic dashboard, and weekly P&L chart. No credit card required.',
-        'faq-q6': 'Is it suitable for crypto and stock investors?',
-        'faq-a6': 'Absolutely! Equilyze is designed for both crypto (Bitcoin, Ethereum, etc.) and traditional market (BIST, forex) investors. You can analyze all asset types in a single panel.',
-        // Security (Layer 4)
-        'seal-desc': 'Your API keys work with <strong>read-only permission</strong> only. Our platform has no authority to execute trades, withdraw funds, or make transfers on your account under any circumstances.',
-        'sf-ssl': 'End-to-end encryption',
-        'sf-readonly': 'Read-Only API',
-        'sf-readonly-sub': 'No trading permission',
-        'sf-notrade': 'No Trading',
-        'sf-notrade-sub': 'Buy/Sell/Transfer disabled',
-        'wc-text': '<strong>Withdrawal Permission Disabled:</strong> I confirm that withdrawal, transfer, and trading permissions are completely disabled on my API key.',
-        // Risk Alerts (Layer 2)
-        'ra-widget-title': '🔔 Risk Alerts',
-        'raw-title': 'Profile-Portfolio Mismatch Detected',
-        'raw-desc': 'Your risk test shows a <strong>"Conservative"</strong> profile, but your portfolio contains <strong>leveraged altcoin positions</strong>. Your risk level contradicts your profile.',
-        'ra-vol-title': 'Portfolio Volatility Up 20%',
-        'ra-vol-desc': 'Portfolio volatility exceeded normal levels in the last 7 days. Review your position sizes.',
-        'ra-sharpe-title': 'Sharpe Ratio Declining',
-        'ra-sharpe-desc': 'Your Sharpe ratio dropped from 1.82 to 1.24. Risk-adjusted return is decreasing.',
-        'ra-corr-title': 'Correlation Concentration',
-        'ra-corr-desc': 'BTC-ETH correlation rose to 0.94. Your portfolio is over-concentrated: correlated assets increase your risk.',
-        'ra-dd-title': 'Maximum Drawdown Warning',
-        'ra-dd-desc': 'Your portfolio reached -8.5% drawdown. You are approaching your drawdown threshold.',
-        // Benchmark (Layer 1)
-        'bench-title': '📈 Benchmark Comparison',
-        // Sentiment (Layer 3)
-        'sentiment-label': '😊 How Were You Feeling?',
-        'sent-fear': 'Fear',
-        'sent-patience': 'Patience',
-        'sent-excitement': 'Excitement',
-        'screenshot-label': '📸 Chart Screenshot',
-        'screenshot-text': 'Drag & drop or click to add a screenshot',
-        'screenshot-sub': 'PNG, JPG — Max 5MB',
-        // Custom Shock (Layer 2)
-        'custom-shock-title': 'Create Your Own Scenario',
-        'custom-shock-btn': '⚡ Run Simulation',
-        // Roadmap (Layer 5)
-        'roadmap-title': 'Development <span class="gradient-text">Roadmap</span>',
-        'roadmap-desc': 'Strategic plan to transform Equilyze into an "Investment Decision Support Ecosystem".',
-        'phase-1-title': 'UI/UX Improvements',
-        'phase-1-desc': 'Dashboard & Data Analytics layer: P&L Heatmap 2.0, Dynamic Correlation Analysis, Benchmark Comparison and Zero&#8209;Touch Security Communication.',
-        'phase-2-title': 'Advanced Quant Analytics',
-        'phase-2-desc': 'Risk management & simulation engine: Custom Shock Tests, Automated Stress Test reports, Risk Profile Alignment and VaR/CVaR models.',
-        'phase-3-title': 'Journal & Psychology',
-        'phase-3-desc': 'Behavioral Finance layer: Sentiment Analysis (Sentiment Tracking), Visual Proof system, performance-emotion correlation and automated psychological insights.',
-        'phase-4-title': 'Mobile Web (PWA)',
-        'phase-4-desc': 'Responsive Design, Push Notifications for risk alerts, offline access and mobile-first experience optimization.',
-        // Correlation TimeSeries
-        'corr-ts-title': 'Correlation Time-Series',
-        'corr-ts-alert': '⚠️ Correlation between BTC and S&P 500 rose from 0.40 to 0.85 in the last 30 days — beware of false confidence!',
-        // Slippage Analysis
-        'slip-title': '💧 Liquidity & Slippage Analysis',
-        'slip-btc-sub': 'Sufficient market depth',
-        'slip-eth-sub': 'Medium depth',
-        'slip-thyao-sub': 'Low liquidity risk',
-        'slip-warning': '⚠️ If you try to close all your positions now, you could experience 1.2% slippage under current market conditions.',
-        // RWA
-        'rwa-title': 'Add Manual Asset (RWA)',
-        'rwa-estate': 'Tokenized Real Estate',
-        'rwa-gold': 'Tokenized Gold',
-        'rwa-commodity': 'Tokenized Commodity',
-        'rwa-bond': 'Tokenized Bond',
-        // Methodology
-        'meth-title': 'Methodology & Data Source',
-        'meth-text': 'This simulation is calculated using the Geometric Brownian Motion (GBM) algorithm with 10 years of market data. CoinGecko API and Yahoo Finance API are used as data sources. Results are predictive in nature and do not constitute investment advice.',
-        // AI Agent
-        'ai-status': '● Strategy Assistant',
-        'ai-welcome': 'Hello! 👋 I\'m your Equilyze AI Strategy Assistant. You can ask questions about your portfolio, request risk/return optimization, or run scenario analysis.<br><br>📌 Try asking:<br>• "How can I invest $5,000 without changing my risk/return ratio?"<br>• "Run correlation analysis"<br>• "What\'s my slippage risk?"',
-        // Insight Bar
-        'insight-title': 'Daily Status Report',
-        'insight-text': 'SAMPLE PORTFOLIO: BTC and ETH positions move with <em>high correlation</em> (0.85) — this concentration may increase your risk.',
-        'insight-cta': 'See Details →',
-        // Info Tooltips
-        'tip-beta': 'Beta shows how volatile your portfolio is compared to the market. Above 1 = more aggressive than market. Below 1 = more defensive.',
-        'tip-var': 'VaR is the maximum your portfolio could lose in the worst 5% of scenarios. A lower VaR means better risk management.',
-        'tip-drawdown': 'The largest percentage drop from peak to trough in your portfolio. Above -15% is considered dangerous.',
-        'tip-sharpe': 'Shows how much return you earn for the risk you take. Above 1 is good — the risk you\'re taking is worth it!',
-        'tip-sortino': 'Similar to Sharpe but only considers downside risk. High Sortino = you\'re well-protected against drops only.',
-        // Quick Scenarios
-        'qs-crisis': 'Great Depression',
-        'qs-crisis-desc': 'What if everything drops 20%?',
-        'qs-bull': 'Bull Run',
-        'qs-bull-desc': 'What if BTC hits $150k?',
-        'qs-tight': 'CBRT Tightening',
-        'qs-tight-desc': 'What if rates hit 50%?',
-        // Psych Report
-        'psych-title': 'Monthly Psychological Analysis Report',
-        'psych-period': '📅 March 2026',
-        'psych-fear': 'Fear',
-        'psych-patience': 'Patient',
-        'psych-greed': 'Greed',
-        'psych-insight': '📊 <strong>AI Insight:</strong> This month, you mostly closed trades during <strong>"FOMO"</strong> moments, which cost you <strong style="color:var(--color-danger)">₺5,240</strong> in total. Your stats show you make <strong>70% more mistakes</strong> in this emotional state. Meanwhile, your "Patient" trades brought in <strong style="color:var(--color-success)">₺8,920</strong> profit.',
-        // Survival Score
-        'survival-label': 'Survival Score',
-        'survival-status-low': '⚠️ Critical — Portfolio would erode 45% in a Black Swan scenario',
-        'survival-action': 'Monte Carlo + Black Swan average',
-        'survival-rebalance': '🧠 AI Rebalance Suggest',
-        // Shadow Backtest
-        'backtest-title': 'Shadow Backtest',
-        'backtest-run': '▶ Run Backtest',
-        'backtest-rule-title': 'No-Code Rule Builder',
-        'backtest-rule-text': 'IF portfolio.volatility > 25%<br>THEN reduce(highestCorrelatedAsset, 20%)<br>AND increase(cash, equivalent)',
-        'backtest-result-title': 'Before / After Comparison',
-        'backtest-before': 'Previous Max Drawdown',
-        'backtest-after': 'After Rule Applied',
-        // Roadmap Updates
-        'phase-1-title': 'Visual & UX',
-        'phase-1-desc': 'Drag-and-Drop Dashboard, Glassmorphism Terminal UI, Asset-based color coding, and user-customizable widget layout.',
-        'phase-2-title': 'Quant Engine',
-        'phase-2-desc': 'No-Code Backtest, AI Rebalance Suggestions, Survival Score, and transition from Analysis to Decision Support.',
-        'phase-3-title': 'Global & RWA',
-        'phase-3-desc': 'IBKR API integration, Global stocks on one screen, automated RWA valuation reports, and multi-exchange sync.',
-        'phase-4-title': 'Legal & Social',
-        'phase-4-desc': 'Tax automation with FIFO/LIFO export, Smart Money tracking, sentiment analysis, and accountant-ready PDF reports.',
-    }
-};
-
-function setLanguage(lang) {
-    currentLang = lang;
-    localStorage.setItem('equilyze-lang', lang);
-    document.documentElement.setAttribute('lang', lang);
-    // Update toggle buttons
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
-    });
-    // Apply translations
-    if (lang === 'tr') {
-        // Revert to original TR content (stored in data-i18n-original)
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            if (el.dataset.i18nOriginal) {
-                el.innerHTML = el.dataset.i18nOriginal;
-            }
-        });
-    } else {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.dataset.i18n;
-            if (!el.dataset.i18nOriginal) {
-                el.dataset.i18nOriginal = el.innerHTML;
-            }
-            if (translations[lang] && translations[lang][key]) {
-                el.innerHTML = translations[lang][key];
-            }
-        });
-    }
-}
-
-// Init language on load
-(function initLang() {
-    const saved = localStorage.getItem('equilyze-lang');
-    if (saved && saved !== 'tr') {
-        // Need to wait for DOM
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => setLanguage(saved));
-        } else {
-            setLanguage(saved);
-        }
-    }
-})();
-
-// ─────────────────────────────────────────────
-// AI STRATEGY ASSISTANT
-// ─────────────────────────────────────────────
-function toggleAIAgent() {
-    const panel = document.getElementById('aiAgentPanel');
-    panel.classList.toggle('open');
-}
-
-function sendAIMessage() {
-    const input = document.getElementById('aiInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    const messages = document.getElementById('aiMessages');
-
-    // Add user message
-    const userDiv = document.createElement('div');
-    userDiv.className = 'ai-msg user';
-    userDiv.textContent = msg;
-    messages.appendChild(userDiv);
-    input.value = '';
-
-    // Show typing
-    const typingDiv = document.createElement('div');
-    typingDiv.className = 'ai-msg bot';
-    typingDiv.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
-    messages.appendChild(typingDiv);
-    messages.scrollTop = messages.scrollHeight;
-
-    // Simulate AI response
-    setTimeout(() => {
-        typingDiv.innerHTML = generateAIResponse(msg);
-        messages.scrollTop = messages.scrollHeight;
-    }, 1500 + Math.random() * 1000);
-}
-
-function generateAIResponse(query) {
-    const q = query.toLowerCase();
-    if (q.includes('risk') || q.includes('nakit') || q.includes('5000') || q.includes('yatırım')) {
-        return 'Monte Carlo simülasyonunu çalıştırdım. <strong>$5,000</strong> nakit için 3 senaryo:<br><br>' +
-            '📊 <strong>Düşük Risk:</strong> %60 BTC + %40 Stablecoin → Beklenen getiri: +%8.2, VaR: -%4.1<br>' +
-            '⚖️ <strong>Dengeli:</strong> %40 BTC + %30 ETH + %30 THYAO → Beklenen getiri: +%12.4, VaR: -%9.3<br>' +
-            '🚀 <strong>Agresif:</strong> %50 ETH + %30 Altcoin + %20 THYAO → Beklenen getiri: +%18.7, VaR: -%15.8<br><br>' +
-            'Risk profili <em>"Muhafazakâr"</em> olan portföy için <strong>Düşük Risk</strong> senaryosu daha uyumlu görünüyor.';
-    }
-    if (q.includes('korelasyon') || q.includes('correlation')) {
-        return 'Portföyünüzdeki korelasyon analizi:<br><br>' +
-            '• BTC-ETH: <strong>0.94</strong> (Çok Yüksek) ⚠️<br>' +
-            '• BTC-S&P500: <strong>0.85</strong> (Yüksek)<br>' +
-            '• THYAO-GARAN: <strong>0.72</strong> (Orta)<br><br>' +
-            'Portföy çeşitlendirmesi açısından <strong>altın veya tahvil</strong> korelasyonu düşürebilir.';
-    }
-    if (q.includes('slippage') || q.includes('likidite')) {
-        return 'Likidite analizi tamamlandı:<br><br>Tüm pozisyonlarınızı anlık kapatma durumunda tahmini slippage: <strong>%1.2</strong><br><br>En yüksek risk: <strong>THYAO</strong> (düşük derinlik, %1.2 kayma beklentisi).';
-    }
-    return '🤖 Sorunuzu analiz ediyorum... Portföy verinize göre bir analiz hazırlıyorum.<br><br>Deneyebileceğiniz sorular:<br>• "Risk/getiri oranı analizi"<br>• "Korelasyon analizi yap"<br>• "$5,000 nakit dağılım senaryosu"';
-}
-
-function handleAIKeypress(e) { if (e.key === 'Enter') sendAIMessage(); }
-
-// ─────────────────────────────────────────────
-// WHAT-IF SIMULATOR
-// ─────────────────────────────────────────────
-function whatIfRemove(symbol, riskScore) {
-    const result = document.getElementById('whatifResult');
-    const newScore = (riskScore - 0.13).toFixed(2);
-    result.innerHTML = `🔍 <strong>What-If:</strong> ${symbol} satıldığında portföy risk skoru <strong>${riskScore}</strong>'ten <strong style="color:var(--color-success)">${newScore}</strong>'e düşer. Volatilite -%${(Math.random()*10+5).toFixed(1)} azalır.`;
-    result.classList.add('show');
-}
-function whatIfAdd(symbol, riskScore) {
-    const result = document.getElementById('whatifResult');
-    const newScore = (riskScore + 0.08).toFixed(2);
-    result.innerHTML = `🔍 <strong>What-If:</strong> ${symbol} pozisyonu %50 artırıldığında risk skoru <strong>${riskScore}</strong>'ten <strong style="color:var(--color-warning)">${newScore}</strong>'e yükselir. Sharpe oranı -%${(Math.random()*5+2).toFixed(1)} değişir.`;
-    result.classList.add('show');
-}
-
-// ─────────────────────────────────────────────
-// RWA SELECTOR
-// ─────────────────────────────────────────────
-function selectRWA(el, type) {
-    el.classList.toggle('selected');
-    if (el.classList.contains('selected')) {
-        showToast(`${type === 'realestate' ? 'Tokenize Emlak' : type === 'gold' ? 'Tokenize Altın' : type === 'commodity' ? 'Tokenize Emtia' : 'Tokenize Tahvil'} portföye eklendi`, 'success');
-    }
-}
-
-// ─────────────────────────────────────────────
-// CORRELATION TIMESERIES CHART
-// ─────────────────────────────────────────────
-function drawCorrTimeseries() {
-    const canvas = document.getElementById('corrTimeseriesChart');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = 100 * dpr;
-    canvas.style.height = '100px';
-    ctx.scale(dpr, dpr);
-
-    const W = rect.width, H = 100;
-    ctx.clearRect(0, 0, W, H);
-
-    // Data: 30 days of correlation values (BTC vs S&P500)
-    const data = [0.40, 0.42, 0.38, 0.45, 0.50, 0.48, 0.52, 0.55, 0.58, 0.54,
-                  0.60, 0.63, 0.58, 0.65, 0.68, 0.70, 0.72, 0.68, 0.75, 0.78,
-                  0.74, 0.77, 0.80, 0.78, 0.82, 0.80, 0.83, 0.84, 0.86, 0.85];
-
-    const pad = { t: 8, b: 16, l: 8, r: 8 };
-    const chartW = W - pad.l - pad.r;
-    const chartH = H - pad.t - pad.b;
-    const step = chartW / (data.length - 1);
-
-    // Warning zone (above 0.85)
-    const warningY = pad.t + chartH - (0.85 / 1.0) * chartH;
-    ctx.save();
-    ctx.fillStyle = 'rgba(239,68,68,0.06)';
-    ctx.fillRect(pad.l, pad.t, chartW, warningY - pad.t);
-    ctx.strokeStyle = 'rgba(239,68,68,0.3)';
-    ctx.lineWidth = 0.5;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(pad.l, warningY);
-    ctx.lineTo(W - pad.r, warningY);
-    ctx.stroke();
-    ctx.restore();
-
-    // Line
-    const pts = data.map((v, i) => ({
-        x: pad.l + i * step,
-        y: pad.t + chartH - (v / 1.0) * chartH
-    }));
-    ctx.save();
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 2;
-    ctx.lineJoin = 'round';
-    ctx.beginPath();
-    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.stroke();
-
-    // Gradient fill
-    ctx.lineTo(pts[pts.length - 1].x, H - pad.b);
-    ctx.lineTo(pts[0].x, H - pad.b);
-    ctx.closePath();
-    const grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, 'rgba(245,158,11,0.15)');
-    grad.addColorStop(1, 'rgba(245,158,11,0)');
-    ctx.fillStyle = grad;
-    ctx.fill();
-    ctx.restore();
-
-    // End dot
-    const last = pts[pts.length - 1];
-    ctx.save();
-    ctx.fillStyle = '#f59e0b';
-    ctx.beginPath(); ctx.arc(last.x, last.y, 4, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
-
-    // Labels
-    ctx.save();
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = '9px Inter, sans-serif';
-    ctx.fillText('0.40', pad.l, H - pad.b + 10);
-    ctx.fillText('0.85', W - pad.r - 20, H - pad.b + 10);
-    ctx.restore();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(drawCorrTimeseries, 600);
-    window.addEventListener('resize', drawCorrTimeseries);
-});
-
-// ─────────────────────────────────────────────
-// SHADOW BACKTEST
-// ─────────────────────────────────────────────
-function runShadowBacktest() {
-    showToast('🔮 Shadow Backtest çalıştırılıyor... 1 yıllık veri analiz ediliyor.', 'info');
-    const beforeEl = document.querySelector('.backtest-col.before .backtest-col-value');
-    const afterEl = document.querySelector('.backtest-col.after .backtest-col-value');
-    if (beforeEl && afterEl) {
-        beforeEl.textContent = '...';
-        afterEl.textContent = '...';
-        setTimeout(() => {
-            const before = -(25 + Math.random() * 15).toFixed(1);
-            const after = -(10 + Math.random() * 12).toFixed(1);
-            beforeEl.textContent = before + '%';
-            afterEl.textContent = after + '%';
-            showToast(`✅ Backtest tamamlandı! Max Drawdown ${before}% → ${after}% azaltıldı.`, 'success');
-        }, 1500);
-    }
-}
-
-// ─────────────────────────────────────────────
-// SURVIVAL SCORE AI TRIGGER
-// ─────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-    const score = parseInt(document.getElementById('survivalNumber')?.textContent || '100');
-    if (score < 40) {
-        setTimeout(() => {
-            const panel = document.getElementById('aiAgentPanel');
-            if (panel && !panel.classList.contains('open')) {
-                toggleAIAgent();
-                setTimeout(() => {
-                    const msgArea = document.getElementById('aiMessages');
-                    if (msgArea) {
-                        const msg = document.createElement('div');
-                        msg.className = 'ai-msg ai-msg-bot';
-                        msg.innerHTML = '🚨 <strong>Acil Uyarı:</strong> Hayatta Kalma Skorun <strong style="color:var(--color-danger)">' + score + '/100</strong>. Siyah Kuğu senaryosunda portföyün %45 eriyor. Skoru artırmak için <strong>korelasyonu yüksek varlıkların oranı</strong> ve <strong>nakit oranı</strong> gözden geçirilebilir. <br><br>👉 Detaylı analiz için "AI Rebalans" de.';
-                        msgArea.appendChild(msg);
-                        msgArea.scrollTop = msgArea.scrollHeight;
-                    }
-                }, 600);
-            }
-        }, 3000);
-    }
-});
-
-// ─────────────────────────────────────────────
-// QUICK SCENARIO CARDS
-// ─────────────────────────────────────────────
-function runQuickScenario(type) {
-    const inputs = {
-        crisis:      { usd: 25, btc: -40, bist: -30, eth: -45, interest: 5 },
-        bull:        { usd: -5, btc: 80,  bist: 20,  eth: 60,  interest: -2 },
-        tightening:  { usd: 15, btc: -15, bist: -25, eth: -20, interest: 15 }
-    };
-    const s = inputs[type];
-    if (!s) return;
-    const el = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
-    el('customUsdTry', s.usd);
-    el('customBtc', s.btc);
-    el('customBist', s.bist);
-    el('customEth', s.eth);
-    el('customInterest', s.interest);
-    if (typeof runCustomShock === 'function') runCustomShock();
-    const labels = { crisis: 'Büyük Bunalım', bull: 'Boğa Koşusu', tightening: 'TCMB Sıkılaştırma' };
-    showToast(`⚡ ${labels[type]} senaryosu yüklendi ve simülasyon başlatıldı!`, 'success');
-}
-
-// ─────────────────────────────────────────────
-// INSIGHT BAR DYNAMIC ENGINE
-// ─────────────────────────────────────────────
-function updateInsightBar() {
-    const userProfile = localStorage.getItem('equilyze-risk-profile') || 'conservative';
-    const beta = 0.85;
-    const corr = 0.85; // BTC-ETH
-    const insightIcon = document.getElementById('insightIcon');
-    const insightText = document.getElementById('insightText');
-    if (!insightIcon || !insightText) return;
-
-    // Decision tree: Critical > Strategic Alignment > Performance > Psychology
-    if (userProfile === 'conservative' && beta > 0.8) {
-        insightIcon.className = 'insight-icon warning';
-        insightIcon.textContent = '⚠️';
-        insightText.innerHTML = 'ÖRNEK PORTFÖY: Risk profilin <strong>"Muhafazakâr"</strong> ancak portföy piyasadan <em>%' + Math.round((beta - 0.5) * 100) + ' daha agresif</em> hareket ediyor. Volatilite ve nakit oranı arasında bir uyumsuzluk var.';
-    } else if (corr > 0.8) {
-        insightIcon.className = 'insight-icon warning';
-        insightIcon.textContent = '🛡️';
-        insightText.innerHTML = 'ÖRNEK PORTFÖY: Varlıklar yüksek korelasyonla hareket ediyor (Korelasyon: <strong>' + corr + '</strong>). Çeşitlendirme düzeyi düşük olabilir.';
-    } else {
-        insightIcon.className = 'insight-icon';
-        insightIcon.textContent = '📈';
-        insightText.innerHTML = 'ÖRNEK PORTFÖY: Günlük portföy değişimi takip ediliyor. Detaylı analiz için dashboard bileşenlerini inceleyin.';
-    }
-
-    // Risk profile coloring on beta metric
-    const metricBeta = document.getElementById('metricBeta');
-    if (metricBeta) {
-        if (userProfile === 'conservative' && beta > 0.7) {
-            metricBeta.style.color = 'var(--color-danger)';
-        } else if (userProfile === 'aggressive' && beta < 1.2) {
-            metricBeta.style.color = 'var(--color-success)';
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(updateInsightBar, 800);
-});
-
-// ─────────────────────────────────────────────
-// AMBIENT RISK LIGHTING
-// ─────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        const glow = document.getElementById('ambientGlow');
-        if (glow) {
-            glow.classList.add('active', 'risk-high');
-        }
-    }, 2000);
-});
-
 </script>
-
-<!-- Ambient Risk Glow Overlay -->
-<div class="ambient-glow" id="ambientGlow"></div>
-
-<!-- AI Agent FAB -->
-<button class="ai-agent-fab" onclick="toggleAIAgent()" title="Equilyze AI Agent" id="aiAgentFab">
-    🤖
-</button>
-
-<!-- AI Agent Chat Panel -->
-<div class="ai-agent-panel" id="aiAgentPanel">
-    <div class="ai-header">
-        <div class="ai-header-left">
-            <div class="ai-avatar">🧠</div>
-            <div>
-                <div class="ai-header-title">Equilyze AI Agent</div>
-                <div class="ai-header-sub" data-i18n="ai-status">● Strateji Asistanı</div>
-            </div>
-        </div>
-        <button class="ai-close" onclick="toggleAIAgent()">✕</button>
-    </div>
-    <div class="ai-messages" id="aiMessages">
-        <div class="ai-msg bot" data-i18n="ai-welcome">
-            Merhaba! 👋 Ben Equilyze AI Strateji Asistanınız. Portföyünüz hakkında sorular sorabilir, risk/getiri analizi isteyebilir veya senaryo analizi yapabilirim.<br><br>
-            📌 Deneyebileceğiniz sorular:<br>
-            • "Portföyümdeki risk/getiri oranını analiz et"<br>
-            • "Korelasyon analizi yap"<br>
-            • "Slippage riski nedir?"
-        </div>
-    </div>
-    <div class="ai-input-bar">
-        <input class="ai-input" id="aiInput" placeholder="Portföyünüz hakkında sorun..." onkeypress="handleAIKeypress(event)">
-        <button class="ai-send" onclick="sendAIMessage()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-        </button>
-    </div>
-</div>
-
 </body>
 </html>
