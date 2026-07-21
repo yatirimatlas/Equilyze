@@ -7439,10 +7439,10 @@ function initFinancialEngines() {
     updateInsightBar(metrics);
     
     // Fetch live market data
-    marketEngine.updateMarketWidget();
+    marketEngine.updateMarketWidget().catch(() => {});
     
     // Refresh market data every 5 minutes
-    setInterval(() => marketEngine.updateMarketWidget(), 300000);
+    setInterval(() => marketEngine.updateMarketWidget().catch(() => {}), 300000);
 }
 
 /* ── UI Controller ── */
@@ -7914,14 +7914,6 @@ const translations = {
         // Roadmap (Layer 5)
         'roadmap-title': 'Development <span class="gradient-text">Roadmap</span>',
         'roadmap-desc': 'Strategic plan to transform Equilyze into an "Investment Decision Support Ecosystem".',
-        'phase-1-title': 'UI/UX Improvements',
-        'phase-1-desc': 'Dashboard & Data Analytics layer: P&L Heatmap 2.0, Dynamic Correlation Analysis, Benchmark Comparison and Zero&#8209;Touch Security Communication.',
-        'phase-2-title': 'Advanced Quant Analytics',
-        'phase-2-desc': 'Risk management & simulation engine: Custom Shock Tests, Automated Stress Test reports, Risk Profile Alignment and VaR/CVaR models.',
-        'phase-3-title': 'Journal & Psychology',
-        'phase-3-desc': 'Behavioral Finance layer: Sentiment Analysis (Sentiment Tracking), Visual Proof system, performance-emotion correlation and automated psychological insights.',
-        'phase-4-title': 'Mobile Web (PWA)',
-        'phase-4-desc': 'Responsive Design, Push Notifications for risk alerts, offline access and mobile-first experience optimization.',
         // Correlation TimeSeries
         'corr-ts-title': 'Correlation Time-Series',
         'corr-ts-alert': '⚠️ Correlation between BTC and S&P 500 rose from 0.40 to 0.85 in the last 30 days — beware of false confidence!',
@@ -8250,7 +8242,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const msgArea = document.getElementById('aiMessages');
                     if (msgArea) {
                         const msg = document.createElement('div');
-                        msg.className = 'ai-msg ai-msg-bot';
+                        msg.className = 'ai-msg bot';
                         msg.innerHTML = '🚨 <strong>Acil Uyarı:</strong> Hayatta Kalma Skorun <strong style="color:var(--color-danger)">' + score + '/100</strong>. Siyah Kuğu senaryosunda portföyün %45 eriyor. Skoru artırmak için <strong>korelasyonu yüksek varlıkların oranı</strong> ve <strong>nakit oranı</strong> gözden geçirilebilir. <br><br>👉 Detaylı analiz için "AI Rebalans" de.';
                         msgArea.appendChild(msg);
                         msgArea.scrollTop = msgArea.scrollHeight;
@@ -8276,9 +8268,7 @@ function runQuickScenario(type) {
     const el = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
     el('customUsdTry', s.usd);
     el('customBtc', s.btc);
-    el('customBist', s.bist);
-    el('customEth', s.eth);
-    el('customInterest', s.interest);
+    el('customRate', s.interest);
     if (typeof runCustomShock === 'function') runCustomShock();
     const labels = { crisis: 'Büyük Bunalım', bull: 'Boğa Koşusu', tightening: 'TCMB Sıkılaştırma' };
     showToast(`⚡ ${labels[type]} senaryosu yüklendi ve simülasyon başlatıldı!`, 'success');
@@ -8288,7 +8278,15 @@ function runQuickScenario(type) {
 // INSIGHT BAR DYNAMIC ENGINE
 // ─────────────────────────────────────────────
 function updateInsightBar(metrics) {
-    const userProfile = localStorage.getItem('equilyze-risk-profile') || 'conservative';
+    let userProfile = 'conservative';
+    try {
+        const raw = localStorage.getItem('equilyze-risk-profile');
+        const parsed = JSON.parse(raw);
+        userProfile = (parsed && parsed.profile === 'Dengeli Yatırımcı') ? 'balanced' :
+                       (parsed && parsed.profile === 'Agresif Yatırımcı') ? 'aggressive' :
+                       (parsed && parsed.profile === 'Muhafazakar Yatırımcı') ? 'conservative' :
+                       (parsed && parsed.profile === 'Korumacı Yatırımcı') ? 'protective' : 'conservative';
+    } catch { userProfile = 'conservative'; }
     const beta = metrics ? metrics.beta : 0.85;
     const avgCorr = metrics ? metrics.avgCorrelation : 0.85;
     const insightIcon = document.getElementById('insightIcon');
