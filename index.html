@@ -3918,6 +3918,7 @@ input, select, textarea { font-family: var(--font-sans); }
                                     <span class="info-tooltip" data-i18n="tip-var">VaR, en kötü %5 senaryoda portföyünüzün kaybedebileceği maksimum tutardır. Düşük bir VaR daha iyi risk yönetimi anlamına gelir.</span>
                                 </span>
                                 <span class="metric-value negative" id="metricVar">--</span>
+                                <div class="metric-bar-wrap" style="margin-top:4px;"><div class="metric-bar"><div class="metric-fill" id="varBar" style="width:0%;background:var(--color-danger)"></div></div></div>
                             </div>
                             <div class="risk-metric">
                                 <span class="metric-label metric-info">Maksimum Drawdown
@@ -4019,6 +4020,18 @@ input, select, textarea { font-family: var(--font-sans); }
                     <div class="widget-content">
                         <div class="crypto-indicators">
                             <div class="crypto-ind-card">
+                                <div class="crypto-ind-icon">₿</div>
+                                <div class="crypto-ind-label">BTC/USD</div>
+                                <div class="crypto-ind-value" id="btcPrice" style="color: var(--color-secondary);">--</div>
+                                <div class="crypto-ind-sub" id="btcChange24h">Canlı veri bekleniyor</div>
+                            </div>
+                            <div class="crypto-ind-card">
+                                <div class="crypto-ind-icon">⟠</div>
+                                <div class="crypto-ind-label">ETH/USD</div>
+                                <div class="crypto-ind-value" id="ethPrice" style="color: var(--color-secondary);">--</div>
+                                <div class="crypto-ind-sub">Canlı veri bekleniyor</div>
+                            </div>
+                            <div class="crypto-ind-card">
                                 <div class="crypto-ind-icon">😨</div>
                                 <div class="crypto-ind-label" data-i18n="fear-greed">Fear & Greed Index</div>
                                 <div class="crypto-ind-value" id="fearGreedValue" style="color: var(--color-warning);">62</div>
@@ -4028,13 +4041,13 @@ input, select, textarea { font-family: var(--font-sans); }
                                 </div>
                             </div>
                             <div class="crypto-ind-card">
-                                <div class="crypto-ind-icon">₿</div>
+                                <div class="crypto-ind-icon">📊</div>
                                 <div class="crypto-ind-label">BTC Dominance</div>
-                                <div class="crypto-ind-value" style="color: var(--color-secondary);">54.2%</div>
+                                <div class="crypto-ind-value" id="btcDominance" style="color: var(--color-secondary);">54.2%</div>
                                 <div class="crypto-ind-sub positive">+0.8% (7g)</div>
                             </div>
                             <div class="crypto-ind-card">
-                                <div class="crypto-ind-icon">📊</div>
+                                <div class="crypto-ind-icon">📈</div>
                                 <div class="crypto-ind-label" data-i18n="market-trend">Piyasa Trendi</div>
                                 <div class="crypto-ind-value positive">▲ Boğa</div>
                                 <div class="crypto-ind-sub" data-i18n="market-trend-sub">200 gün MA üstünde</div>
@@ -7388,7 +7401,25 @@ class MarketDataEngine {
                 fng.value_classification === 'Extreme Greed' ? 'Aşırı Açgözlülük' :
                 fng.value_classification === 'Extreme Fear' ? 'Aşırı Korku' : 'Nötr'
             );
+            // Fear & Greed marker position (0-100)
+            const marker = document.getElementById('fearGreedMarker');
+            if (marker) marker.style.left = Math.min(95, Math.max(5, parseInt(fng.value))) + '%';
         }
+
+        // Fetch BTC dominance from CoinGecko
+        this.fetchDominance();
+    }
+
+    async fetchDominance() {
+        try {
+            const resp = await fetch('https://api.coingecko.com/api/v3/global');
+            const data = await resp.json();
+            const dom = data?.data?.market_cap_percentage?.btc;
+            if (dom) {
+                const el = document.getElementById('btcDominance');
+                if (el) el.textContent = dom.toFixed(1) + '%';
+            }
+        } catch {}
     }
 }
 
