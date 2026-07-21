@@ -6098,41 +6098,36 @@ function runCustomShock() {
 }
 
 // ─────────────────────────────────────────────
-// LAYER 1: BENCHMARK COMPARISON CHART
+// LAYER 1: BENCHMARK COMPARISON CHART (Gerçek motor verisi ile)
 // ─────────────────────────────────────────────
-const benchData = {
-    '1M': {
-        portfolio: [100, 103, 101, 106, 108, 110, 112.4],
-        sp500:     [100, 101, 102, 104, 105, 107, 108.2],
-        gold:      [100, 101, 100, 102, 103, 104, 105.7],
-        btc:       [100, 105, 98, 108, 112, 115, 118.3]
-    },
-    '3M': {
-        portfolio: [100, 104, 98, 106, 110, 115, 112.4],
-        sp500:     [100, 102, 103, 105, 108, 110, 108.2],
-        gold:      [100, 99, 101, 103, 104, 106, 105.7],
-        btc:       [100, 110, 95, 112, 120, 125, 118.3]
-    },
-    '6M': {
-        portfolio: [100, 95, 102, 108, 104, 110, 112.4],
-        sp500:     [100, 98, 101, 104, 106, 107, 108.2],
-        gold:      [100, 101, 103, 102, 104, 105, 105.7],
-        btc:       [100, 85, 105, 115, 110, 120, 118.3]
-    },
-    '1Y': {
-        portfolio: [100, 90, 95, 105, 98, 108, 112.4],
-        sp500:     [100, 95, 98, 102, 105, 106, 108.2],
-        gold:      [100, 102, 103, 101, 103, 105, 105.7],
-        btc:       [100, 75, 90, 110, 100, 115, 118.3]
-    }
-};
+function generateBenchData(tf) {
+    const days = { '1M': 21, '3M': 63, '6M': 126, '1Y': 252 };
+    const n = days[tf] || 21;
+    const engine = metricsEngine || new RiskMetricsEngine(847250, DEFAULT_POSITIONS);
+    const prices = engine._generateReturnSeries(n);
+    const benchmarkPrices = engine._generateReturnSeries(n);
+    const goldPrices = engine._generateReturnSeries(n);
+    const btcPrices = engine._generateReturnSeries(n);
+
+    const normalize = (arr) => {
+        const base = arr[0] || 100;
+        return arr.map(v => +(v / base * 100).toFixed(1));
+    };
+
+    return {
+        portfolio: normalize(prices),
+        sp500: normalize(benchmarkPrices),
+        gold: normalize(goldPrices),
+        btc: normalize(btcPrices)
+    };
+}
 let currentBenchTf = '1M';
 
 function setBenchTf(btn, tf) {
     btn.closest('.chart-timeframes').querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentBenchTf = tf;
-    drawBenchmarkChart(benchData[tf]);
+    drawBenchmarkChart(generateBenchData(tf));
 }
 
 function drawBenchmarkChart(data) {
@@ -6202,13 +6197,26 @@ function drawBenchmarkChart(data) {
 
 // Init benchmark chart
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => drawBenchmarkChart(benchData['1M']), 500);
-    window.addEventListener('resize', () => drawBenchmarkChart(benchData[currentBenchTf]));
+    setTimeout(() => drawBenchmarkChart(generateBenchData('1M')), 500);
+    window.addEventListener('resize', () => drawBenchmarkChart(generateBenchData(currentBenchTf)));
 });
 
 // ─────────────────────────────────────────────
-// PORTFOLIO CHART
+// PORTFOLIO CHART (GBM tabanlı gerçek simülasyon)
 // ─────────────────────────────────────────────
+function generatePortfolioChartData(tf) {
+    const days = { '1H': 12, '1D': 24, '1W': 30, '1M': 60 };
+    const n = days[tf] || 12;
+    const engine = metricsEngine || new RiskMetricsEngine(847250, DEFAULT_POSITIONS);
+    const prices = engine._generateReturnSeries(n);
+    // Scale to start at ~800K and use engine's portfolio value as end
+    const base = 800000;
+    const endVal = engine.portfolioValue;
+    return prices.map((p, i) => {
+        const ratio = i / (prices.length - 1);
+        return Math.round(base + (endVal - base) * (p / prices[prices.length - 1]));
+    });
+}
 let chartData = {
     '1H': [842000, 843500, 841000, 844200, 845100, 843800, 847250],
     '1D': [820000, 825000, 818000, 835000, 842000, 838000, 847250],
@@ -6221,7 +6229,7 @@ function setTimeframe(btn, tf) {
     document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentTf = tf;
-    drawChart(chartData[tf]);
+    drawChart(generatePortfolioChartData(tf));
 }
 
 function drawChart(data) {
@@ -6313,7 +6321,10 @@ function drawChart(data) {
 const dashObs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
         if (e.isIntersecting) {
-            setTimeout(() => drawChart(chartData[currentTf]), 200);
+            // Generate portfolio chart data from engine on first view
+            const tf = currentTf;
+            chartData[tf] = generatePortfolioChartData(tf);
+            drawChart(chartData[tf]);
             dashObs.unobserve(e.target);
         }
     });
