@@ -3738,6 +3738,7 @@ input, select, textarea { font-family: var(--font-sans); }
                             <div class="psc-value">₺847,250</div>
                             <div class="psc-change positive">+₺12,840 bugün (ÖRNEK PORTFÖY)</div>
                         </div>
+                        <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()" style="margin-left:auto;align-self:center;white-space:nowrap" title="Portföyünü düzenle">✎ Düzenle</button>
                     </div>
                     <div class="portfolio-stat-card">
                         <div class="psc-icon" style="background: rgba(6,182,212,0.15);">
@@ -5559,6 +5560,35 @@ input, select, textarea { font-family: var(--font-sans); }
         </div>
     </section>
 
+    <!-- Portfolio Edit Modal -->
+    <div class="modal-overlay" id="portfolioModalOverlay" onclick="if(event.target===this)closePortfolioModal()">
+        <div class="modal" style="max-width:600px">
+            <div class="modal-header">
+                <h3>Portföyümü Düzenle</h3>
+                <button class="modal-close" onclick="closePortfolioModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="max-height:80vh;overflow-y:auto">
+                <div style="margin-bottom:16px">
+                    <label>Toplam Portföy Değeri (₺)</label>
+                    <input type="number" id="pfValueInput" style="width:100%;padding:10px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-bg-secondary);color:var(--color-text);font-size:1rem" value="847250">
+                </div>
+                <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+                    <label style="font-weight:600">Pozisyonlar</label>
+                    <button class="btn btn-sm btn-outline" onclick="addPortfolioPosition()">+ Pozisyon Ekle</button>
+                </div>
+                <div id="pfPositionsList"></div>
+                <div style="margin-top:16px;padding:12px;background:var(--color-bg-secondary);border-radius:8px;text-align:center">
+                    <span style="font-size:0.9rem;color:var(--color-text-secondary)">Ağırlıklar toplamı: </span>
+                    <span id="pfWeightSum" style="font-weight:700">0%</span>
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end;padding:16px;border-top:1px solid var(--color-border)">
+                <button class="btn btn-outline" onclick="closePortfolioModal()">İptal</button>
+                <button class="btn btn-primary" onclick="savePortfolio()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -6356,7 +6386,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function generatePortfolioChartData(tf) {
     const days = { '1H': 12, '1D': 24, '1W': 30, '1M': 60 };
     const n = days[tf] || 12;
-    const engine = metricsEngine || new RiskMetricsEngine(847250, DEFAULT_POSITIONS);
+    const pf = resolvePortfolio();
+    const engine = metricsEngine || new RiskMetricsEngine(pf.value, pf.positions);
     const prices = engine._generateReturnSeries(n);
     // Scale to start at ~800K and use engine's portfolio value as end
     const base = 800000;
@@ -6618,7 +6649,7 @@ function runBlackSwan(scenario, cardEl) {
     if (cardEl) cardEl.classList.add('active');
 
     const d = swanData[scenario];
-    const portfolioValue = 847250;
+    const portfolioValue = metricsEngine ? metricsEngine.portfolioValue : resolvePortfolio().value;
     const loss = portfolioValue * d.drop;
     const remaining = portfolioValue - loss;
 
@@ -7564,7 +7595,8 @@ let marketEngine = null;
 
 /* ── Dashboard init ── */
 function initFinancialEngines() {
-    metricsEngine = new RiskMetricsEngine(847250, DEFAULT_POSITIONS);
+    const pf = resolvePortfolio();
+    metricsEngine = new RiskMetricsEngine(pf.value, pf.positions);
     marketEngine = new MarketDataEngine();
     
     // Calculate and update all metrics
@@ -7635,7 +7667,10 @@ function authRegister(event) {
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
+    if (metricsEngine) recreateEnginesWithPortfolio(resolvePortfolio());
     showToast('✅ Hesabınız oluşturuldu! Hoş geldiniz, ' + name, 'success');
+    // Yeni kullanıcı onboarding: portföy düzenleme modalını aç
+    setTimeout(openPortfolioModal, 800);
 }
 function authLogin(event) {
     event.preventDefault();
@@ -7648,6 +7683,7 @@ function authLogin(event) {
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
+    if (metricsEngine) recreateEnginesWithPortfolio(resolvePortfolio());
     showToast('✅ Giriş yapıldı! Hoş geldiniz, ' + users[email].name, 'success');
 }
 function demoLogin() {
@@ -7660,6 +7696,7 @@ function demoLogin() {
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
+    if (metricsEngine) recreateEnginesWithPortfolio(resolvePortfolio());
     showToast('✅ Demo hesaba giriş yapıldı!', 'success');
 }
 function authLogout() {
@@ -7668,7 +7705,129 @@ function authLogout() {
     document.querySelector('.nav-login').style.display = '';
     document.querySelector('.auth-user-card')?.remove();
     closeUserPage();
+    // Reset engines to default portfolio
+    recreateEnginesWithPortfolio(getDefaultPortfolio());
     showToast('Çıkış yapıldı.', 'info');
+}
+
+/* ── User Portfolio (localStorage, e-posta bazlı) ── */
+function getPortfolioKey(email) { return 'equilyze-porfolio-' + email; }
+function getUserPortfolio(email) {
+    try { return JSON.parse(localStorage.getItem(getPortfolioKey(email))); } catch { return null; }
+}
+function saveUserPortfolio(email, portfolio) {
+    localStorage.setItem(getPortfolioKey(email), JSON.stringify(portfolio));
+}
+function getDefaultPortfolio() {
+    return { value: 847250, positions: DEFAULT_POSITIONS };
+}
+function resolvePortfolio() {
+    const session = getSession();
+    if (session) {
+        const userPf = getUserPortfolio(session.email);
+        if (userPf && userPf.value && userPf.positions && userPf.positions.length > 0) {
+            return userPf;
+        }
+    }
+    return getDefaultPortfolio();
+}
+function recreateEnginesWithPortfolio(pf) {
+    const val = pf ? pf.value : 847250;
+    const pos = pf ? pf.positions : DEFAULT_POSITIONS;
+    metricsEngine = new RiskMetricsEngine(val, pos);
+    mcEngine = null;
+    mcLastResult = null;
+    // Regenerate chart data cache
+    chartData = { '1H': null, '1D': null, '1W': null, '1M': null };
+    // Update portfolio stat card value and label
+    const pscLabel = document.querySelector('.psc-label');
+    const pscChange = document.querySelector('.psc-change');
+    const isUserPortfolio = pf && pf.positions !== DEFAULT_POSITIONS;
+    if (pscLabel) pscLabel.textContent = isUserPortfolio ? 'Portföyüm — Toplam Değer' : 'ÖRNEK PORTFÖY — Toplam Değer';
+    if (pscChange) pscChange.textContent = isUserPortfolio ? 'Kişisel portföyünüz' : '+₺12,840 bugün (ÖRNEK PORTFÖY)';
+    const pscValue = document.querySelector('.psc-value');
+    if (pscValue) pscValue.textContent = '₺' + Number(val).toLocaleString('tr-TR');
+    // Redraw chart if visible
+    const currentTfVal = typeof currentTf !== 'undefined' ? currentTf : '1H';
+    chartData[currentTfVal] = generatePortfolioChartData(currentTfVal);
+    if (document.getElementById('portfolioChart')) drawChart(chartData[currentTfVal]);
+    // Regenerate benchmark chart
+    if (typeof currentBenchTf !== 'undefined' && document.getElementById('benchmarkChart')) drawBenchmarkChart(generateBenchData(currentBenchTf));
+    const metrics = metricsEngine.updateDashboard();
+    updateInsightBar(metrics);
+    if (marketEngine) marketEngine.updateMarketWidget().catch(() => {});
+}
+function openPortfolioModal() {
+    document.getElementById('portfolioModalOverlay').classList.add('open');
+    const session = getSession();
+    const pf = session ? getUserPortfolio(session.email) || getDefaultPortfolio() : getDefaultPortfolio();
+    document.getElementById('pfValueInput').value = pf.value;
+    renderPortfolioPositions(pf.positions);
+}
+function renderPortfolioPositions(positions) {
+    const container = document.getElementById('pfPositionsList');
+    const types = ['crypto', 'stock', 'bond', 'forex'];
+    container.innerHTML = positions.map((p, i) => `
+        <div class="pf-position-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <input type="text" class="pf-symbol" value="${p.symbol}" placeholder="Sembol" style="flex:2;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+            <select class="pf-type" style="flex:1;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+                ${types.map(t => `<option value="${t}" ${t === p.type ? 'selected' : ''}>${t}</option>`).join('')}
+            </select>
+            <input type="number" class="pf-weight" value="${Math.round(p.weight * 100)}" placeholder="%" min="0" max="100" style="flex:1;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+            <button class="btn btn-sm btn-danger" onclick="this.closest('.pf-position-row').remove();updatePfWeightSum()" style="padding:4px 8px;background:var(--color-danger);color:white;border:none;border-radius:4px;cursor:pointer">&times;</button>
+        </div>
+    `).join('');
+    container.querySelectorAll('.pf-weight, .pf-symbol, .pf-type').forEach(el => el.addEventListener('input', updatePfWeightSum));
+    updatePfWeightSum();
+}
+function updatePfWeightSum() {
+    const sum = Array.from(document.querySelectorAll('.pf-weight')).reduce((s, inp) => s + (parseFloat(inp.value) || 0), 0);
+    document.getElementById('pfWeightSum').textContent = sum.toFixed(0) + '%';
+    const el = document.getElementById('pfWeightSum');
+    el.style.color = Math.abs(sum - 100) < 0.1 ? 'var(--color-success)' : 'var(--color-danger)';
+}
+function addPortfolioPosition() {
+    const container = document.getElementById('pfPositionsList');
+    const div = document.createElement('div');
+    div.className = 'pf-position-row';
+    div.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px';
+    div.innerHTML = `
+        <input type="text" class="pf-symbol" value="YENI" placeholder="Sembol" style="flex:2;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+        <select class="pf-type" style="flex:1;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+            <option value="crypto">crypto</option><option value="stock">stock</option><option value="bond">bond</option><option value="forex">forex</option>
+        </select>
+        <input type="number" class="pf-weight" value="10" placeholder="%" min="0" max="100" style="flex:1;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+        <button class="btn btn-sm" onclick="this.closest('.pf-position-row').remove();updatePfWeightSum()" style="padding:4px 8px;background:var(--color-danger);color:white;border:none;border-radius:4px;cursor:pointer">&times;</button>
+    `;
+    container.appendChild(div);
+    div.querySelectorAll('.pf-weight, .pf-symbol, .pf-type').forEach(el => el.addEventListener('input', updatePfWeightSum));
+    updatePfWeightSum();
+}
+function closePortfolioModal() {
+    document.getElementById('portfolioModalOverlay').classList.remove('open');
+}
+function savePortfolio() {
+    const session = getSession();
+    if (!session) { showToast('Lütfen önce giriş yapın.', 'error'); return; }
+    const value = parseFloat(document.getElementById('pfValueInput').value);
+    if (!value || value <= 0) { showToast('Geçerli bir portföy değeri girin.', 'error'); return; }
+    const rows = document.querySelectorAll('.pf-position-row');
+    const positions = [];
+    rows.forEach(row => {
+        const symbol = row.querySelector('.pf-symbol').value.trim();
+        const type = row.querySelector('.pf-type').value;
+        const weight = parseFloat(row.querySelector('.pf-weight').value) || 0;
+        if (symbol && weight > 0) positions.push({ symbol, type, weight: weight / 100 });
+    });
+    if (positions.length === 0) { showToast('En az bir pozisyon ekleyin.', 'error'); return; }
+    // Normalize weights to sum to 1
+    const totalW = positions.reduce((s, p) => s + p.weight, 0);
+    if (totalW > 0) positions.forEach(p => p.weight = p.weight / totalW);
+    const pf = { value, positions, updatedAt: new Date().toISOString() };
+    saveUserPortfolio(session.email, pf);
+    closePortfolioModal();
+    recreateEnginesWithPortfolio(pf);
+    showToast('Portföy kaydedildi! Metrikler yeniden hesaplandı.', 'success');
 }
 function applyAuthState(email) {
     const users = getUsers();
@@ -7834,7 +7993,8 @@ function runMonteCarloUI() {
             progressWrap.style.display = 'none';
 
             // Run actual simulation
-            mcEngine = new MonteCarloEngine(847250, DEFAULT_POSITIONS);
+            const pf = resolvePortfolio();
+            mcEngine = new MonteCarloEngine(pf.value, pf.positions);
             const result = mcEngine.run({
                 simulations: simCount,
                 days,
@@ -8538,7 +8698,7 @@ function runShadowBacktest() {
             // Historical simulation: 3-yıllık getiri serisi üzerinden
             // "Önce" = mevcut portföyün max drawdown'ı
             // "Sonra" = risk parity ağırlıklı portföyün max drawdown'ı
-            const engine = metricsEngine || new RiskMetricsEngine(847250, DEFAULT_POSITIONS);
+    const engine = metricsEngine || new RiskMetricsEngine(resolvePortfolio().value, resolvePortfolio().positions);
             const metrics = engine.calculateAll();
             
             // Simulate risk parity improvement
