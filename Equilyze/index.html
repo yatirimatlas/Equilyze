@@ -5493,6 +5493,15 @@ input, select, textarea { font-family: var(--font-sans); }
                     <div class="user-stat"><span class="user-stat-label">Kayıt Tarihi</span><span class="user-stat-value" id="upRegDate">--</span></div>
                 </div>
             </div>
+            <div class="user-card">
+                <h3>📊 Pozisyon Dağılımı</h3>
+                <div id="upPositionsList" style="font-size:0.85rem">
+                    <div class="user-stat"><span class="user-stat-label">Henüz pozisyon eklenmedi</span></div>
+                </div>
+                <div style="margin-top:12px">
+                    <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()" style="width:100%">✎ Portföyü Düzenle</button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -7885,6 +7894,19 @@ function openUserPage() {
     // MC + shock counts
     document.getElementById('upMCCount').textContent = localStorage.getItem('equilyze-mc-count') || '0';
     document.getElementById('upShockCount').textContent = localStorage.getItem('equilyze-shock-count') || '0';
+    // Portfolio positions breakdown
+    const pf = resolvePortfolio();
+    const posContainer = document.getElementById('upPositionsList');
+    if (posContainer) {
+        posContainer.innerHTML = pf.positions.map(p => {
+            const pct = (p.weight * 100).toFixed(0);
+            const val = '₺' + Math.round(pf.value * p.weight).toLocaleString('tr-TR');
+            return `<div class="user-stat" style="border-bottom:1px solid var(--color-border);padding:4px 0">
+                <span class="user-stat-label">${p.symbol} <span style="font-size:0.7rem;color:var(--color-text-secondary)">(${p.type})</span></span>
+                <span class="user-stat-value">${pct}% · ${val}</span>
+            </div>`;
+        }).join('');
+    }
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
