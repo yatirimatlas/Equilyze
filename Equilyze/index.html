@@ -94,6 +94,7 @@
 /* ── RESET & BASE ── */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+*, *::before, *::after { transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
 body {
     font-family: var(--font-sans);
     background: radial-gradient(ellipse at 20% 50%, #0a1628 0%, #0a0f12 45%, #000000 100%);
@@ -1108,6 +1109,14 @@ input, select, textarea { font-family: var(--font-sans); }
 }
 @keyframes loadingAnim { from { width: 0; } to { width: 100%; } }
 .loading-bar + span { font-size: 0.75rem; color: var(--text-muted); }
+
+/* ── Skeleton Loading ── */
+.skeleton { background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-hover) 50%, var(--bg-tertiary) 75%); background-size: 200% 100%; animation: skeletonPulse 1.5s ease infinite; border-radius: var(--radius-sm); }
+@keyframes skeletonPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton-text { height: 14px; margin-bottom: 8px; width: 80%; }
+.skeleton-text.short { width: 40%; }
+.skeleton-card { height: 80px; border-radius: var(--radius-lg); margin-bottom: 12px; }
+.skeleton-chart { height: 200px; border-radius: var(--radius-lg); }
 .impact-metrics {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -3756,6 +3765,13 @@ input, select, textarea { font-family: var(--font-sans); }
             <!-- Dashboard Widgets -->
             <div class="dashboard-grid" id="dashboardGrid">
 
+                <!-- Skeleton overlay shown during init -->
+                <div id="dashboardSkeleton" style="grid-column:1/-1;display:grid;gap:12px;grid-template-columns:2fr 1fr">
+                    <div><div class="skeleton skeleton-chart" style="height:60px;margin-bottom:12px"></div><div class="skeleton skeleton-chart"></div></div>
+                    <div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div></div>
+                    <div style="grid-column:1/-1"><div class="skeleton skeleton-chart"></div></div>
+                </div>
+
                 <!-- Insight Bar (Action-Oriented Summary) -->
                 <div class="insight-bar" id="insightBar">
                     <div class="insight-icon warning" id="insightIcon">⚠️</div>
@@ -5818,6 +5834,7 @@ function initThemeToggle() {
 
     toggle.addEventListener('click', () => {
         const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.body.style.transition = 'background 0.3s ease';
         html.setAttribute('data-theme', next);
         localStorage.setItem('equilyze-theme', next);
     });
@@ -7740,6 +7757,9 @@ function initFinancialEngines() {
     renderPositionsList();
     renderHeatmap();
     initCorrelationMatrix();
+    // Remove skeleton overlay
+    const skel = document.getElementById('dashboardSkeleton');
+    if (skel) { skel.style.transition = 'opacity 0.4s'; skel.style.opacity = '0'; setTimeout(() => skel.remove(), 500); }
 }
 
 /* ── AUTH SYSTEM (localStorage tabanlı) ── */
