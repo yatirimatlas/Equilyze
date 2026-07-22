@@ -4018,7 +4018,7 @@ input, select, textarea { font-family: var(--font-sans); }
                                 <div class="crypto-ind-icon">⟠</div>
                                 <div class="crypto-ind-label">ETH/USD</div>
                                 <div class="crypto-ind-value" id="ethPrice" style="color: var(--color-secondary);">--</div>
-                                <div class="crypto-ind-sub">Canlı veri bekleniyor</div>
+                                <div class="crypto-ind-sub" id="ethChange24h">Canlı veri bekleniyor</div>
                             </div>
                             <div class="crypto-ind-card">
                                 <div class="crypto-ind-icon">😨</div>
@@ -4069,6 +4069,9 @@ input, select, textarea { font-family: var(--font-sans); }
                                     <line x1="12" y1="15" x2="12" y2="3"/>
                                 </svg>
                                 Rapor İndir
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick="applyRiskParityToPortfolio()" id="mcApplyBtn" style="display:none">
+                                ⚖️ Risk Parity ile Optimize Et
                             </button>
                         </div>
                     </div>
@@ -6094,6 +6097,20 @@ function showResults() {
     // Save to localStorage
     localStorage.setItem('equilyze-risk-profile', JSON.stringify({ score, profile, date: new Date().toISOString() }));
     showToast('Risk profiliniz kaydedildi!', 'success');
+    // Onboarding: kullanıcının portföyü yoksa düzenleme modalını öner
+    const session = getSession();
+    if (session) {
+        const pf = getUserPortfolio(session.email);
+        if (!pf) {
+            setTimeout(() => {
+                if (confirm('Risk profiliniz kaydedildi! Şimdi portföyünüzü girerek metrikleri görmek ister misiniz?')) {
+                    closeUserPage();
+                    document.querySelector('#dashboard').scrollIntoView({ behavior: 'smooth' });
+                    setTimeout(openPortfolioModal, 600);
+                }
+            }, 1500);
+        }
+    }
 }
 
 function restartTest() {
@@ -6740,6 +6757,21 @@ function saveTrade() {
     closeTradeModal();
     updateJournalStats();
     filterJournal();
+    syncPortfolioFromJournal();
+}
+
+function syncPortfolioFromJournal() {
+    // Show total realized P&L from journal in the portfolio stat card
+    const closed = trades.filter(t => t.pnl !== null);
+    const totalPnl = closed.reduce((s, t) => s + t.pnl, 0);
+    const changeEl = document.querySelector('.psc-change');
+    if (changeEl) {
+        const pnlStr = (totalPnl >= 0 ? '+' : '') + '₺' + Math.round(totalPnl).toLocaleString('tr-TR');
+        const isUser = (() => { try { const s = getSession(); return s && getUserPortfolio(s.email) !== null; } catch { return false; } })();
+        changeEl.textContent = (totalPnl !== 0 ? pnlStr + ' (gerçekleşen K/Z)' : (isUser ? 'Henüz işlem yok' : '+₺12,840 bugün (ÖRNEK PORTFÖY)'));
+        changeEl.className = 'psc-change' + (totalPnl >= 0 ? ' positive' : ' negative');
+    }
+    updateJournalStats();
 }
 
 function deleteTrade(id) {
@@ -7531,54 +7563,75 @@ class MarketDataEngine {
     constructor() {
         this.baseUrl = 'https://api.coingecko.com/api/v3';
         this.cache = {};
-        this.cacheDuration = 60000; // 1 dakika cache
+        this.cacheDuration = 60000;
+        // Load last known prices from localStorage
+        try { const s = localStorage.getItem('equilyze-market-cache'); if (s) { const c = JSON.parse(s); Object.assign(this.cache, c); } } catch {}
     }
 
-    async fetchPrice(coinId) {
+    _saveCache() {
+        try { localStorage.setItem('equilyze-market-cache', JSON.stringify(this.cache)); } catch {}
+    }
+
+    async fetchPrice(coinId, label) {
         const now = Date.now();
         if (this.cache[coinId] && now - this.cache[coinId].timestamp < this.cacheDuration) {
-            return this.cache[coinId].price;
+            return this.cache[coinId];
         }
         try {
             const url = `${this.baseUrl}/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`;
             const resp = await fetch(url);
             const data = await resp.json();
-            const price = data[coinId]?.usd || 0;
-            this.cache[coinId] = { price, timestamp: now };
-            return price;
-        } catch {
-            return 0;
-        }
+            if (data[coinId]) {
+                const result = { price: data[coinId].usd || 0, change24h: data[coinId].usd_24h_change || 0, timestamp: now };
+                this.cache[coinId] = result;
+                this._saveCache();
+                return result;
+            }
+        } catch {}
+        // Fallback: return last cached value if available
+        if (this.cache[coinId]) return this.cache[coinId];
+        return { price: 0, change24h: 0, timestamp: now };
     }
 
     async fetchFearGreed() {
         try {
             const resp = await fetch('https://api.alternative.me/fng/?limit=1');
             const data = await resp.json();
-            return data.data?.[0] || null;
-        } catch {
-            return null;
-        }
+            if (data?.data?.[0]) {
+                this.cache['fng'] = { ...data.data[0], timestamp: Date.now() };
+                this._saveCache();
+                return data.data[0];
+            }
+        } catch {}
+        if (this.cache['fng']) return this.cache['fng'];
+        return { value: '--', value_classification: 'N/A' };
     }
 
     async updateMarketWidget() {
-        const btcPrice = await this.fetchPrice('bitcoin');
-        const ethPrice = await this.fetchPrice('ethereum');
-        const fng = await this.fetchFearGreed();
+        const [btc, eth, fng] = await Promise.all([
+            this.fetchPrice('bitcoin'),
+            this.fetchPrice('ethereum'),
+            this.fetchFearGreed()
+        ]);
 
-        const updateEl = (id, val) => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = val;
-        };
+        const updateEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const setSub = (id, text, cls) => { const el = document.getElementById(id); if (el) { el.textContent = text; el.className = 'crypto-ind-sub' + (cls ? ' ' + cls : ''); } };
 
-        if (btcPrice > 0) {
-            updateEl('btcPrice', `$${btcPrice.toLocaleString('en-US')}`);
-            updateEl('btcChange24h', btcPrice > 0 ? 'Canlı' : 'Veri bekleniyor');
+        if (btc.price > 0) {
+            updateEl('btcPrice', `$${btc.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`);
+            const chg = btc.change24h;
+            const chgStr = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% (24s)';
+            setSub('btcChange24h', chgStr, chg >= 0 ? 'positive' : 'negative');
+        } else {
+            setSub('btcChange24h', 'Çevrimdışı — önbellek kullanılıyor', '');
         }
-        if (ethPrice > 0) {
-            updateEl('ethPrice', `$${ethPrice.toLocaleString('en-US')}`);
+        if (eth.price > 0) {
+            updateEl('ethPrice', `$${eth.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`);
+            const chg = eth.change24h;
+            const chgStr = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% (24s)';
+            if (document.getElementById('ethChange24h')) setSub('ethChange24h', chgStr, chg >= 0 ? 'positive' : 'negative');
         }
-        if (fng) {
+        if (fng && fng.value !== '--') {
             updateEl('fearGreedValue', fng.value);
             updateEl('fearGreedLabel', 
                 fng.value_classification === 'Fear' ? 'Korku' :
@@ -7586,12 +7639,9 @@ class MarketDataEngine {
                 fng.value_classification === 'Extreme Greed' ? 'Aşırı Açgözlülük' :
                 fng.value_classification === 'Extreme Fear' ? 'Aşırı Korku' : 'Nötr'
             );
-            // Fear & Greed marker position (0-100)
             const marker = document.getElementById('fearGreedMarker');
             if (marker) marker.style.left = Math.min(95, Math.max(5, parseInt(fng.value))) + '%';
         }
-
-        // Fetch BTC dominance from CoinGecko
         this.fetchDominance();
     }
 
@@ -8083,6 +8133,7 @@ function runMonteCarloUI() {
             btn.classList.remove('mc-running');
             btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Yeniden Çalıştır';
     document.getElementById('mcExportBtn').style.display = 'inline-flex';
+    document.getElementById('mcApplyBtn').style.display = getSession() ? 'inline-flex' : 'none';
     // Track MC sim count
     const mcCount = parseInt(localStorage.getItem('equilyze-mc-count') || '0');
     localStorage.setItem('equilyze-mc-count', mcCount + 1);
@@ -8362,6 +8413,52 @@ function exportMonteCarloReport() {
     a.download = 'equilyze-monte-carlo-' + new Date().toISOString().split('T')[0] + '.csv';
     a.click();
     showToast('Monte Carlo raporu indirildi!', 'success');
+}
+
+function applyRiskParityToPortfolio() {
+    const session = getSession();
+    if (!session) { showToast('Önce giriş yapmalısınız', 'error'); return; }
+    const portfolio = getUserPortfolio(session.email);
+    if (!portfolio || !portfolio.positions || portfolio.positions.length === 0) {
+        showToast('Önce portföy oluşturmalısınız', 'error');
+        return;
+    }
+    if (!window.rmEngine) {
+        showToast('Risk motoru hazır değil', 'error');
+        return;
+    }
+    const symbols = portfolio.positions.map(p => p.symbol);
+    const prices = symbols.map(s => window.rmEngine.assetPrices?.[s] || 100);
+    const val = portfolio.totalValue || 1000000;
+    const returnsByAsset = symbols.map(s => window.rmEngine._generateReturns?.(s, 500) || window.rmEngine._normalRandom(500));
+    if (!returnsByAsset || returnsByAsset.length < 2) {
+        showToast('Optimizasyon için en az 2 varlık gerekli', 'error');
+        return;
+    }
+    const ercWeights = window.rmEngine._riskParityWeights(returnsByAsset);
+    if (!ercWeights || ercWeights.length !== symbols.length) {
+        showToast('Ağırlık hesaplanamadı', 'error');
+        return;
+    }
+    // Show confirmation
+    const preview = ercWeights.map((w, i) => `${symbols[i]}: %${(w * 100).toFixed(1)}`).join('\n');
+    if (!confirm(`Risk Parity (Eşit Risk Katkısı) ile optimize edilmiş ağırlıklar:\n\n${preview}\n\nPortföyünüze uygulansın mı?`)) return;
+    // Calculate position sizes based on value
+    const newPositions = symbols.map((symbol, i) => {
+        const weight = ercWeights[i];
+        const size = Math.round(weight * val / (prices[i] || 100));
+        return { symbol, weight: Math.round(weight * 1000) / 10, size, price: prices[i] || 100 };
+    });
+    const newPortfolio = { ...portfolio, positions: newPositions, totalValue: val };
+    saveUserPortfolio(session.email, newPortfolio);
+    recreateEnginesWithPortfolio();
+    showToast('Optimize ağırlıklar portföye uygulandı!', 'success');
+    document.getElementById('mcApplyBtn').style.display = 'none';
+    // Refresh dashboard
+    if (typeof renderPositionsList === 'function') renderPositionsList();
+    if (typeof renderPortfolioPositionsChart === 'function') {
+        setTimeout(renderPortfolioPositionsChart, 300);
+    }
 }
 
 // Add Chart.js spin animation style
