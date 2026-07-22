@@ -3823,71 +3823,7 @@ input, select, textarea { font-family: var(--font-sans); }
                         <span class="live-dot"><span class="dot-pulse"></span>Canlı</span>
                     </div>
                     <div class="widget-content">
-                        <div class="positions-list">
-                            <div class="position-item long asset-crypto">
-                                <div class="pos-dir">A</div>
-                                <div class="position-info">
-                                    <span class="position-symbol">BTC/USDT</span>
-                                    <span class="position-exchange">Binance</span>
-                                    <div class="whatif-controls">
-                                        <button class="whatif-btn remove" title="Satış Simülasyonu" onclick="whatIfRemove('BTC/USDT',0.85)">−</button>
-                                        <button class="whatif-btn add" title="Artırma Simülasyonu" onclick="whatIfAdd('BTC/USDT',0.85)">+</button>
-                                    </div>
-                                </div>
-                                <div class="position-details">
-                                    <span class="position-size">0.35 BTC</span>
-                                    <span class="position-pnl positive">+₺8,420</span>
-                                </div>
-                            </div>
-                            <div class="position-item long asset-crypto">
-                                <div class="pos-dir">A</div>
-                                <div class="position-info">
-                                    <span class="position-symbol">ETH/USDT</span>
-                                    <span class="position-exchange">Binance</span>
-                                </div>
-                                <div class="position-details">
-                                    <span class="position-size">2.5 ETH</span>
-                                    <span class="position-pnl positive">+₺3,180</span>
-                                </div>
-                            </div>
-                            <div class="position-item short">
-                                <div class="pos-dir s">S</div>
-                                <div class="position-info">
-                                    <span class="position-symbol">BNB/USDT</span>
-                                    <span class="position-exchange">Binance</span>
-                                </div>
-                                <div class="position-details">
-                                    <span class="position-size">15 BNB</span>
-                                    <span class="position-pnl negative">-₺890</span>
-                                </div>
-                            </div>
-                            <div class="position-item long asset-bist">
-                                <div class="pos-dir">A</div>
-                                <div class="position-info">
-                                    <span class="position-symbol">THYAO</span>
-                                    <span class="position-exchange">MetaTrader</span>
-                                    <div class="whatif-controls">
-                                        <button class="whatif-btn remove" title="Satış Simülasyonu" onclick="whatIfRemove('THYAO',0.72)">−</button>
-                                        <button class="whatif-btn add" title="Artırma Simülasyonu" onclick="whatIfAdd('THYAO',0.72)">+</button>
-                                    </div>
-                                </div>
-                                <div class="position-details">
-                                    <span class="position-size">500 Lot</span>
-                                    <span class="position-pnl positive">+₺5,600</span>
-                                </div>
-                            </div>
-                            <div class="position-item long asset-bist">
-                                <div class="pos-dir">A</div>
-                                <div class="position-info">
-                                    <span class="position-symbol">GARAN</span>
-                                    <span class="position-exchange">MetaTrader</span>
-                                </div>
-                                <div class="position-details">
-                                    <span class="position-size">1000 Lot</span>
-                                    <span class="position-pnl positive">+₺1,240</span>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="positions-list" id="positionsList"></div>
                         <!-- What-If Result -->
                         <div class="whatif-result" id="whatifResult"></div>
                         <!-- RWA Section -->
@@ -7610,6 +7546,7 @@ function initFinancialEngines() {
     
     // Refresh market data every 5 minutes
     setInterval(() => marketEngine.updateMarketWidget().catch(() => {}), 300000);
+    renderPositionsList();
 }
 
 /* ── AUTH SYSTEM (localStorage tabanlı) ── */
@@ -7756,6 +7693,7 @@ function recreateEnginesWithPortfolio(pf) {
     const metrics = metricsEngine.updateDashboard();
     updateInsightBar(metrics);
     if (marketEngine) marketEngine.updateMarketWidget().catch(() => {});
+    renderPositionsList();
 }
 function openPortfolioModal() {
     document.getElementById('portfolioModalOverlay').classList.add('open');
@@ -7828,6 +7766,42 @@ function savePortfolio() {
     closePortfolioModal();
     recreateEnginesWithPortfolio(pf);
     showToast('Portföy kaydedildi! Metrikler yeniden hesaplandı.', 'success');
+}
+function renderPositionsList() {
+    const container = document.getElementById('positionsList');
+    if (!container) return;
+    const pf = resolvePortfolio();
+    const totalVal = pf.value;
+    container.innerHTML = pf.positions.map(p => {
+        const isCrypto = p.type === 'crypto' || p.symbol.includes('/');
+        const exchange = isCrypto ? 'Binance' : 'MetaTrader';
+        const symClass = isCrypto ? 'asset-crypto' : 'asset-bist';
+        const dir = p.weight >= 0 ? 'A' : 'S';
+        const dirClass = p.weight >= 0 ? 'long' : 'short';
+        // Approximate PnL: random walk based on weight (demo only)
+        const pnlPct = (Math.random() * 0.1 - 0.02) * p.weight * 100;
+        const pnl = Math.round(totalVal * p.weight * pnlPct);
+        const pnlClass = pnl >= 0 ? 'positive' : 'negative';
+        const pnlStr = (pnl >= 0 ? '+' : '') + '₺' + Math.abs(pnl).toLocaleString('tr-TR');
+        // Approximate size
+        const size = (p.weight * totalVal / 100000).toFixed(2) + ' ' + p.symbol.split('/')[0];
+        return `
+            <div class="position-item ${dirClass} ${symClass}">
+                <div class="pos-dir ${dir === 'S' ? 's' : ''}">${dir}</div>
+                <div class="position-info">
+                    <span class="position-symbol">${p.symbol}</span>
+                    <span class="position-exchange">${exchange}</span>
+                    <div class="whatif-controls">
+                        <button class="whatif-btn remove" title="Satış Simülasyonu" onclick="whatIfRemove('${p.symbol}',0.85)">−</button>
+                        <button class="whatif-btn add" title="Artırma Simülasyonu" onclick="whatIfAdd('${p.symbol}',0.85)">+</button>
+                    </div>
+                </div>
+                <div class="position-details">
+                    <span class="position-size">${size}</span>
+                    <span class="position-pnl ${pnlClass}">${pnlStr}</span>
+                </div>
+            </div>`;
+    }).join('');
 }
 function applyAuthState(email) {
     const users = getUsers();
