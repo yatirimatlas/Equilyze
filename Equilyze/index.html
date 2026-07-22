@@ -317,6 +317,11 @@ input, select, textarea { font-family: var(--font-sans); }
     padding: 20px 24px;
     gap: 0;
     z-index: 999;
+    animation: mobileNavIn 0.25s ease;
+}
+@keyframes mobileNavIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 .nav-links.open .nav-link {
     padding: 14px 0;
@@ -5333,21 +5338,19 @@ input, select, textarea { font-family: var(--font-sans); }
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
             </svg>
-            <span>Journal</span>
+            <span>Günlük</span>
         </a>
         <a href="#macro-engine" class="mbn-item" onclick="setActiveMbn(this)">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
             </svg>
-            <span>Macro</span>
+            <span>Shock</span>
         </a>
-        <a href="#risk-test" class="mbn-item" onclick="setActiveMbn(this)">
+        <a href="#" class="mbn-item" id="mbnLogin" onclick="event.preventDefault();if(getSession()){openUserPage()}else{openAuthModal()}">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
             </svg>
-            <span>Risk Testi</span>
+            <span id="mbnLoginLabel">Giriş</span>
         </a>
     </nav>
 
@@ -7842,6 +7845,11 @@ function authLogout() {
     closeUserPage();
     // Reset engines to default portfolio
     recreateEnginesWithPortfolio(getDefaultPortfolio());
+    // Reset mobile nav login
+    const mbnLabel = document.getElementById('mbnLoginLabel');
+    if (mbnLabel) mbnLabel.textContent = 'Giriş';
+    const mbnItem = document.getElementById('mbnLogin');
+    if (mbnItem) mbnItem.href = '#';
     showToast('Çıkış yapıldı.', 'info');
 }
 
@@ -8041,6 +8049,11 @@ function applyAuthState(email) {
             document.querySelectorAll('.auth-user-card.open').forEach(el => el.classList.remove('open'));
         }
     });
+    // Update mobile bottom nav login
+    const mbnLogin = document.getElementById('mbnLoginLabel');
+    if (mbnLogin) mbnLogin.textContent = user.name.split(' ')[0];
+    const mbnItem = document.getElementById('mbnLogin');
+    if (mbnItem) mbnItem.href = '#';
 }
 function openUserPage() {
     const session = getSession();
