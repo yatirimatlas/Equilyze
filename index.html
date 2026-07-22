@@ -139,7 +139,7 @@ input, select, textarea { font-family: var(--font-sans); }
     text-decoration: none;
 }
 .btn-lg { padding: 14px 28px; font-size: 1rem; border-radius: var(--radius-lg); }
-.btn-sm { padding: 7px 14px; font-size: 0.75rem; }
+.btn-sm { padding: 7px 14px; font-size: 0.75rem; border-radius: var(--radius-sm); }
 .btn-full { width: 100%; justify-content: center; }
 
 .btn-primary {
@@ -169,6 +169,11 @@ input, select, textarea { font-family: var(--font-sans); }
     box-shadow: 0 4px 15px rgba(139,92,246,0.3);
 }
 .btn-elite:hover { transform: translateY(-1px); box-shadow: 0 6px 25px rgba(139,92,246,0.4); }
+.btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid transparent; }
+.btn-ghost:hover { color: var(--text-primary); background: var(--bg-hover); }
+.btn-danger { background: var(--color-danger); color: #fff; }
+.btn-danger:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.btn-connected { background: rgba(16,185,129,0.12); color: #10b981; border-color: rgba(16,185,129,0.3); cursor: default; }
 .btn-nav-cta {
     background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
     color: #fff;
@@ -806,7 +811,7 @@ input, select, textarea { font-family: var(--font-sans); }
 .widget {
     grid-column: span 4;
     background: var(--bg-card);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: border-color 0.3s, box-shadow 0.3s;
@@ -1730,7 +1735,6 @@ input, select, textarea { font-family: var(--font-sans); }
     .widget-medium { grid-column: span 12; }
     .widget { grid-column: span 6; }
     .pricing-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
-    .pricing-grid { max-width: none; grid-template-columns: repeat(3,1fr); }
     .journal-stats-grid { grid-template-columns: repeat(3, 1fr); }
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
 }
@@ -1799,6 +1803,7 @@ input, select, textarea { font-family: var(--font-sans); }
     
     /* Features */
     .features-grid { grid-template-columns: 1fr; }
+    .security-features-grid { grid-template-columns: repeat(2, 1fr); }
     
     /* Pricing */
     .pricing-grid { grid-template-columns: 1fr; gap: 24px; }
@@ -1827,6 +1832,7 @@ input, select, textarea { font-family: var(--font-sans); }
     .stat-num { font-size: 1.4rem; }
     .section-title { font-size: 1.5rem; }
     .dashboard-row { grid-template-columns: 1fr; }
+    .security-features-grid { grid-template-columns: 1fr; }
     .shock-scenarios { grid-template-columns: 1fr; }
     .journal-stats-grid { grid-template-columns: repeat(2,1fr); }
     .swan-scenarios { grid-template-columns: 1fr; }
@@ -3348,6 +3354,35 @@ input, select, textarea { font-family: var(--font-sans); }
 .faq-item.open .faq-answer { max-height: 300px; padding: 0 22px 20px; }
 .faq-answer p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.75; }
 
+/* ═══════════════════════════════════════════
+   WAITLIST SECTION
+   ═══════════════════════════════════════════ */
+.section-waitlist { background: var(--bg-secondary); }
+.waitlist-container { max-width: 640px; margin: 0 auto; text-align: center; }
+.waitlist-benefits {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    margin: 28px 0;
+}
+.waitlist-benefit {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg-card); border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md); padding: 14px 18px; text-align: left;
+    font-size: 0.8125rem; color: var(--text-secondary);
+    min-width: 180px;
+}
+.waitlist-benefit .benefit-icon { font-size: 1.25rem; }
+.waitlist-benefit strong { display: block; color: var(--text-primary); font-size: 0.875rem; }
+.waitlist-form { margin-top: 20px; }
+.waitlist-form-group { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
+.waitlist-input {
+    flex: 1; padding: 12px 16px; border: 1px solid var(--border-color);
+    border-radius: var(--radius-md); background: var(--bg-tertiary);
+    color: var(--text-primary); font-size: 0.9375rem;
+}
+.waitlist-input:focus { outline: none; border-color: var(--color-primary); }
+.waitlist-submit { padding: 12px 24px; white-space: nowrap; }
+.waitlist-form-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; }
+
 /* ── Responsive for new sections ── */
 @media (max-width: 768px) {
     .crypto-indicators { grid-template-columns: 1fr; }
@@ -3356,6 +3391,9 @@ input, select, textarea { font-family: var(--font-sans); }
     .edu-grid { grid-template-columns: 1fr; }
     .testimonials-grid { grid-template-columns: 1fr; }
     .lang-toggle { margin-right: 0; }
+    .waitlist-form-group { flex-direction: column; }
+    .waitlist-benefits { flex-direction: column; align-items: center; }
+    .waitlist-benefit { min-width: 200px; }
 }
 
 </style>
@@ -3883,7 +3921,7 @@ input, select, textarea { font-family: var(--font-sans); }
                     <div class="widget-header">
                         <h4>Risk Metrikleri</h4>
                         <div style="display:flex;gap:8px;align-items:center">
-                            <span id="userProfileBadge" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:var(--color-bg-secondary);color:var(--color-text-secondary)">Profil: --</span>
+                            <span id="userProfileBadge" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:var(--bg-secondary);color:var(--text-secondary)">Profil: --</span>
                             <div class="risk-indicator" id="riskIndicator">
                             <span class="risk-dot green"></span>
                             <span>Düşük Risk</span>
@@ -5522,19 +5560,19 @@ input, select, textarea { font-family: var(--font-sans); }
             <div class="modal-body" style="max-height:80vh;overflow-y:auto">
                 <div style="margin-bottom:16px">
                     <label>Toplam Portföy Değeri (₺)</label>
-                    <input type="number" id="pfValueInput" style="width:100%;padding:10px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-bg-secondary);color:var(--color-text);font-size:1rem" value="847250">
+                    <input type="number" id="pfValueInput" style="width:100%;padding:10px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-size:1rem" value="847250">
                 </div>
                 <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
                     <label style="font-weight:600">Pozisyonlar</label>
                     <button class="btn btn-sm btn-outline" onclick="addPortfolioPosition()">+ Pozisyon Ekle</button>
                 </div>
                 <div id="pfPositionsList"></div>
-                <div style="margin-top:16px;padding:12px;background:var(--color-bg-secondary);border-radius:8px;text-align:center">
-                    <span style="font-size:0.9rem;color:var(--color-text-secondary)">Ağırlıklar toplamı: </span>
+                <div style="margin-top:16px;padding:12px;background:var(--bg-secondary);border-radius:8px;text-align:center">
+                    <span style="font-size:0.9rem;color:var(--text-secondary)">Ağırlıklar toplamı: </span>
                     <span id="pfWeightSum" style="font-weight:700">0%</span>
                 </div>
             </div>
-            <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end;padding:16px;border-top:1px solid var(--color-border)">
+            <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end;padding:16px;border-top:1px solid var(--border-color)">
                 <button class="btn btn-outline" onclick="closePortfolioModal()">İptal</button>
                 <button class="btn btn-primary" onclick="savePortfolio()">Kaydet</button>
             </div>
@@ -6140,7 +6178,7 @@ function connectAPI(exchange) {
     setTimeout(() => {
         if (status) { status.textContent = '✓ Bağlı'; status.className = 'api-status connected'; }
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Bağlı';
-        btn.style.cssText = 'background:rgba(16,185,129,0.12);color:#10b981;border-color:rgba(16,185,129,0.3)';
+        btn.className = 'btn btn-sm btn-connected';
         btn.disabled = true;
         showToast(`${exchange.charAt(0).toUpperCase() + exchange.slice(1)} bağlantısı kuruldu!`, 'success');
     }, 1800);
@@ -6531,7 +6569,7 @@ function initCorrelationMatrix() {
         idx: i
     }));
     if (assets.length < 2) {
-        container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--color-text-secondary)">En az 2 varlık gerekli</div>';
+        container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-secondary)">En az 2 varlık gerekli</div>';
         return;
     }
 
@@ -6720,6 +6758,23 @@ function saveTrade() {
         showToast('Lütfen zorunlu alanları doldurun', 'error');
         return;
     }
+    if (size <= 0) { showToast('Miktar pozitif olmalıdır', 'error'); return; }
+    if (entry <= 0) { showToast('Giriş fiyatı pozitif olmalıdır', 'error'); return; }
+    if (exit !== null && exit <= 0) { showToast('Çıkış fiyatı pozitif olmalıdır', 'error'); return; }
+    if (stop !== null && stop <= 0) { showToast('Stop fiyatı pozitif olmalıdır', 'error'); return; }
+    if (tp !== null && tp <= 0) { showToast('Take profit fiyatı pozitif olmalıdır', 'error'); return; }
+    if (type === 'buy' && exit !== null && exit <= entry) { showToast('Alış işleminde çıkış fiyatı giriş fiyatından büyük olmalıdır', 'error'); return; }
+    if (type === 'sell' && exit !== null && exit >= entry) { showToast('Satış işleminde çıkış fiyatı giriş fiyatından küçük olmalıdır', 'error'); return; }
+    if (stop !== null) {
+        if (type === 'buy' && stop >= entry) { showToast('Alış işleminde stop giriş fiyatının altında olmalıdır', 'error'); return; }
+        if (type === 'sell' && stop <= entry) { showToast('Satış işleminde stop giriş fiyatının üstünde olmalıdır', 'error'); return; }
+    }
+    if (tp !== null) {
+        if (type === 'buy' && tp <= entry) { showToast('Alış işleminde take profit giriş fiyatının üstünde olmalıdır', 'error'); return; }
+        if (type === 'sell' && tp >= entry) { showToast('Satış işleminde take profit giriş fiyatının altında olmalıdır', 'error'); return; }
+    }
+    if (new Date(date) > new Date()) { showToast('İşlem tarihi gelecek bir tarih olamaz', 'error'); return; }
+    if (new Date(date) < new Date('2000-01-01')) { showToast('Geçerli bir tarih girin', 'error'); return; }
 
     // Calculate P&L
     let pnl = null, rr = null;
@@ -7731,6 +7786,12 @@ function authRegister(event) {
     const pass = document.getElementById('authRegPassword').value;
     const confirm = document.getElementById('authRegConfirm').value;
     const errEl = document.getElementById('authError');
+
+    if (!name || name.length < 2) { errEl.textContent = 'Ad en az 2 karakter olmalıdır.'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = 'Geçerli bir e-posta adresi girin.'; return; }
+    if (pass.length < 6) { errEl.textContent = 'Şifre en az 6 karakter olmalıdır.'; return; }
+    if (!/[A-Z]/.test(pass)) { errEl.textContent = 'Şifre en az bir büyük harf içermelidir.'; return; }
+    if (!/[0-9]/.test(pass)) { errEl.textContent = 'Şifre en az bir rakam içermelidir.'; return; }
     if (pass !== confirm) { errEl.textContent = 'Şifreler eşleşmiyor.'; return; }
     const users = getUsers();
     if (users[email]) { errEl.textContent = 'Bu e-posta zaten kayıtlı.'; return; }
@@ -7749,6 +7810,8 @@ function authLogin(event) {
     const email = document.getElementById('authLoginEmail').value.trim().toLowerCase();
     const pass = document.getElementById('authLoginPassword').value;
     const errEl = document.getElementById('authError');
+    if (!email) { errEl.textContent = 'E-posta adresinizi girin.'; return; }
+    if (!pass) { errEl.textContent = 'Şifrenizi girin.'; return; }
     const users = getUsers();
     if (!users[email]) { errEl.textContent = 'E-posta bulunamadı.'; return; }
     if (atob(users[email].password) !== pass) { errEl.textContent = 'Hatalı şifre.'; return; }
@@ -7844,11 +7907,11 @@ function renderPortfolioPositions(positions) {
     const types = ['crypto', 'stock', 'bond', 'forex'];
     container.innerHTML = positions.map((p, i) => `
         <div class="pf-position-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-            <input type="text" class="pf-symbol" value="${p.symbol}" placeholder="Sembol" style="flex:2;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
-            <select class="pf-type" style="flex:1;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+            <input type="text" class="pf-symbol" value="${p.symbol}" placeholder="Sembol" style="flex:2;padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-secondary);color:var(--text-primary)">
+            <select class="pf-type" style="flex:1;padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-secondary);color:var(--text-primary)">
                 ${types.map(t => `<option value="${t}" ${t === p.type ? 'selected' : ''}>${t}</option>`).join('')}
             </select>
-            <input type="number" class="pf-weight" value="${Math.round(p.weight * 100)}" placeholder="%" min="0" max="100" style="flex:1;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+            <input type="number" class="pf-weight" value="${Math.round(p.weight * 100)}" placeholder="%" min="0" max="100" style="flex:1;padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-secondary);color:var(--text-primary)">
             <button class="btn btn-sm btn-danger" onclick="this.closest('.pf-position-row').remove();updatePfWeightSum()" style="padding:4px 8px;background:var(--color-danger);color:white;border:none;border-radius:4px;cursor:pointer">&times;</button>
         </div>
     `).join('');
@@ -7867,11 +7930,11 @@ function addPortfolioPosition() {
     div.className = 'pf-position-row';
     div.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px';
     div.innerHTML = `
-        <input type="text" class="pf-symbol" value="YENI" placeholder="Sembol" style="flex:2;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
-        <select class="pf-type" style="flex:1;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+        <input type="text" class="pf-symbol" value="YENI" placeholder="Sembol" style="flex:2;padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-secondary);color:var(--text-primary)">
+        <select class="pf-type" style="flex:1;padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-secondary);color:var(--text-primary)">
             <option value="crypto">crypto</option><option value="stock">stock</option><option value="bond">bond</option><option value="forex">forex</option>
         </select>
-        <input type="number" class="pf-weight" value="10" placeholder="%" min="0" max="100" style="flex:1;padding:8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg-secondary);color:var(--color-text)">
+        <input type="number" class="pf-weight" value="10" placeholder="%" min="0" max="100" style="flex:1;padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-secondary);color:var(--text-primary)">
         <button class="btn btn-sm" onclick="this.closest('.pf-position-row').remove();updatePfWeightSum()" style="padding:4px 8px;background:var(--color-danger);color:white;border:none;border-radius:4px;cursor:pointer">&times;</button>
     `;
     container.appendChild(div);
@@ -7895,6 +7958,8 @@ function savePortfolio() {
         if (symbol && weight > 0) positions.push({ symbol, type, weight: weight / 100 });
     });
     if (positions.length === 0) { showToast('En az bir pozisyon ekleyin.', 'error'); return; }
+    const symbols = positions.map(p => p.symbol);
+    if (new Set(symbols).size !== symbols.length) { showToast('Aynı sembolden birden fazla ekleyemezsiniz.', 'error'); return; }
     // Normalize weights to sum to 1
     const totalW = positions.reduce((s, p) => s + p.weight, 0);
     if (totalW > 0) positions.forEach(p => p.weight = p.weight / totalW);
@@ -8029,8 +8094,8 @@ function openUserPage() {
         posContainer.innerHTML = pf.positions.map(p => {
             const pct = (p.weight * 100).toFixed(0);
             const val = '₺' + Math.round(pf.value * p.weight).toLocaleString('tr-TR');
-            return `<div class="user-stat" style="border-bottom:1px solid var(--color-border);padding:4px 0">
-                <span class="user-stat-label">${p.symbol} <span style="font-size:0.7rem;color:var(--color-text-secondary)">(${p.type})</span></span>
+            return `<div class="user-stat" style="border-bottom:1px solid var(--border-color);padding:4px 0">
+                <span class="user-stat-label">${p.symbol} <span style="font-size:0.7rem;color:var(--text-secondary)">(${p.type})</span></span>
                 <span class="user-stat-value">${pct}% · ${val}</span>
             </div>`;
         }).join('');
