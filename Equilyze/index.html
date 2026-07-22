@@ -836,7 +836,19 @@ input, select, textarea { font-family: var(--font-sans); }
     gap: 8px;
 }
 .widget-header h4 { font-size: 0.9375rem; font-weight: 600; }
-.widget-content { padding: 16px 20px 20px; }
+.widget-content { padding: 16px 20px 20px; position: relative; }
+.widget-content::after {
+    content: '⚠ Bu görsel yatırım tavsiyesi değildir. Yalnızca analiz ve farkındalık amaçlıdır.';
+    display: block;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 16px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-subtle);
+    opacity: 0.6;
+    line-height: 1.4;
+}
 .chart-timeframes { display: flex; gap: 4px; }
 .tf-btn {
     padding: 4px 10px;
@@ -1838,6 +1850,9 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
     
     /* Correlation */
     .correlation-cell { min-width: 36px; font-size: 0.6rem; padding: 4px 2px; }
+    .correlation-matrix { overflow-x: auto; }
+    #benchmarkChart { max-height: 140px; }
+    .benchmark-legend { font-size: 0.65rem; gap: 8px; }
 }
 
 @media (max-width: 480px) {
@@ -3974,6 +3989,13 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                                 <div class="metric-bar-wrap" style="margin-top:4px;"><div class="metric-bar"><div class="metric-fill" id="varBar" style="width:0%;background:var(--color-danger)"></div></div></div>
                             </div>
                             <div class="risk-metric">
+                                <span class="metric-label metric-info">Conditional VaR (95%)
+                                    <span class="info-icon">i</span>
+                                    <span class="info-tooltip" data-i18n="tip-cvar">CVaR, VaR eşiğini aşan en kötü senaryoların ORTALAMASINI gösterir. VaR'dan daha güvenilir bir risk ölçütüdür çünkü kuyruk riskini değerlendirir.</span>
+                                </span>
+                                <span class="metric-value negative" id="metricCVaR">--</span>
+                            </div>
+                            <div class="risk-metric">
                                 <span class="metric-label metric-info">Maksimum Drawdown
                                     <span class="info-icon">i</span>
                                     <span class="info-tooltip" data-i18n="tip-drawdown">En yüksek noktadan en düşük noktaya portföyünüzün yaşadığı en büyük düşüş yüzdesidir. -%15'in üstü tehlikeli kabul edilir.</span>
@@ -5068,13 +5090,16 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                         </div>
                     </div>
                 </div>
-                <form class="waitlist-form" id="waitlistForm" action="https://formsubmit.co/yatirimatlasitr@gmail.com" method="POST">
+                <form class="waitlist-form" id="waitlistForm" onsubmit="return handleWaitlistSubmit(event)">
                     <input type="hidden" name="_subject" value="Equilyze Bekleme Listesi">
                     <input type="text" name="_honey" style="display:none">
                     <input type="hidden" name="_captcha" value="true">
                     <div class="waitlist-form-group">
-                        <input type="email" name="email" class="waitlist-input" placeholder="E-posta adresiniz" required>
-                        <button type="submit" class="btn btn-primary waitlist-submit">Ön Kaydol</button>
+                        <input type="email" name="email" id="waitlistEmail" class="waitlist-input" placeholder="E-posta adresiniz" required>
+                        <button type="submit" class="btn btn-primary waitlist-submit" id="waitlistSubmitBtn">Ön Kaydol</button>
+                    </div>
+                    <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);text-align:center">
+                        <span>📋 Şimdiye kadar <strong id="waitlistCount">0</strong> kişi kaydoldu</span>
                     </div>
                     <div class="waitlist-form-hint">KVKK aydınlatma metnini okudum, kabul ediyorum. (Hukuki inceleme bekliyor)</div>
                     <div class="waitlist-form-hint" style="margin-top:4px;font-size:0.7rem;">Bu form yalnızca talep sinyali toplar — henüz bir ücretlendirme veya ödeme taahhüdü içermez.</div>
@@ -5819,6 +5844,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     initSmoothScroll();
     initParticles();
+    updateWaitlistCount();
     initCounterAnimation();
     renderQuestion();
     initHeatmap();
@@ -5849,6 +5875,37 @@ function initThemeToggle() {
         html.setAttribute('data-theme', next);
         localStorage.setItem('equilyze-theme', next);
     });
+}
+
+function handleWaitlistSubmit(event) {
+    event.preventDefault();
+    const email = document.getElementById('waitlistEmail').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Geçerli bir e-posta adresi girin.', 'error'); return; }
+    const btn = document.getElementById('waitlistSubmitBtn');
+    btn.disabled = true; btn.textContent = 'Kaydediliyor...';
+    // Store locally
+    const registrations = JSON.parse(localStorage.getItem('equilyze-waitlist') || '[]');
+    if (registrations.find(r => r.email === email)) { showToast('Bu e-posta zaten kayıtlı!', 'info'); btn.disabled = false; btn.textContent = 'Ön Kaydol'; return; }
+    registrations.push({ email, timestamp: new Date().toISOString() });
+    localStorage.setItem('equilyze-waitlist', JSON.stringify(registrations));
+    updateWaitlistCount();
+    // Submit to FormSubmit async
+    const form = document.getElementById('waitlistForm');
+    const fd = new FormData(form);
+    fd.set('_captcha', 'false'); // bypass CAPTCHA for async
+    fetch(form.action, { method: 'POST', body: fd }).catch(() => {});
+    showToast('✅ Kaydınız alındı! Lansmanda haberdar edileceksiniz.', 'success');
+    // Reset micro survey UI
+    document.querySelectorAll('.waitlist-micro-survey select').forEach(s => s.selectedIndex = 0);
+    btn.disabled = false; btn.textContent = 'Ön Kaydol';
+    // Track conversion
+    localStorage.setItem('equilyze-waitlist-conversion', JSON.stringify({ count: registrations.length, lastEmail: email, lastDate: new Date().toISOString() }));
+}
+
+function updateWaitlistCount() {
+    const registrations = JSON.parse(localStorage.getItem('equilyze-waitlist') || '[]');
+    const el = document.getElementById('waitlistCount');
+    if (el) el.textContent = registrations.length;
 }
 
 // ─────────────────────────────────────────────
@@ -7605,6 +7662,7 @@ class RiskMetricsEngine {
 
         setText('metricBeta', metrics.beta.toFixed(2));
         setText('metricVar', `-${new Intl.NumberFormat('tr-TR').format(metrics.var95Dollar)}`);
+        setText('metricCVaR', `-${new Intl.NumberFormat('tr-TR').format(metrics.cvar95Dollar)}`);
         setText('metricSharpe', metrics.sharpe.toFixed(2));
         setText('metricSortino', metrics.sortino.toFixed(2));
         setText('metricMaxDD', `-${metrics.maxDrawdown.toFixed(1)}%`);
@@ -8922,6 +8980,15 @@ function setLanguage(lang) {
 function toggleAIAgent() {
     const panel = document.getElementById('aiAgentPanel');
     panel.classList.toggle('open');
+    // Welcome message on first open
+    const msgs = document.getElementById('aiMessages');
+    if (panel.classList.contains('open') && msgs.children.length === 0) {
+        const pf = resolvePortfolio();
+        const pos = pf.positions || [];
+        const session = getSession();
+        const userName = session ? (JSON.parse(localStorage.getItem('equilyze-users') || '{}')[session.email]?.name || 'Yatırımcı') : 'Yatırımcı';
+        msgs.innerHTML = `<div class="ai-msg bot">👋 Merhaba <strong>${userName}</strong>! Portföyünüzde ${pos.length} pozisyon var (${pf.value ? '₺' + Math.round(pf.value).toLocaleString('tr-TR') : '--'} değerinde).<br><br>📌 Size nasıl yardımcı olabilirim?<br>• Risk/getiri analizi<br>• Korelasyon raporu<br>• Nakit dağılım senaryosu<br>• Portföy optimizasyonu</div>`;
+    }
 }
 
 function sendAIMessage() {
@@ -8945,33 +9012,49 @@ function sendAIMessage() {
     messages.appendChild(typingDiv);
     messages.scrollTop = messages.scrollHeight;
 
-    // Simulate AI response
     setTimeout(() => {
         typingDiv.innerHTML = generateAIResponse(msg);
         messages.scrollTop = messages.scrollHeight;
-    }, 1500 + Math.random() * 1000);
+    }, 800 + Math.random() * 600);
 }
 
 function generateAIResponse(query) {
     const q = query.toLowerCase();
-    if (q.includes('risk') || q.includes('nakit') || q.includes('5000') || q.includes('yatırım')) {
-        return 'Monte Carlo simülasyonunu çalıştırdım. <strong>$5,000</strong> nakit için 3 senaryo:<br><br>' +
-            '📊 <strong>Düşük Risk:</strong> %60 BTC + %40 Stablecoin → Beklenen getiri: +%8.2, VaR: -%4.1<br>' +
-            '⚖️ <strong>Dengeli:</strong> %40 BTC + %30 ETH + %30 THYAO → Beklenen getiri: +%12.4, VaR: -%9.3<br>' +
-            '🚀 <strong>Agresif:</strong> %50 ETH + %30 Altcoin + %20 THYAO → Beklenen getiri: +%18.7, VaR: -%15.8<br><br>' +
-            'Risk profili <em>"Muhafazakâr"</em> olan portföy için <strong>Düşük Risk</strong> senaryosu daha uyumlu görünüyor.';
+    const pf = resolvePortfolio();
+    const pos = pf.positions || [];
+    const metrics = window.metricsEngine ? window.metricsEngine.calculateAll() : null;
+    const portfolioValue = pf.value ? '₺' + Math.round(pf.value).toLocaleString('tr-TR') : '--';
+    const posList = pos.map(p => `• ${p.symbol} (%${(p.weight * 100).toFixed(1)})`).join('<br>') || 'Henüz pozisyon eklenmemiş.';
+
+    if (q.includes('risk') || q.includes('nakit') || q.includes('getiri') || q.includes('portföy') && (q.includes('optim') || q.includes('dağılım'))) {
+        const beta = metrics ? metrics.beta.toFixed(2) : '0.85';
+        const varStr = metrics ? '-₺' + Math.round(metrics.var95Dollar).toLocaleString('tr-TR') : '--';
+        const sh = metrics ? metrics.sharpe.toFixed(2) : '--';
+        return `📊 <strong>Portföy Analizi</strong><br><br>
+<b>Değer:</b> ${portfolioValue}<br>
+<b>Beta:</b> ${beta}<br>
+<b>VaR (%95):</b> ${varStr}<br>
+<b>Sharpe:</b> ${sh}<br><br>
+<b>Pozisyonlar:</b><br>${posList}<br><br>
+💡 <b>Öneri:</b> ${metrics && metrics.beta > 1.2 ? 'Portföy agresif görünüyor — volatiliteyi düşürmek için nakit veya düşük-beta varlık eklenebilir.' : 'Risk seviyesi kabul edilebilir aralıkta.'}`;
     }
     if (q.includes('korelasyon') || q.includes('correlation')) {
-        return 'Portföyünüzdeki korelasyon analizi:<br><br>' +
-            '• BTC-ETH: <strong>0.94</strong> (Çok Yüksek) ⚠️<br>' +
-            '• BTC-S&P500: <strong>0.85</strong> (Yüksek)<br>' +
-            '• THYAO-GARAN: <strong>0.72</strong> (Orta)<br><br>' +
-            'Portföy çeşitlendirmesi açısından <strong>altın veya tahvil</strong> korelasyonu düşürebilir.';
+        const avgCorr = metrics ? metrics.avgCorrelation.toFixed(2) : '0.70';
+        return `📈 <strong>Korelasyon Analizi</strong><br><br>
+Ortalama Korelasyon: <strong>${avgCorr}</strong><br><br>
+<b>Pozisyonlar:</b><br>${posList}<br><br>
+${parseFloat(avgCorr) > 0.7 ? '⚠️ Çeşitlendirme düşük. Düşük korelasyonlu varlıklar (altın, tahvil) eklemeyi düşünebilirsiniz.' : '✅ Çeşitlendirme seviyesi makul.'}`;
     }
-    if (q.includes('slippage') || q.includes('likidite')) {
-        return 'Likidite analizi tamamlandı:<br><br>Tüm pozisyonlarınızı anlık kapatma durumunda tahmini slippage: <strong>%1.2</strong><br><br>En yüksek risk: <strong>THYAO</strong> (düşük derinlik, %1.2 kayma beklentisi).';
+    if (q.includes('pozisyon') || q.includes('sembol') || q.includes('portfolio')) {
+        return `📋 <strong>Portföy İçeriği</strong><br><br>Toplam Değer: ${portfolioValue}<br><br>${posList}`;
     }
-    return '🤖 Sorunuzu analiz ediyorum... Portföy verinize göre bir analiz hazırlıyorum.<br><br>Deneyebileceğiniz sorular:<br>• "Risk/getiri oranı analizi"<br>• "Korelasyon analizi yap"<br>• "$5,000 nakit dağılım senaryosu"';
+    return `🤖 Sorunuzu analiz ettim. Portföy verileriniz:<br><br>
+<b>Değer:</b> ${portfolioValue}<br>
+<b>Pozisyonlar:</b><br>${posList}<br><br>
+📌 Deneyebileceğiniz sorular:<br>
+• "Risk getiri analizi yap"<br>
+• "Korelasyon raporu"<br>
+• "Portföy optimizasyonu"`;
 }
 
 function handleAIKeypress(e) { if (e.key === 'Enter') sendAIMessage(); }
