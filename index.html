@@ -3798,6 +3798,7 @@ input, select, textarea { font-family: var(--font-sans); }
                             <div class="psc-change positive">+₺12,840 bugün (ÖRNEK PORTFÖY)</div>
                         </div>
                         <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()" style="margin-left:auto;align-self:center;white-space:nowrap" title="Portföyünü düzenle">✎ Düzenle</button>
+                        <button class="btn btn-sm btn-outline" onclick="exportFullReport()" style="align-self:center;white-space:nowrap" title="Tam raporu indir">📄 Rapor</button>
                     </div>
                     <div class="portfolio-stat-card">
                         <div class="psc-icon" style="background: rgba(6,182,212,0.15);">
@@ -8385,6 +8386,92 @@ function _renderDistChart(distribution, pv, varThreshold) {
                         label: (item) => [`Olasılık: %${parseFloat(item.raw).toFixed(2)}`, `Simülasyon: ${distribution[item.dataIndex].cnt}`]
                     }
                 }
+            }
+        }
+    });
+}
+
+function exportFullReport() {
+    const session = getSession();
+    const pf = session ? getUserPortfolio(session.email) || resolvePortfolio() : resolvePortfolio();
+    const positions = pf.positions || [];
+    const trades = JSON.parse(localStorage.getItem('equilyze-journal') || '[]');
+    const riskProfile = JSON.parse(localStorage.getItem('equilyze-risk-profile') || 'null');
+    const closed = trades.filter(t => t.pnl !== null);
+    const totalPnl = closed.reduce((s, t) => s + t.pnl, 0);
+    const winRate = closed.length > 0 ? (closed.filter(t => t.pnl > 0).length / closed.length * 100).toFixed(1) : 0;
+    const now = new Date().toLocaleDateString('tr-TR');
+    const mcResult = mcLastResult;
+
+    let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Equilyze Raporu - ${now}</title>
+    <style>
+        body { font-family: 'Inter', -apple-system, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1a1a2e; }
+        h1 { font-size: 1.75rem; margin-bottom: 4px; }
+        .meta { color: #666; font-size: 0.875rem; margin-bottom: 24px; }
+        h2 { font-size: 1.25rem; margin: 28px 0 12px; border-bottom: 2px solid #10b981; padding-bottom: 6px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #e5e7eb; font-size: 0.875rem; }
+        th { background: #f9fafb; font-weight: 600; }
+        .positive { color: #059669; } .negative { color: #dc2626; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .kpi { background: #f9fafb; border-radius: 8px; padding: 14px; text-align: center; }
+        .kpi .val { font-size: 1.25rem; font-weight: 700; font-family: monospace; }
+        .kpi .lbl { font-size: 0.75rem; color: #666; margin-top: 4px; }
+        @media print { body { margin: 20px; } .no-print { display: none; } }
+    </style></head><body>
+    <h1>Equilyze Raporu</h1>
+    <div class="meta">${now} ${session ? '— ' + session.email : ''}</div>`;
+
+    // Portfolio KPIs
+    html += `<h2>Portföy Özeti</h2><div class="kpi-grid">
+        <div class="kpi"><div class="val">${pf.value ? '₺' + Math.round(pf.value).toLocaleString('tr-TR') : '--'}</div><div class="lbl">Toplam Değer</div></div>
+        <div class="kpi"><div class="val">${positions.length}</div><div class="lbl">Pozisyon</div></div>
+        <div class="kpi"><div class="val ${totalPnl >= 0 ? 'positive' : 'negative'}">${(totalPnl >= 0 ? '+' : '') + '₺' + Math.round(totalPnl).toLocaleString('tr-TR')}</div><div class="lbl">Gerçekleşen K/Z</div></div>
+        <div class="kpi"><div class="val">${winRate}%</div><div class="lbl">Win Rate</div></div>
+    </div>`;
+
+    if (riskProfile) {
+        html += `<p><strong>Risk Profili:</strong> ${riskProfile.profile} (${riskProfile.score}/100)</p>`;
+    }
+
+    // Positions table
+    if (positions.length > 0) {
+        html += `<h2>Pozisyonlar</h2><table><thead><tr><th>Sembol</th><th>Tür</th><th>Ağırlık</th></tr></thead><tbody>`;
+        positions.forEach(p => {
+            html += `<tr><td>${p.symbol}</td><td>${p.type}</td><td>${(p.weight * 100).toFixed(1)}%</td></tr>`;
+        });
+        html += `</tbody></table>`;
+    }
+
+    // MC Results
+    if (mcResult) {
+        const { stats, var: varData, cvar } = mcResult;
+        html += `<h2>Monte Carlo Simülasyonu</h2><div class="kpi-grid">
+            <div class="kpi"><div class="val">₺${Math.round(stats.mean).toLocaleString('tr-TR')}</div><div class="lbl">Beklenen Değer</div></div>
+            <div class="kpi"><div class="val">₺${Math.round(stats.median).toLocaleString('tr-TR')}</div><div class="lbl">Medyan</div></div>
+            <div class="kpi"><div class="val negative">-₺${Math.round(varData[0.95].absolute).toLocaleString('tr-TR')}</div><div class="lbl">VaR %95</div></div>
+            <div class="kpi"><div class="val negative">-₺${Math.round(cvar[0.95].absolute).toLocaleString('tr-TR')}</div><div class="lbl">CVaR %95</div></div>
+        </div>`;
+    }
+
+    // Journal trades
+    if (trades.length > 0) {
+        html += `<h2>Trading Journal (son 20 işlem)</h2><table><thead><tr><th>Tarih</th><th>Sembol</th><th>Tür</th><th>K/Z</th></tr></thead><tbody>`;
+        trades.slice(0, 20).forEach(t => {
+            const cls = t.pnl !== null ? (t.pnl >= 0 ? 'positive' : 'negative') : '';
+            html += `<tr><td>${t.date}</td><td>${t.sym}</td><td>${t.type}</td><td class="${cls}">${t.pnl !== null ? (t.pnl >= 0 ? '+' : '') + '₺' + Math.round(t.pnl).toLocaleString('tr-TR') : '--'}</td></tr>`;
+        });
+        html += `</tbody></table>`;
+    }
+
+    html += `<p class="no-print" style="margin-top:32px;text-align:center"><button onclick="window.print()" style="padding:10px 24px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem">📄 PDF Olarak Kaydet / Yazdır</button></p>`;
+    html += `</body></html>`;
+
+    const w = window.open('', '_blank');
+    w.document.write(html);
+    w.document.close();
+    showToast('Rapor oluşturuldu! Yazdır > PDF olarak kaydedebilirsiniz.', 'success');
+}
             },
             scales: {
                 x: { ticks: { display: false }, grid: { display: false } },
@@ -8677,6 +8764,39 @@ const translations = {
         'slip-btc-sub': 'Sufficient market depth',
         'slip-eth-sub': 'Medium depth',
         'slip-thyao-sub': 'Low liquidity risk',
+        // Missing translations
+        'nav-risk': 'Risk Test',
+        'nav-pricing': 'Early Access',
+        'hero-subtitle': 'Take data-driven investment decisions with 15-question Risk Test, Monte Carlo Simulation, Macro Shock Engine, Trading Journal, and live API integrations.',
+        'insight-title': 'Daily Status Report',
+        'insight-cta': 'Go to Details →',
+        'crypto-widget-title': 'Crypto Market Indicators',
+        'live': 'Live',
+        'fear-greed': 'Fear & Greed Index',
+        'greed': 'Greed',
+        'survival-rebalance': '🧠 Suggest AI Rebalance',
+        'rwa-title': 'Add Manual Asset (RWA)',
+        'rwa-estate': 'Tokenized Real Estate',
+        'rwa-gold': 'Tokenized Gold',
+        'rwa-commodity': 'Tokenized Commodity',
+        'rwa-bond': 'Tokenized Bond',
+        'slippage-title': '💧 Slippage Analysis',
+        'slippage-desc': 'Estimated price impact for simulated orders based on current market depth data.',
+        'ps-positions': 'Positions',
+        'ps-allocation': 'Allocation',
+        'ps-portfolio': 'Portfolio',
+        'ps-symbol': 'Symbol',
+        'ps-value': 'Value',
+        'ps-total': 'Total',
+        'ps-currency': '₺',
+        'badge-conservative': 'Conservative',
+        'badge-moderate': 'Moderate',
+        'badge-aggressive': 'Aggressive',
+        'badge-very-aggressive': 'Very Aggressive',
+        'phase-1-desc': 'Dashboard & Data Analytics layer: P&L Heatmap 2.0, Dynamic Correlation Analysis, Benchmark Comparison and Zero-Touch Security Communication.',
+        'phase-2-desc': 'Predictive Intelligence layer: AI-powered portfolio suggestions, NLP Chatbot, Sentiment Analysis and Price Forecasting.',
+        'phase-3-desc': 'Portfolio Automation layer: automated rebalancing, smart stop-loss alerts and basket order management.',
+        'phase-4-desc': 'Open Ecosystem layer: Open source SDK, widget marketplace and third-party developer API.',
         'slip-warning': '⚠️ If you try to close all your positions now, you could experience 1.2% slippage under current market conditions.',
         // RWA
         'rwa-title': 'Add Manual Asset (RWA)',
@@ -9083,6 +9203,18 @@ function updateInsightBar(metrics) {
             metricBeta.style.color = 'var(--color-success)';
         } else {
             metricBeta.style.color = '';
+        }
+    }
+    // VaR threshold notification
+    if (metrics && metrics.var95Pct) {
+        const varPct = Math.abs(metrics.var95Pct);
+        const prevVar = parseFloat(localStorage.getItem('equilyze-last-var') || '0');
+        localStorage.setItem('equilyze-last-var', varPct.toFixed(2));
+        const threshold = parseFloat(localStorage.getItem('equilyze-var-threshold') || '10');
+        if (varPct > threshold) {
+            showToast('⚠️ VaR (%95) %' + varPct.toFixed(1) + ' seviyesinde — eşik olan %' + threshold + ' aşıldı!', 'error', 5000);
+        } else if (prevVar > 0 && varPct > prevVar * 1.3) {
+            showToast('📈 VaR son güncellemeden %30 arttı — dikkat!', 'info', 4000);
         }
     }
 }
