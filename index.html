@@ -4760,7 +4760,7 @@ input, select, textarea { font-family: var(--font-sans); }
                     <thead>
                         <tr>
                             <th onclick="sortJournal('date')">Tarih <span class="sort-icon">↕</span></th>
-                            <th onclick="sortJournal('symbol')">Sembol <span class="sort-icon">↕</span></th>
+                            <th onclick="sortJournal('sym')">Sembol <span class="sort-icon">↕</span></th>
                             <th>Yön</th>
                             <th onclick="sortJournal('entry')">Giriş <span class="sort-icon">↕</span></th>
                             <th onclick="sortJournal('exit')">Çıkış <span class="sort-icon">↕</span></th>
@@ -5325,7 +5325,8 @@ input, select, textarea { font-family: var(--font-sans); }
                 <div class="form-row">
                     <div class="form-group">
                         <label>Sembol *</label>
-                        <input type="text" id="tradeSym" placeholder="ör. BTC/USDT" required>
+                        <input type="text" id="tradeSym" placeholder="ör. BTC/USDT" required list="portfolioSymbols">
+                        <datalist id="portfolioSymbols"></datalist>
                     </div>
                     <div class="form-group">
                         <label>Tarih *</label>
@@ -5416,6 +5417,7 @@ input, select, textarea { font-family: var(--font-sans); }
                     </div>
                     <input type="file" id="screenshotInput" accept="image/*" style="display:none" onchange="handleScreenshot(this)">
                 </div>
+                <input type="hidden" id="tradeScreenshotData">
                 <input type="hidden" id="tradeEditId">
             </div>
             <div class="modal-footer">
@@ -6158,14 +6160,21 @@ function handleScreenshot(input) {
             showToast('Dosya boyutu 5MB\'dan büyük olamaz', 'error');
             return;
         }
-        const upload = document.getElementById('screenshotUpload');
-        upload.innerHTML = `
-            <div class="screenshot-upload-icon">✅</div>
-            <div class="screenshot-upload-text">${file.name}</div>
-            <div class="screenshot-upload-sub">${(file.size / 1024).toFixed(1)} KB — Yüklendi</div>
-        `;
-        showToast('Ekran görüntüsü eklendi', 'success');
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const upload = document.getElementById('screenshotUpload');
+            const dataUrl = e.target.result;
+            document.getElementById('tradeScreenshotData').value = dataUrl;
+            upload.innerHTML = '<img src="' + dataUrl + '" style="max-width:100%;max-height:120px;border-radius:8px;object-fit:cover"><button class="btn btn-sm btn-ghost" onclick="removeScreenshot()" style="margin-top:4px">✕ Kaldır</button>';
+            showToast('Ekran görüntüsü eklendi', 'success');
+        };
+        reader.readAsDataURL(file);
     }
+}
+function removeScreenshot() {
+    document.getElementById('tradeScreenshotData').value = '';
+    const upload = document.getElementById('screenshotUpload');
+    upload.innerHTML = '<div class="screenshot-upload-icon">📎</div><div class="screenshot-upload-text">Sürükle-bırak veya tıklayarak ekran görüntüsü ekleyin</div><div class="screenshot-upload-sub">PNG, JPG — Maks 5MB</div>';
 }
 
 // ─────────────────────────────────────────────
@@ -6686,6 +6695,9 @@ function saveTrade() {
     const tp = parseFloat(document.getElementById('tradeTp').value) || null;
     const note = document.getElementById('tradeNote').value.trim();
     const selectedTags = [...document.querySelectorAll('.tag-check input:checked')].map(i => i.value);
+    const sentimentEl = document.querySelector('.sentiment-option.selected input');
+    const sentiment = sentimentEl ? sentimentEl.value : null;
+    const screenshot = document.getElementById('tradeScreenshotData')?.value || null;
 
     if (!sym || !date || isNaN(size) || isNaN(entry)) {
         showToast('Lütfen zorunlu alanları doldurun', 'error');
@@ -6696,24 +6708,31 @@ function saveTrade() {
     let pnl = null, rr = null;
     if (exit !== null) {
         pnl = type === 'buy' ? (exit - entry) * size : (entry - exit) * size;
-    }
-    if (stop !== null && entry !== null) {
-        const risk = Math.abs(entry - stop) * size;
-        if (tp !== null) {
-            const reward = Math.abs(tp - entry) * size;
-            rr = risk > 0 ? reward / risk : null;
+        // Realized R:R from exit if no TP/SL defined
+        if (stop !== null) {
+            const risk = Math.abs(entry - stop) * size;
+            if (tp !== null) {
+                const reward = Math.abs(tp - entry) * size;
+                rr = risk > 0 ? reward / risk : null;
+            } else if (pnl !== 0) {
+                rr = risk > 0 ? Math.abs(pnl) / risk : null;
+            }
         }
+    } else if (stop !== null && tp !== null) {
+        const risk = Math.abs(entry - stop) * size;
+        const reward = Math.abs(tp - entry) * size;
+        rr = risk > 0 ? reward / risk : null;
     }
 
     if (editingId !== null) {
         const idx = trades.findIndex(t => t.id === editingId);
         if (idx !== -1) {
-            trades[idx] = { ...trades[idx], sym, date, type, size, entry, exit, stop, tp, pnl, rr, note, tags: selectedTags };
+            trades[idx] = { ...trades[idx], sym, date, type, size, entry, exit, stop, tp, pnl, rr, note, tags: selectedTags, sentiment, screenshot };
         }
         editingId = null;
         showToast('İşlem güncellendi', 'success');
     } else {
-        trades.unshift({ id: Date.now(), sym, date, type, size, entry, exit, stop, tp, pnl, rr, note, tags: selectedTags });
+        trades.unshift({ id: Date.now(), sym, date, type, size, entry, exit, stop, tp, pnl, rr, note, tags: selectedTags, sentiment, screenshot });
         showToast('İşlem kaydedildi', 'success');
     }
 
@@ -6749,6 +6768,18 @@ function editTrade(id) {
     document.querySelectorAll('.tag-check input').forEach(inp => {
         inp.checked = t.tags && t.tags.includes(inp.value);
     });
+    // Restore sentiment
+    document.querySelectorAll('.sentiment-option').forEach(o => {
+        const m = o.classList, r = o.querySelector('input');
+        if (t.sentiment && r && r.value === t.sentiment) { m.add('selected'); r.checked = true; } else { m.remove('selected'); r.checked = false; }
+    });
+    // Restore screenshot
+    const ssField = document.getElementById('tradeScreenshotData');
+    if (ssField) ssField.value = t.screenshot || '';
+    if (t.screenshot) {
+        const upload = document.getElementById('screenshotUpload');
+        upload.innerHTML = '<img src="' + t.screenshot + '" style="max-width:100%;max-height:120px;border-radius:8px;object-fit:cover"><button class="btn btn-sm btn-ghost" onclick="removeScreenshot()" style="margin-top:4px">✕ Kaldır</button>';
+    }
     openTradeModal();
 }
 
@@ -6886,6 +6917,10 @@ function openTradeModal() {
         document.getElementById('tradeTp').value = '';
         document.getElementById('tradeNote').value = '';
         document.querySelectorAll('.tag-check input').forEach(i => i.checked = false);
+        // Populate symbol datalist from portfolio
+        const pf = resolvePortfolio();
+        const dl = document.getElementById('portfolioSymbols');
+        dl.innerHTML = pf.positions.map(p => `<option value="${p.symbol}">`).join('');
         setTodayDate();
     }
     document.getElementById('tradeModalOverlay').classList.add('open');
@@ -6901,11 +6936,12 @@ function closeTradeModal(event) {
 
 function exportCSV() {
     if (trades.length === 0) { showToast('Dışa aktarılacak işlem yok', 'info'); return; }
-    const header = ['Tarih', 'Sembol', 'Yön', 'Giriş', 'Çıkış', 'Miktar', 'KZ', 'RR', 'Etiket', 'Not'];
+    const header = ['Tarih', 'Sembol', 'Yön', 'Giriş', 'Çıkış', 'Stop', 'TP', 'Miktar', 'KZ', 'RR', 'Duygu', 'Etiket', 'Not'];
     const rows = trades.map(t => [
         t.date, t.sym, t.type === 'buy' ? 'Alım' : 'Satım',
-        t.entry, t.exit || '', t.size, t.pnl !== null ? t.pnl.toFixed(2) : '',
-        t.rr ? t.rr.toFixed(2) : '', (t.tags || []).join('; '), t.note || ''
+        t.entry, t.exit || '', t.stop || '', t.tp || '',
+        t.size, t.pnl !== null ? t.pnl.toFixed(2) : '',
+        t.rr ? t.rr.toFixed(2) : '', t.sentiment || '', (t.tags || []).join('; '), t.note || ''
     ]);
     const csv = [header, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
