@@ -3466,9 +3466,9 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
             </a>
             <div class="nav-links" id="navLinks">
                 <a href="#risk-test" class="nav-link" data-i18n="nav-risk">Risk Testi</a>
-                <a href="#dashboard" class="nav-link">Dashboard</a>
-                <a href="#macro-engine" class="nav-link">Macro Shock</a>
-                <a href="#journal" class="nav-link">Trading Journal</a>
+                <a href="#dashboard" class="nav-link" data-i18n="nav-dashboard">Dashboard</a>
+                <a href="#macro-engine" class="nav-link" data-i18n="nav-macro">Macro Shock</a>
+                <a href="#journal" class="nav-link" data-i18n="nav-journal">Trading Journal</a>
                 <a href="#waitlist" class="nav-link" data-i18n="nav-pricing">Erken Erişim</a>
             </div>
             <div class="nav-actions">
@@ -4133,27 +4133,30 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                         <span class="elite-badge-sm">ELITE</span>
                     </div>
                     <div class="widget-content">
-                        <div class="risk-alerts" id="riskAlerts">
-                            <div class="risk-alert critical">
-                                <div class="ralert-icon">🔴</div>
-                                <div class="ralert-body">
-                                    <div class="ralert-title">Yoğunlaşma Riskiniz Yüksek</div>
-                                    <div class="ralert-desc">BTC+ETH toplam portföyün %40'ını oluşturuyor</div>
+                        <div class="risk-alert-list" id="riskAlerts">
+                            <div class="risk-alert-item">
+                                <div class="ra-icon volatility">🔴</div>
+                                <div class="ra-content">
+                                    <div class="ra-title">Yoğunlaşma Riskiniz Yüksek</div>
+                                    <div class="ra-desc">BTC+ETH toplam portföyün %40'ını oluşturuyor</div>
                                 </div>
+                                <span class="ra-severity high">KRİTİK</span>
                             </div>
-                            <div class="risk-alert warning">
-                                <div class="ralert-icon">🟡</div>
-                                <div class="ralert-body">
-                                    <div class="ralert-title">Korelasyon Uyarısı</div>
-                                    <div class="ralert-desc">Kripto varlıklar arası korelasyon >0.70</div>
+                            <div class="risk-alert-item">
+                                <div class="ra-icon correlation">🟡</div>
+                                <div class="ra-content">
+                                    <div class="ra-title">Korelasyon Uyarısı</div>
+                                    <div class="ra-desc">Kripto varlıklar arası korelasyon >0.70</div>
                                 </div>
+                                <span class="ra-severity medium">ORTA</span>
                             </div>
-                            <div class="risk-alert info">
-                                <div class="ralert-icon">🔵</div>
-                                <div class="ralert-body">
-                                    <div class="ralert-title">Likidite Riski</div>
-                                    <div class="ralert-desc">THYAO pozisyonu düşük hacimli</div>
+                            <div class="risk-alert-item">
+                                <div class="ra-icon drawdown">🔵</div>
+                                <div class="ra-content">
+                                    <div class="ra-title">Likidite Riski</div>
+                                    <div class="ra-desc">THYAO pozisyonu düşük hacimli</div>
                                 </div>
+                                <span class="ra-severity low">DÜŞÜK</span>
                             </div>
                         </div>
                     </div>
@@ -4205,7 +4208,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                 </div>
 
                 <!-- Slippage Widget -->
-                <div class="widget widget-half slippage-widget" data-widget="slippage">
+                <div class="widget widget-medium slippage-widget" data-widget="slippage">
                     <div class="widget-header">
                         <h4 data-i18n="slip-title">💧 Likidite & Kayma Analizi</h4>
                         <span class="elite-badge-sm">ELITE</span>
@@ -4246,20 +4249,6 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                         <div class="corr-ts-alert" data-i18n="slip-warning" style="margin-top:14px;">
                             ⚠️ Şu anki piyasa koşullarında tüm pozisyonlarınızı kapatmaya kalksanız %1.2 slippage yaşayabilirsiniz.
                         </div>
-                    </div>
-                </div>
-
-                <!-- Survival Score -->
-                <div class="widget widget-half" data-widget="survival">
-                    <div class="widget-header">
-                        <h4>Hayatta Kalma Skoru</h4>
-                    </div>
-                    <div class="widget-content" style="text-align:center;padding:20px">
-                        <div class="survival-score-circle" id="survivalScoreCircle">
-                            <span class="survival-number" id="survivalNumber">85</span>
-                            <span class="survival-label">/100</span>
-                        </div>
-                        <div class="survival-status safe" id="survivalStatus">✅ Sağlam — Portföy şoklara dayanıklı</div>
                     </div>
                 </div>
 
@@ -5615,7 +5604,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
             <div class="modal-body" style="max-height:80vh;overflow-y:auto">
                 <div style="margin-bottom:16px">
                     <label>Toplam Portföy Değeri (₺)</label>
-                    <input type="number" id="pfValueInput" style="width:100%;padding:10px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-size:1rem" value="847250">
+                    <input type="number" id="pfValueInput" style="width:100%;padding:10px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-size:1rem">
                 </div>
                 <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
                     <label style="font-weight:600">Pozisyonlar</label>
@@ -5846,7 +5835,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initParticles();
     updateWaitlistCount();
-    initCounterAnimation();
     renderQuestion();
     initHeatmap();
     initCorrelationMatrix();
@@ -5885,7 +5873,7 @@ function handleWaitlistSubmit(event) {
     const btn = document.getElementById('waitlistSubmitBtn');
     btn.disabled = true; btn.textContent = 'Kaydediliyor...';
     // Store locally
-    const registrations = JSON.parse(localStorage.getItem('equilyze-waitlist') || '[]');
+    let registrations = []; try { registrations = JSON.parse(localStorage.getItem('equilyze-waitlist') || '[]'); } catch {}
     if (registrations.find(r => r.email === email)) { showToast('Bu e-posta zaten kayıtlı!', 'info'); btn.disabled = false; btn.textContent = 'Ön Kaydol'; return; }
     registrations.push({ email, timestamp: new Date().toISOString() });
     localStorage.setItem('equilyze-waitlist', JSON.stringify(registrations));
@@ -5904,7 +5892,7 @@ function handleWaitlistSubmit(event) {
 }
 
 function updateWaitlistCount() {
-    const registrations = JSON.parse(localStorage.getItem('equilyze-waitlist') || '[]');
+    let registrations = []; try { registrations = JSON.parse(localStorage.getItem('equilyze-waitlist') || '[]'); } catch {}
     const el = document.getElementById('waitlistCount');
     if (el) el.textContent = registrations.length;
 }
@@ -5976,32 +5964,6 @@ function initParticles() {
 // ─────────────────────────────────────────────
 // COUNTER ANIMATION
 // ─────────────────────────────────────────────
-function initCounterAnimation() {
-    const counters = document.querySelectorAll('[data-count]');
-    const io = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-            if (e.isIntersecting) {
-                animateCounter(e.target, parseFloat(e.target.dataset.count));
-                io.unobserve(e.target);
-            }
-        });
-    }, { threshold: 0.5 });
-    counters.forEach(c => io.observe(c));
-}
-
-function animateCounter(el, target) {
-    const duration = 2000, start = performance.now();
-    function update(t) {
-        const p = Math.min((t - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - p, 4);
-        const v = target * ease;
-        el.textContent = target < 10 ? v.toFixed(1) : Math.floor(v).toLocaleString('tr-TR');
-        if (p < 1) requestAnimationFrame(update);
-        else el.textContent = target < 10 ? target.toFixed(1) : target.toLocaleString('tr-TR');
-    }
-    requestAnimationFrame(update);
-}
-
 // ─────────────────────────────────────────────
 // RISK PROFILE TEST
 // ─────────────────────────────────────────────
@@ -6259,6 +6221,10 @@ function connectAPI(exchange) {
     const card = document.querySelector(`[data-exchange="${exchange}"]`);
     const status = document.getElementById('status-' + exchange);
     const btn = card.querySelector('button');
+    const key = prompt(`${exchange.charAt(0).toUpperCase() + exchange.slice(1)} API Key girin:`);
+    if (!key) { showToast('Bağlantı iptal edildi.', 'info'); return; }
+    const secret = prompt('Secret Key girin:');
+    if (!secret) { showToast('Bağlantı iptal edildi.', 'info'); return; }
 
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Bağlanıyor...';
     btn.disabled = true;
@@ -6269,6 +6235,7 @@ function connectAPI(exchange) {
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Bağlı';
         btn.className = 'btn btn-sm btn-connected';
         btn.disabled = true;
+        localStorage.setItem('equilyze-api-' + exchange, JSON.stringify({ key, label: exchange, connectedAt: Date.now() }));
         showToast(`${exchange.charAt(0).toUpperCase() + exchange.slice(1)} bağlantısı kuruldu!`, 'success');
     }, 1800);
 }
@@ -6329,7 +6296,7 @@ function runCustomShock() {
     const btc = parseFloat(document.getElementById('customBtc').value) || 0;
     const rate = parseFloat(document.getElementById('customRate').value) || 0;
 
-    const portfolioValue = metricsEngine ? metricsEngine.portfolioValue : 847250;
+    const portfolioValue = metricsEngine ? metricsEngine.portfolioValue : DEFAULT_PORTFOLIO_VALUE;
     const usdExposure = 0.35;
     const btcExposure = 0.25;
     const rateImpact = rate * -0.002;
@@ -6371,7 +6338,7 @@ function runCustomShock() {
 function generateBenchData(tf) {
     const days = { '1M': 21, '3M': 63, '6M': 126, '1Y': 252 };
     const n = days[tf] || 21;
-    const engine = metricsEngine || new RiskMetricsEngine(847250, DEFAULT_POSITIONS);
+    const engine = metricsEngine || new RiskMetricsEngine(DEFAULT_PORTFOLIO_VALUE, DEFAULT_POSITIONS);
     const prices = engine._generateReturnSeries(n);
     const goldPrices = engine._generateReturnSeries(n);
     const btcPrices = engine._generateReturnSeries(n);
@@ -7426,12 +7393,18 @@ class RiskMetricsEngine {
     }
 
     /* ── GBM ile sentetik getiri serisi üretimi (Mild, 2026 metodolojisi) ── */
-    _generateReturnSeries(days) {
+    _generateReturnSeries(days, assetType) {
         const series = [];
-        const annualDrift = 0.08;  // %8 yıllık beklenen getiri
-        const annualVol = 0.18;    // %18 yıllık vol
-        const mu = annualDrift / 252;
-        const sigma = annualVol / Math.sqrt(252);
+        const params = {
+            crypto: { drift: 0.12, vol: 0.45 },
+            stock:  { drift: 0.08, vol: 0.20 },
+            bond:   { drift: 0.04, vol: 0.08 },
+            forex:  { drift: 0.02, vol: 0.10 },
+            default:{ drift: 0.08, vol: 0.22 },
+        };
+        const p = params[assetType] || params.default;
+        const mu = p.drift / 252;
+        const sigma = p.vol / Math.sqrt(252);
         
         let price = 100;
         for (let i = 0; i < days; i++) {
@@ -7737,6 +7710,16 @@ class RiskMetricsEngine {
             }
         }
 
+        // Survival ring
+        const ring = document.getElementById('survivalRing');
+        if (ring) {
+            const circumference = 175.9;
+            const offset = circumference - (metrics.survivalScore / 100) * circumference;
+            ring.style.strokeDashoffset = offset;
+            ring.classList.remove('low', 'mid', 'high');
+            ring.classList.add(metrics.survivalScore >= 70 ? 'high' : metrics.survivalScore >= 40 ? 'mid' : 'low');
+        }
+
         // VaR bar
         const varBar = document.getElementById('varBar');
         if (varBar) {
@@ -7779,7 +7762,7 @@ class MarketDataEngine {
                 this._saveCache();
                 return result;
             }
-        } catch {}
+        } catch { console.warn('MarketDataEngine: fetchPrice failed for', coinId); }
         // Fallback: return last cached value if available
         if (this.cache[coinId]) return this.cache[coinId];
         return { price: 0, change24h: 0, timestamp: now };
@@ -7877,6 +7860,7 @@ function initFinancialEngines() {
     renderPositionsList();
     initHeatmap();
     initCorrelationMatrix();
+    updatePortfolioLabel();
     // Remove skeleton overlay
     const skel = document.getElementById('dashboardSkeleton');
     if (skel) { skel.style.transition = 'opacity 0.4s'; skel.style.opacity = '0'; setTimeout(() => skel.remove(), 500); }
@@ -7892,6 +7876,8 @@ function getSession() {
 }
 function setSession(email) { localStorage.setItem('equilyze-session', JSON.stringify({ email, loginTime: Date.now() })); }
 function clearSession() { localStorage.removeItem('equilyze-session'); }
+
+function hashPass(p) { let h = 0; for (let i = 0; i < p.length; i++) { h = ((h << 5) - h) + p.charCodeAt(i); h |= 0; } return 'h' + Math.abs(h).toString(36); }
 
 function authInit() {
     const session = getSession();
@@ -7938,7 +7924,7 @@ function authRegister(event) {
     if (pass !== confirm) { errEl.textContent = 'Şifreler eşleşmiyor.'; return; }
     const users = getUsers();
     if (users[email]) { errEl.textContent = 'Bu e-posta zaten kayıtlı.'; return; }
-    users[email] = { name, email, password: btoa(pass), registeredAt: new Date().toISOString(), riskProfile: null };
+    users[email] = { name, email, password: hashPass(pass), registeredAt: new Date().toISOString(), riskProfile: null };
     saveUsers(users);
     setSession(email);
     applyAuthState(email);
@@ -7957,7 +7943,7 @@ function authLogin(event) {
     if (!pass) { errEl.textContent = 'Şifrenizi girin.'; return; }
     const users = getUsers();
     if (!users[email]) { errEl.textContent = 'E-posta bulunamadı.'; return; }
-    if (atob(users[email].password) !== pass) { errEl.textContent = 'Hatalı şifre.'; return; }
+    if (users[email].password !== hashPass(pass)) { errEl.textContent = 'Hatalı şifre.'; return; }
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
@@ -7968,7 +7954,7 @@ function demoLogin() {
     const email = 'demo@equilyze.com';
     const users = getUsers();
     if (!users[email]) {
-        users[email] = { name: 'Demo Kullanıcı', email, password: btoa('demo123'), registeredAt: new Date().toISOString(), riskProfile: null };
+        users[email] = { name: 'Demo Kullanıcı', email, password: hashPass('demo123'), registeredAt: new Date().toISOString(), riskProfile: null };
         saveUsers(users);
     }
     setSession(email);
@@ -8002,7 +7988,7 @@ function saveUserPortfolio(email, portfolio) {
     localStorage.setItem(getPortfolioKey(email), JSON.stringify(portfolio));
 }
 function getDefaultPortfolio() {
-    return { value: 847250, positions: DEFAULT_POSITIONS };
+    return { value: DEFAULT_PORTFOLIO_VALUE, positions: DEFAULT_POSITIONS };
 }
 function resolvePortfolio() {
     const session = getSession();
@@ -8014,8 +8000,18 @@ function resolvePortfolio() {
     }
     return getDefaultPortfolio();
 }
+function updatePortfolioLabel(pf) {
+    if (!pf) pf = resolvePortfolio();
+    const pscLabel = document.querySelector('.psc-label');
+    const pscChange = document.querySelector('.psc-change');
+    const isUserPortfolio = pf && pf.positions !== DEFAULT_POSITIONS;
+    if (pscLabel) pscLabel.textContent = isUserPortfolio ? 'Portföyüm — Toplam Değer' : 'ÖRNEK PORTFÖY — Toplam Değer';
+    if (pscChange) pscChange.textContent = isUserPortfolio ? 'Kişisel portföyünüz' : '+₺12,840 bugün (ÖRNEK PORTFÖY)';
+    const pscValue = document.querySelector('.psc-value');
+    if (pscValue) pscValue.textContent = '₺' + Number(pf.value).toLocaleString('tr-TR');
+}
 function recreateEnginesWithPortfolio(pf) {
-    const val = pf ? pf.value : 847250;
+    const val = pf ? pf.value : DEFAULT_PORTFOLIO_VALUE;
     const pos = pf ? pf.positions : DEFAULT_POSITIONS;
     metricsEngine = new RiskMetricsEngine(val, pos);
     window.rmEngine = metricsEngine;
@@ -8023,12 +8019,7 @@ function recreateEnginesWithPortfolio(pf) {
     mcLastResult = null;
     // Regenerate chart data cache
     chartData = { '1H': null, '1D': null, '1W': null, '1M': null };
-    // Update portfolio stat card value and label
-    const pscLabel = document.querySelector('.psc-label');
-    const pscChange = document.querySelector('.psc-change');
-    const isUserPortfolio = pf && pf.positions !== DEFAULT_POSITIONS;
-    if (pscLabel) pscLabel.textContent = isUserPortfolio ? 'Portföyüm — Toplam Değer' : 'ÖRNEK PORTFÖY — Toplam Değer';
-    if (pscChange) pscChange.textContent = isUserPortfolio ? 'Kişisel portföyünüz' : '+₺12,840 bugün (ÖRNEK PORTFÖY)';
+    updatePortfolioLabel(pf);
     const pscValue = document.querySelector('.psc-value');
     if (pscValue) pscValue.textContent = '₺' + Number(val).toLocaleString('tr-TR');
     // Redraw chart if visible
@@ -8173,7 +8164,7 @@ function applyAuthState(email) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 Profilim
             </button>
-            <button class="auth-dropdown-item" onclick="document.querySelector('.nav-login').click();event.stopPropagation();">
+            <button class="auth-dropdown-item" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'});event.stopPropagation();">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
                 Dashboard
             </button>
@@ -8269,6 +8260,8 @@ let mcLastResult = null;
 let mcConfidence = 0.95;
 let mcPathChart = null;
 let mcDistChart = null;
+
+const DEFAULT_PORTFOLIO_VALUE = 847250;
 
 // Default portfolio positions (will use real data when available)
 const DEFAULT_POSITIONS = [
@@ -8515,8 +8508,8 @@ function exportFullReport() {
     const session = getSession();
     const pf = session ? getUserPortfolio(session.email) || resolvePortfolio() : resolvePortfolio();
     const positions = pf.positions || [];
-    const trades = JSON.parse(localStorage.getItem('equilyze-journal') || '[]');
-    const riskProfile = JSON.parse(localStorage.getItem('equilyze-risk-profile') || 'null');
+    let trades = []; try { trades = JSON.parse(localStorage.getItem('equilyze-journal') || '[]'); } catch {}
+    let riskProfile = null; try { riskProfile = JSON.parse(localStorage.getItem('equilyze-risk-profile') || 'null'); } catch {}
     const closed = trades.filter(t => t.pnl !== null);
     const totalPnl = closed.reduce((s, t) => s + t.pnl, 0);
     const winRate = closed.length > 0 ? (closed.filter(t => t.pnl > 0).length / closed.length * 100).toFixed(1) : 0;
@@ -8759,9 +8752,7 @@ function applyRiskParityToPortfolio() {
     document.getElementById('mcApplyBtn').style.display = 'none';
     // Refresh dashboard
     if (typeof renderPositionsList === 'function') renderPositionsList();
-    if (typeof renderPortfolioPositionsChart === 'function') {
-        setTimeout(renderPortfolioPositionsChart, 300);
-    }
+    initHeatmap();
 }
 
 // Add Chart.js spin animation style
@@ -8884,6 +8875,9 @@ const translations = {
         'slip-thyao-sub': 'Low liquidity risk',
         // Missing translations
         'nav-risk': 'Risk Test',
+        'nav-dashboard': 'Dashboard',
+        'nav-macro': 'Macro Shock',
+        'nav-journal': 'Trading Journal',
         'nav-pricing': 'Early Access',
         'hero-subtitle': 'Take data-driven investment decisions with 15-question Risk Test, Monte Carlo Simulation, Macro Shock Engine, Trading Journal, and live API integrations.',
         'slippage-title': '💧 Slippage Analysis',
@@ -9009,7 +9003,8 @@ function toggleAIAgent() {
         const pf = resolvePortfolio();
         const pos = pf.positions || [];
         const session = getSession();
-        const userName = session ? (JSON.parse(localStorage.getItem('equilyze-users') || '{}')[session.email]?.name || 'Yatırımcı') : 'Yatırımcı';
+        let userData = {}; try { userData = JSON.parse(localStorage.getItem('equilyze-users') || '{}'); } catch {}
+        const userName = session ? (userData[session.email]?.name || 'Yatırımcı') : 'Yatırımcı';
         msgs.innerHTML = `<div class="ai-msg bot">👋 Merhaba <strong>${userName}</strong>! Portföyünüzde ${pos.length} pozisyon var (${pf.value ? '₺' + Math.round(pf.value).toLocaleString('tr-TR') : '--'} değerinde).<br><br>📌 Size nasıl yardımcı olabilirim?<br>• Risk/getiri analizi<br>• Korelasyon raporu<br>• Nakit dağılım senaryosu<br>• Portföy optimizasyonu</div>`;
     }
 }
