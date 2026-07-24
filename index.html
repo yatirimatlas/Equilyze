@@ -107,6 +107,7 @@ body {
 img, svg { display: block; }
 a { text-decoration: none; color: inherit; }
 button { font-family: var(--font-sans); cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 input, select, textarea { font-family: var(--font-sans); }
 
 .container {
@@ -1043,6 +1044,7 @@ input, select, textarea { font-family: var(--font-sans); }
     border-bottom: 1px solid var(--border-subtle);
 }
 .activity-item:last-child { border-bottom: none; }
+.activity-empty { color: var(--text-muted); padding: 24px; text-align: center; font-size: 0.85rem; }
 .activity-icon {
     width: 30px; height: 30px;
     border-radius: 8px;
@@ -1610,6 +1612,7 @@ input, select, textarea { font-family: var(--font-sans); }
     padding: 20px;
 }
 .modal-overlay.open { display: flex; }
+.modal-overlay.open .modal { animation: fadeScale 0.25s ease; }
 .modal {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -1682,7 +1685,12 @@ input, select, textarea { font-family: var(--font-sans); }
 
 /* ── USER PAGE ── */
 .user-page { display: none; padding: 100px 0 60px; min-height: 100vh; }
-.user-page.open { display: block; }
+.user-page.open { display: block; animation: fadeInUp 0.4s ease; }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeScale { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+@keyframes toastIn { from { opacity:0; transform:translateX(100%); } to { opacity:1; transform:translateX(0); } }
+@keyframes toastOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(100%); } }
+@keyframes spin { to { transform:rotate(360deg); } }
 body.user-page-open .hero, body.user-page-open .section:not(.user-page) { display: none; }
 .user-container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
 .user-header { display: flex; align-items: center; gap: 20px; margin-bottom: 32px; flex-wrap: wrap; }
@@ -1759,11 +1767,11 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
     animation: toastIn 0.3s ease;
     border: 1px solid transparent;
 }
-@keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-@keyframes toastOut { to { transform: translateX(110%); opacity: 0; } }
 .toast.success { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: var(--color-success); }
 .toast.error { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: var(--color-danger); }
 .toast.info { background: rgba(6,182,212,0.12); border-color: rgba(6,182,212,0.3); color: var(--color-secondary); }
+.toast .toast-dismiss { margin-left:auto; background:none; border:none; color:inherit; opacity:0.5; cursor:pointer; padding:2px 6px; font-size:1rem; border-radius:4px; }
+.toast .toast-dismiss:hover { opacity:1; background:rgba(0,0,0,0.1); }
 
 /* ── COLOR UTILITIES ── */
 .positive { color: var(--color-success) !important; }
@@ -1782,6 +1790,25 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
     .pricing-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
     .journal-stats-grid { grid-template-columns: repeat(3, 1fr); }
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+}
+
+/* ========================================
+   RESPONSIVE — TABLET (769–1024px)
+   ======================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .mobile-bottom-nav { display: flex; }
+    [data-theme="light"] .mobile-bottom-nav { background: rgba(240,253,244,0.96); }
+    body { padding-bottom: var(--mobile-nav-h); }
+    .nav-links:not(.open) { display: none; }
+    .mobile-toggle { display: flex; }
+    .nav-actions { display: none; }
+    .dashboard-grid { grid-template-columns: 1fr; gap: 12px; }
+    .widget, .widget-wide, .widget-medium, .widget-half { grid-column: span 1; }
+    .api-connections { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .hero-title { font-size: 2.2rem; }
+    .toast-container { top: auto; bottom: calc(var(--mobile-nav-h) + 12px); right: 12px; left: 12px; }
+    .toast { max-width: 100%; min-width: 0; }
 }
 
 /* ========================================
@@ -1865,7 +1892,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
     
     /* Toast */
     .toast-container { top: auto; bottom: calc(var(--mobile-nav-h) + 12px); right: 12px; left: 12px; }
-    .toast { max-width: 100%; }
+    .toast { max-width: 100%; min-width: 0; }
     
     /* Correlation */
     .correlation-cell { min-width: 36px; font-size: 0.6rem; padding: 4px 2px; }
@@ -4098,30 +4125,9 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                         <h4>Son İşlemler</h4>
                     </div>
                     <div class="widget-content">
-                        <div class="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-icon buy">A</div>
-                                <div class="activity-info">
-                                    <span class="activity-title">BTC/USDT Alım</span>
-                                    <span class="activity-time">2 dakika önce</span>
-                                </div>
-                                <span class="activity-amount positive">+0.05 BTC</span>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon sell">S</div>
-                                <div class="activity-info">
-                                    <span class="activity-title">THYAO Satım</span>
-                                    <span class="activity-time">15 dakika önce</span>
-                                </div>
-                                <span class="activity-amount negative">-200 Lot</span>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon deposit">Y</div>
-                                <div class="activity-info">
-                                    <span class="activity-title">Para Yatırma</span>
-                                    <span class="activity-time">1 saat önce</span>
-                                </div>
-                                <span class="activity-amount positive">+₺50,000</span>
+                        <div class="activity-list" id="activityList">
+                            <div class="activity-empty" id="activityEmpty" style="padding:24px;text-align:center;color:var(--text-muted);font-size:0.85rem">
+                                Henüz işlem kaydedilmedi. Trading Journal'dan ilk işleminizi ekleyin.
                             </div>
                         </div>
                     </div>
@@ -5396,7 +5402,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
     </nav>
 
     <!-- Trade Modal -->
-    <div class="modal-overlay" id="tradeModalOverlay" onclick="closeTradeModal(event)">
+    <div class="modal-overlay" id="tradeModalOverlay" onclick="closeTradeModal(event)" role="dialog" aria-modal="true" aria-label="İşlem Ekle">
         <div class="modal" id="tradeModal">
             <div class="modal-header">
                 <h3 id="modalTitle">İşlem Ekle</h3>
@@ -5513,7 +5519,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
     </div>
 
     <!-- Auth Modal -->
-    <div class="modal-overlay" id="authModalOverlay" onclick="if(event.target===this)closeAuthModal()">
+    <div class="modal-overlay" id="authModalOverlay" onclick="if(event.target===this)closeAuthModal()" role="dialog" aria-modal="true" aria-label="Hesap">
         <div class="modal" style="max-width:440px">
             <div class="modal-header">
                 <h3 id="authModalTitle">Hesap</h3>
@@ -5529,7 +5535,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                 <form class="auth-form" id="authLoginForm" onsubmit="authLogin(event)" style="display:block">
                     <input type="email" id="authLoginEmail" placeholder="E-posta adresiniz" required>
                     <input type="password" id="authLoginPassword" placeholder="Şifreniz" required minlength="6">
-                    <button type="submit" class="btn btn-primary" style="width:100%">Giriş Yap</button>
+                    <button type="submit" class="btn btn-primary" style="width:100%" data-orig-text="Giriş Yap">Giriş Yap</button>
                     <div class="auth-divider">— veya —</div>
                     <button type="button" class="btn btn-ghost" style="width:100%" onclick="demoLogin()">Demo Hesap ile Devam Et</button>
                 </form>
@@ -5541,7 +5547,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                     </div>
                     <input type="password" id="authRegPassword" placeholder="Şifre (en az 6 karakter)" required minlength="6">
                     <input type="password" id="authRegConfirm" placeholder="Şifre tekrar" required minlength="6">
-                    <button type="submit" class="btn btn-primary" style="width:100%">Hesap Oluştur</button>
+                    <button type="submit" class="btn btn-primary" style="width:100%" data-orig-text="Hesap Oluştur">Hesap Oluştur</button>
                 </form>
             </div>
         </div>
@@ -5558,8 +5564,8 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                     <p id="userMemberSince" style="font-size:0.75rem;margin-top:4px"></p>
                 </div>
                 <div style="margin-left:auto;display:flex;gap:10px;flex-wrap:wrap">
-                    <button class="btn btn-outline" onclick="closeUserPage()">Dashboard'a Dön</button>
-                    <button class="btn-logout" onclick="authLogout()">Çıkış Yap</button>
+                    <button class="btn btn-outline" onclick="closeUserPage()" data-i18n="user-back-btn">Dashboard'a Dön</button>
+                    <button class="btn-logout" onclick="authLogout()" data-i18n="user-logout-btn">Çıkış Yap</button>
                 </div>
             </div>
             <div class="user-grid">
@@ -5595,7 +5601,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
     </section>
 
     <!-- Portfolio Edit Modal -->
-    <div class="modal-overlay" id="portfolioModalOverlay" onclick="if(event.target===this)closePortfolioModal()">
+    <div class="modal-overlay" id="portfolioModalOverlay" onclick="if(event.target===this)closePortfolioModal()" role="dialog" aria-modal="true" aria-label="Portföy Düzenle">
         <div class="modal" style="max-width:600px">
             <div class="modal-header">
                 <h3>Portföyümü Düzenle</h3>
@@ -6904,6 +6910,7 @@ function saveTrade() {
     updateJournalStats();
     filterJournal();
     syncPortfolioFromJournal();
+    renderActivityList();
 }
 
 function syncPortfolioFromJournal() {
@@ -6918,6 +6925,7 @@ function syncPortfolioFromJournal() {
         changeEl.className = 'psc-change' + (totalPnl >= 0 ? ' positive' : ' negative');
     }
     updateJournalStats();
+    renderActivityList();
 }
 
 function deleteTrade(id) {
@@ -6926,6 +6934,7 @@ function deleteTrade(id) {
     localStorage.setItem('equilyze-journal', JSON.stringify(trades));
     updateJournalStats();
     filterJournal();
+    renderActivityList();
     showToast('İşlem silindi', 'info');
 }
 
@@ -7133,17 +7142,17 @@ function exportCSV() {
 // ─────────────────────────────────────────────
 // TOAST NOTIFICATIONS
 // ─────────────────────────────────────────────
-function showToast(msg, type = 'info') {
+function showToast(msg, type = 'info', duration = 3000) {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     const icons = { success: '✓', error: '✕', info: 'ℹ' };
-    toast.innerHTML = `<span style="font-size:1rem">${icons[type]}</span><span>${msg}</span>`;
+    toast.innerHTML = `<span style="font-size:1rem">${icons[type]}</span><span>${msg}</span><button class="toast-dismiss" onclick="this.closest('.toast').remove()">&times;</button>`;
     container.appendChild(toast);
     setTimeout(() => {
         toast.style.animation = 'toastOut 0.3s ease forwards';
         setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, duration);
 }
 
 // ─────────────────────────────────────────────
@@ -7727,6 +7736,9 @@ class RiskMetricsEngine {
             varBar.style.width = Math.min(100, varPct * 5) + '%';
         }
 
+        // Son İşlemler
+        renderActivityList();
+
         return metrics;
     }
 }
@@ -7838,6 +7850,50 @@ let metricsEngine = null;
 let marketEngine = null;
 let mcEngine = null;
 
+function renderActivityList() {
+    const list = document.getElementById('activityList');
+    if (!list) return;
+    try {
+        const trades = JSON.parse(localStorage.getItem('equilyze-journal')) || [];
+        if (trades.length === 0) {
+            list.innerHTML = '<div class="activity-empty">Henüz işlem kaydedilmedi. Trading Journal\'dan ilk işleminizi ekleyin.</div>';
+            return;
+        }
+        const recent = trades.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        list.innerHTML = recent.map(t => {
+            const isBuy = t.type === 'buy';
+            const icon = isBuy ? 'A' : 'S';
+            const iconClass = isBuy ? 'buy' : 'sell';
+            const title = t.symbol + ' ' + (isBuy ? 'Alım' : 'Satım');
+            const timeAgo = getTimeAgo(t.date);
+            const amount = (t.size || 0) + ' Lot';
+            const pnl = t.pnl;
+            const pnlClass = pnl >= 0 ? 'positive' : 'negative';
+            const pnlStr = pnl != null ? (pnl >= 0 ? '+' : '') + '₺' + Math.round(pnl).toLocaleString('tr-TR') : '';
+            return `<div class="activity-item">
+                <div class="activity-icon ${iconClass}">${icon}</div>
+                <div class="activity-info">
+                    <span class="activity-title">${title}</span>
+                    <span class="activity-time">${timeAgo}</span>
+                </div>
+                <span class="activity-amount ${pnlClass}">${pnlStr || amount}</span>
+            </div>`;
+        }).join('');
+    } catch { list.innerHTML = '<div class="activity-empty">Henüz işlem kaydedilmedi.</div>'; }
+}
+function getTimeAgo(dateStr) {
+    const now = new Date();
+    const d = new Date(dateStr);
+    const diff = now - d;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Az önce';
+    if (mins < 60) return mins + ' dakika önce';
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + ' saat önce';
+    const days = Math.floor(hrs / 24);
+    return days + ' gün önce';
+}
+
 /* ── Dashboard init ── */
 function initFinancialEngines() {
     const pf = resolvePortfolio();
@@ -7908,6 +7964,10 @@ function switchAuthTab(tab) {
     document.getElementById('authRegisterForm').style.display = tab === 'register' ? 'block' : 'none';
     document.getElementById('authError').textContent = '';
 }
+function setAuthLoading(loading) {
+    const btns = document.querySelectorAll('#authLoginForm button[type="submit"], #authRegisterForm button[type="submit"]');
+    btns.forEach(b => { b.disabled = loading; b.innerHTML = loading ? '⏳ Lütfen bekleyin...' : b.dataset.origText || b.textContent; });
+}
 function authRegister(event) {
     event.preventDefault();
     const name = document.getElementById('authRegName').value.trim();
@@ -7922,13 +7982,15 @@ function authRegister(event) {
     if (!/[A-Z]/.test(pass)) { errEl.textContent = 'Şifre en az bir büyük harf içermelidir.'; return; }
     if (!/[0-9]/.test(pass)) { errEl.textContent = 'Şifre en az bir rakam içermelidir.'; return; }
     if (pass !== confirm) { errEl.textContent = 'Şifreler eşleşmiyor.'; return; }
+    setAuthLoading(true);
     const users = getUsers();
-    if (users[email]) { errEl.textContent = 'Bu e-posta zaten kayıtlı.'; return; }
+    if (users[email]) { setAuthLoading(false); errEl.textContent = 'Bu e-posta zaten kayıtlı.'; return; }
     users[email] = { name, email, password: hashPass(pass), registeredAt: new Date().toISOString(), riskProfile: null };
     saveUsers(users);
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
+    setAuthLoading(false);
     if (metricsEngine) recreateEnginesWithPortfolio(resolvePortfolio());
     showToast('✅ Hesabınız oluşturuldu! Hoş geldiniz, ' + name, 'success');
     // Yeni kullanıcı onboarding: portföy düzenleme modalını aç
@@ -7941,12 +8003,14 @@ function authLogin(event) {
     const errEl = document.getElementById('authError');
     if (!email) { errEl.textContent = 'E-posta adresinizi girin.'; return; }
     if (!pass) { errEl.textContent = 'Şifrenizi girin.'; return; }
+    setAuthLoading(true);
     const users = getUsers();
-    if (!users[email]) { errEl.textContent = 'E-posta bulunamadı.'; return; }
-    if (users[email].password !== hashPass(pass)) { errEl.textContent = 'Hatalı şifre.'; return; }
+    if (!users[email]) { setAuthLoading(false); errEl.textContent = 'E-posta bulunamadı.'; return; }
+    if (users[email].password !== hashPass(pass)) { setAuthLoading(false); errEl.textContent = 'Hatalı şifre.'; return; }
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
+    setAuthLoading(false);
     if (metricsEngine) recreateEnginesWithPortfolio(resolvePortfolio());
     showToast('✅ Giriş yapıldı! Hoş geldiniz, ' + users[email].name, 'success');
 }
@@ -8197,7 +8261,7 @@ function openUserPage() {
     document.body.classList.add('user-page-open');
     document.getElementById('userPage').classList.add('open');
     document.getElementById('userPage').style.display = 'block';
-    document.getElementById('userAvatarLarge').textContent = (user.name || 'K')[0].toUpperCase();
+    document.getElementById('userAvatarLarge').textContent = (user.name || '?')[0].toUpperCase();
     document.getElementById('userDisplayName').textContent = user.name || 'Kullanıcı';
     document.getElementById('userEmail').textContent = user.email;
     document.getElementById('userMemberSince').textContent = 'Kayıt: ' + (user.registeredAt ? new Date(user.registeredAt).toLocaleDateString('tr-TR') : '--');
@@ -8876,6 +8940,8 @@ const translations = {
         // Missing translations
         'nav-risk': 'Risk Test',
         'nav-dashboard': 'Dashboard',
+        'user-back-btn': 'Back to Dashboard',
+        'user-logout-btn': 'Log Out',
         'nav-macro': 'Macro Shock',
         'nav-journal': 'Trading Journal',
         'nav-pricing': 'Early Access',
