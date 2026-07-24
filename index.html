@@ -8845,7 +8845,13 @@ function authLogout() {
     document.querySelector('.nav-login').textContent = 'Giriş Yap';
     document.querySelector('.nav-login').style.display = '';
     document.querySelector('.auth-user-card')?.remove();
-    closeUserPage();
+    // Çıkışta ana sayfaya dön (dashboard'a değil): tüm sayfa modlarını kapat
+    closeUserPage(false);
+    document.body.classList.remove('dashboard-open', 'overlay-open');
+    document.querySelectorAll('.overlay-page').forEach(p => p.classList.remove('open'));
+    const dashBackBtn = document.getElementById('dashboardBackBtn');
+    if (dashBackBtn) dashBackBtn.style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     // Reset engines to default portfolio
     recreateEnginesWithPortfolio(getDefaultPortfolio());
     // Reset mobile nav login
