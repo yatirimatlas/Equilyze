@@ -4828,6 +4828,12 @@ body.dashboard-open .footer { display: none; }
                     <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Kaldıraç (x)
                         <input type="number" id="psLeverage" value="1" min="1" max="125" step="1" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
                     </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Yön
+                        <select id="psDirection" onchange="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary)">
+                            <option value="long">Long (Alış)</option>
+                            <option value="short">Short (Satış)</option>
+                        </select>
+                    </label>
                 </div>
                 <div class="possize-results" id="psResults" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px"></div>
                 <div id="psWarning" style="margin-top:12px;font-size:0.8rem;line-height:1.5"></div>
@@ -7262,6 +7268,11 @@ function calcPositionSize() {
     const rr = (target && Math.abs(target - entry) > 0) ? Math.abs(target - entry) / stopDist : null;
     const rewardAmount = rr !== null ? riskAmount * rr : null;
     const posPct = posValue / account * 100;
+    // Likidasyon (izole marj, ~%0.5 sürdürme marjı varsayımı)
+    const dir = (document.getElementById('psDirection') || {}).value || 'long';
+    const mmr = 0.005;
+    const liqPrice = dir === 'long' ? entry * (1 - 1 / lev + mmr) : entry * (1 + 1 / lev - mmr);
+    const liqDistPct = Math.abs(entry - liqPrice) / entry * 100;
     const fmtTL = n => '₺' + Math.round(n).toLocaleString('tr-TR');
     const tile = (label, value, color) => `<div style="padding:12px;background:var(--bg-tertiary);border-radius:10px">
         <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:4px">${label}</div>
@@ -7273,11 +7284,17 @@ function calcPositionSize() {
         tile('Pozisyon Değeri', fmtTL(posValue)) +
         tile('Gerekli Teminat', fmtTL(margin), 'var(--color-secondary)') +
         (rr !== null ? tile('R:R (Ödül:Risk)', rr.toFixed(2) + ' : 1', rr >= 2 ? 'var(--color-success)' : rr >= 1 ? 'var(--color-warning)' : 'var(--color-danger)') : '') +
-        (rewardAmount !== null ? tile('Hedefte Kazanç', '+' + fmtTL(rewardAmount), 'var(--color-success)') : '');
+        (rewardAmount !== null ? tile('Hedefte Kazanç', '+' + fmtTL(rewardAmount), 'var(--color-success)') : '') +
+        (lev > 1 ? tile('Likidasyon Fiyatı', liqPrice.toLocaleString('tr-TR', { maximumFractionDigits: 4 }), 'var(--color-danger)') : '') +
+        (lev > 1 ? tile('Likidasyona Mesafe', liqDistPct.toFixed(2) + '%', liqDistPct < 5 ? 'var(--color-danger)' : liqDistPct < 15 ? 'var(--color-warning)' : 'var(--text-primary)') : '');
     // Uyarılar
     const msgs = [];
     if (margin > account) msgs.push(`🔴 Gerekli teminat (${fmtTL(margin)}) hesabınızı aşıyor — kaldıraç artırın veya pozisyonu küçültün.`);
     else if (posPct > 100 && lev === 1) msgs.push(`🟡 Pozisyon değeri hesabın %${posPct.toFixed(0)}'ı — kaldıraç olmadan bu boyut açılamaz.`);
+    // Likidasyon vs stop: kritik
+    const stopBeyondLiq = (dir === 'long' && stop <= liqPrice) || (dir === 'short' && stop >= liqPrice);
+    if (lev > 1 && stopBeyondLiq) msgs.push(`🔴 KRİTİK: Stop'unuz (${stop}) likidasyon fiyatının (${liqPrice.toFixed(2)}) ötesinde — stop tetiklenmeden LİKİDE OLURSUNUZ. Kaldıracı düşürün.`);
+    else if (lev > 1 && liqDistPct < stopPct * 1.5) msgs.push(`🟡 Likidasyon mesafesi (${liqDistPct.toFixed(1)}%) stop mesafesine (${stopPct.toFixed(1)}%) çok yakın — küçük bir dalgalanma likide edebilir.`);
     if (rr !== null && rr < 1) msgs.push(`🟡 R:R 1'in altında (${rr.toFixed(2)}) — ödül riski karşılamıyor, kurulum zayıf.`);
     if (riskPct > 2) msgs.push(`🟡 İşlem başına %${riskPct} risk yüksek — çoğu profesyonel %1-2 ile sınırlar.`);
     if (warn) warn.innerHTML = msgs.length ? msgs.map(m => `<div style="margin-bottom:4px;color:var(--text-secondary)">${m}</div>`).join('') :
