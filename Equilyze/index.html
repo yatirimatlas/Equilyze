@@ -6056,11 +6056,11 @@ function handleWaitlistSubmit(event) {
     if (registrations.find(r => r.email === email)) { showToast('Bu e-posta zaten kayıtlı!', 'info'); btn.disabled = false; btn.textContent = 'Ön Kaydol'; return; }
     registrations.push({ email, timestamp: new Date().toISOString() });
     localStorage.setItem('equilyze-waitlist', JSON.stringify(registrations));
-    // Submit to FormSubmit async
+    // Kayıt bildirimi + append-only yedek (endpoint boşken güvenli no-op)
     const form = document.getElementById('waitlistForm');
-    const fd = new FormData(form);
-    fd.set('_captcha', 'false'); // bypass CAPTCHA for async
-    fetch(form.action, { method: 'POST', body: fd }).catch(() => {});
+    const featureInterest = form.querySelector('[name="feature_interest"]')?.value || '';
+    const priceSignal = form.querySelector('[name="price_signal"]')?.value || '';
+    notifyRegistration('waitlist', { email, featureInterest, priceSignal });
     showToast('✅ Kaydınız alındı! Lansmanda haberdar edileceksiniz.', 'success');
     // Reset micro survey UI
     document.querySelectorAll('.waitlist-micro-survey select').forEach(s => s.selectedIndex = 0);
@@ -8626,6 +8626,48 @@ function initFinancialEngines() {
 }
 
 /* ── AUTH SYSTEM (localStorage tabanlı) ── */
+/* ── Kayıt bildirimi & kalıcılık ──
+   NOTIFY_ENDPOINT ayarlanınca (ör. FormSubmit) kayıt/waitlist maili gönderilir.
+   Boşken güvenli no-op (kırık fetch yok). Kayıtlar localStorage'da kalıcı; ayrıca
+   append-only yedek + owner için JSON export (konsoldan equilyzeExport()). ── */
+const NOTIFY_ENDPOINT = ''; // ör: 'https://formsubmit.co/ajax/TOKEN' — boşken bildirim gönderilmez
+function notifyRegistration(type, data) {
+    // Append-only yedek — üye kayıtlarının kaybolmasını önler
+    try {
+        const log = JSON.parse(localStorage.getItem('equilyze-members') || '[]');
+        log.push({ type, ...data, at: new Date().toISOString() });
+        localStorage.setItem('equilyze-members', JSON.stringify(log));
+    } catch {}
+    // Email bildirimi (yalnızca endpoint ayarlıysa)
+    if (NOTIFY_ENDPOINT) {
+        try {
+            fetch(NOTIFY_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ _subject: 'Equilyze — yeni ' + type, ...data })
+            }).catch(() => {});
+        } catch {}
+    }
+}
+/* Owner: tüm kayıtları JSON indir — tarayıcı konsolunda equilyzeExport() çalıştır */
+function equilyzeExport() {
+    const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || d); } catch { return JSON.parse(d); } };
+    const dump = {
+        exportedAt: new Date().toISOString(),
+        users: read('equilyze-users', '{}'),
+        members: read('equilyze-members', '[]'),
+        waitlist: read('equilyze-waitlist', '[]'),
+    };
+    const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'equilyze-kayitlar-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click(); URL.revokeObjectURL(url);
+    console.log('Equilyze export: ' + Object.keys(dump.users).length + ' üye, ' + dump.waitlist.length + ' waitlist');
+    return dump;
+}
+if (typeof window !== 'undefined') window.equilyzeExport = equilyzeExport;
+
 function getUsers() {
     try { return JSON.parse(localStorage.getItem('equilyze-users')) || {}; } catch { return {}; }
 }
@@ -8690,6 +8732,7 @@ function authRegister(event) {
     if (users[email]) { setAuthLoading(false); errEl.textContent = 'Bu e-posta zaten kayıtlı.'; return; }
     users[email] = { name, email, password: hashPass(pass), registeredAt: new Date().toISOString(), riskProfile: null };
     saveUsers(users);
+    notifyRegistration('üye kaydı', { name, email }); // yedek + (endpoint varsa) email
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
