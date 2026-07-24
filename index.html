@@ -826,7 +826,7 @@ input, select, textarea { font-family: var(--font-sans); }
 .widget:hover { border-color: var(--border-hover); }
 .widget-half { grid-column: span 6; }
 .widget-wide { grid-column: span 8; }
-.widget-medium { grid-column: span 8; }
+.widget-medium { grid-column: span 12; }
 .widget-header {
     display: flex;
     align-items: center;
@@ -840,15 +840,18 @@ input, select, textarea { font-family: var(--font-sans); }
 .widget-content::after {
     content: '⚠ Bu görsel yatırım tavsiyesi değildir. Yalnızca analiz ve farkındalık amaçlıdır.';
     display: block;
-    font-size: 0.6rem;
+    font-size: 0.625rem;
     color: var(--text-muted);
-    text-align: center;
     margin-top: 16px;
-    padding-top: 10px;
+    padding-top: 8px;
     border-top: 1px solid var(--border-subtle);
     opacity: 0.6;
-    line-height: 1.4;
+    text-align: center;
 }
+.widget-header + .bm-timeframes { display: flex; gap: 6px; padding: 0 20px; margin-bottom: 4px; }
+.widget-header + .bm-timeframes .tf-btn { padding: 4px 12px; font-size: 0.75rem; border: 1px solid var(--border-subtle); background: transparent; color: var(--text-secondary); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; }
+.widget-header + .bm-timeframes .tf-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.widget-header + .bm-timeframes .tf-btn.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
 .chart-timeframes { display: flex; gap: 4px; }
 .tf-btn {
     padding: 4px 10px;
@@ -935,6 +938,19 @@ input, select, textarea { font-family: var(--font-sans); }
 .heatmap-legend { display: flex; gap: 10px; align-items: center; }
 .hm-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--text-muted); }
 .hm-dot { width: 10px; height: 10px; border-radius: 2px; }
+.heatmap-stats { display: flex; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; }
+.hm-stat { flex: 1; min-width: 100px; text-align: center; }
+.hm-stat-label { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 4px; }
+.hm-stat-value { font-size: 1rem; font-weight: 700; }
+.hm-stat-value.positive { color: var(--color-success); }
+.hm-stat-value.negative { color: var(--color-danger); }
+.survival-score-circle { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(6,182,212,0.2)); border: 3px solid var(--color-primary); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.survival-number { font-size: 2.5rem; font-weight: 800; color: var(--color-primary); line-height: 1; }
+.survival-label { font-size: 0.75rem; color: var(--text-muted); }
+.survival-status { font-size: 0.85rem; font-weight: 500; padding: 8px 12px; border-radius: var(--radius-md); }
+.survival-status.safe { background: rgba(16,185,129,0.1); color: var(--color-success); }
+.survival-status.warning { background: rgba(245,158,11,0.1); color: var(--color-warning); }
+.survival-status.danger { background: rgba(239,68,68,0.1); color: var(--color-danger); }
 
 /* RISK METRICS */
 .risk-metrics { display: flex; flex-direction: column; gap: 10px; }
@@ -3943,7 +3959,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                 </div>
 
                 <!-- P&L Heatmap Widget -->
-                <div class="widget widget-half" data-widget="heatmap">
+                <div class="widget widget-medium" data-widget="heatmap">
                     <div class="widget-header">
                         <h4>P&L Isı Haritası</h4>
                         <div class="heatmap-legend">
@@ -3954,6 +3970,12 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                     </div>
                     <div class="widget-content">
                         <div class="heatmap-calendar" id="heatmapCalendar"></div>
+                        <div class="heatmap-stats" id="heatmapStats">
+                            <div class="hm-stat"><span class="hm-stat-label">Bu Ay K/Z</span><span class="hm-stat-value positive" id="hmMonthPnL">+₺0</span></div>
+                            <div class="hm-stat"><span class="hm-stat-label">En İyi Gün</span><span class="hm-stat-value positive" id="hmBestDay">+₺0</span></div>
+                            <div class="hm-stat"><span class="hm-stat-label">En Kötü Gün</span><span class="hm-stat-value negative" id="hmWorstDay">-₺0</span></div>
+                            <div class="hm-stat"><span class="hm-stat-label">Kârlı Gün</span><span class="hm-stat-value positive" id="hmWinDays">%0</span></div>
+                        </div>
                     </div>
                 </div>
 
@@ -3993,7 +4015,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                                     <span class="info-icon">i</span>
                                     <span class="info-tooltip" data-i18n="tip-cvar">CVaR, VaR eşiğini aşan en kötü senaryoların ORTALAMASINI gösterir. VaR'dan daha güvenilir bir risk ölçütüdür çünkü kuyruk riskini değerlendirir.</span>
                                 </span>
-                                <span class="metric-value negative" id="metricCVaR">--</span>
+                                <span class="metric-value negative" id="metricCVar">--</span>
                             </div>
                             <div class="risk-metric">
                                 <span class="metric-label metric-info">Maksimum Drawdown
@@ -4020,6 +4042,22 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                     </div>
                 </div>
 
+                <!-- Benchmark Widget -->
+                <div class="widget widget-half" data-widget="benchmark">
+                    <div class="widget-header">
+                        <h4 data-i18n="bm-title">Benchmark Karşılaştırması</h4>
+                    </div>
+                    <div class="bm-timeframes">
+                        <button class="tf-btn active" onclick="setBenchTf(this,'1H')" data-i18n="1h">1S</button>
+                        <button class="tf-btn" onclick="setBenchTf(this,'1D')" data-i18n="1d">1G</button>
+                        <button class="tf-btn" onclick="setBenchTf(this,'1W')" data-i18n="1w">1H</button>
+                        <button class="tf-btn" onclick="setBenchTf(this,'1M')" data-i18n="1m">1A</button>
+                    </div>
+                    <div class="widget-content">
+                        <canvas id="benchmarkChart" style="width:100%;height:180px;"></canvas>
+                    </div>
+                </div>
+
                 <!-- Correlation Matrix Widget -->
                 <div class="widget widget-medium" data-widget="correlation">
                     <div class="widget-header">
@@ -4035,7 +4073,6 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                             </svg>
                             <span id="correlationWarningText">Portföyünüzdeki varlıklar arası korelasyon inceleniyor...</span>
                         </div>
-                        <!-- Correlation Heatmap 2.0: Time-Series -->
                         <div class="corr-timeseries-wrap">
                             <div class="corr-ts-header">
                                 <div class="corr-ts-title">
@@ -4045,14 +4082,14 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                             </div>
                             <canvas id="corrTimeseriesChart" style="width:100%;height:100px;"></canvas>
                             <div class="corr-ts-alert" data-i18n="corr-ts-alert">
-                                ⚠️ BTC ve S&P 500 arasındaki korelasyon son 30 günde 0.40’tan 0.85’e çıktı — yanıltıcı güvene dikkat!
+                                ⚠️ BTC ve S&P 500 arasındaki korelasyon son 30 günde 0.40'tan 0.85'e çıktı — yanıltıcı güvene dikkat!
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Activity Widget -->
-                <div class="widget" data-widget="activity">
+                <!-- Recent Activity + Risk Alerts row -->
+                <div class="widget widget-half" data-widget="activity">
                     <div class="widget-header">
                         <h4>Son İşlemler</h4>
                     </div>
@@ -4081,6 +4118,38 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                                     <span class="activity-time">1 saat önce</span>
                                 </div>
                                 <span class="activity-amount positive">+₺50,000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget widget-half risk-alerts-widget" data-widget="risk-alerts">
+                    <div class="widget-header">
+                        <h4 data-i18n="risk-alerts">Risk Uyarıları</h4>
+                        <span class="elite-badge-sm">ELITE</span>
+                    </div>
+                    <div class="widget-content">
+                        <div class="risk-alerts" id="riskAlerts">
+                            <div class="risk-alert critical">
+                                <div class="ralert-icon">🔴</div>
+                                <div class="ralert-body">
+                                    <div class="ralert-title">Yoğunlaşma Riskiniz Yüksek</div>
+                                    <div class="ralert-desc">BTC+ETH toplam portföyün %40'ını oluşturuyor</div>
+                                </div>
+                            </div>
+                            <div class="risk-alert warning">
+                                <div class="ralert-icon">🟡</div>
+                                <div class="ralert-body">
+                                    <div class="ralert-title">Korelasyon Uyarısı</div>
+                                    <div class="ralert-desc">Kripto varlıklar arası korelasyon >0.70</div>
+                                </div>
+                            </div>
+                            <div class="risk-alert info">
+                                <div class="ralert-icon">🔵</div>
+                                <div class="ralert-body">
+                                    <div class="ralert-title">Likidite Riski</div>
+                                    <div class="ralert-desc">THYAO pozisyonu düşük hacimli</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -4128,6 +4197,65 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                                 <div class="crypto-ind-sub" data-i18n="market-trend-sub">200 gün MA üstünde</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Slippage Widget -->
+                <div class="widget widget-half slippage-widget" data-widget="slippage">
+                    <div class="widget-header">
+                        <h4 data-i18n="slip-title">💧 Likidite & Kayma Analizi</h4>
+                        <span class="elite-badge-sm">ELITE</span>
+                    </div>
+                    <div class="widget-content">
+                        <div class="slippage-metrics">
+                            <div class="slip-metric">
+                                <div class="slip-metric-label">
+                                    <span class="slip-metric-icon">₿</span>
+                                    <div>
+                                        <div class="slip-metric-name">BTC/USDT</div>
+                                        <div class="slip-metric-sub" data-i18n="slip-btc-sub">Piyasa derinliği yeterli</div>
+                                    </div>
+                                </div>
+                                <span class="slip-metric-value ok">%0.08</span>
+                            </div>
+                            <div class="slip-metric">
+                                <div class="slip-metric-label">
+                                    <span class="slip-metric-icon">Ξ</span>
+                                    <div>
+                                        <div class="slip-metric-name">ETH/USDT</div>
+                                        <div class="slip-metric-sub" data-i18n="slip-eth-sub">Orta derinlik</div>
+                                    </div>
+                                </div>
+                                <span class="slip-metric-value warning">%0.35</span>
+                            </div>
+                            <div class="slip-metric">
+                                <div class="slip-metric-label">
+                                    <span class="slip-metric-icon">🏦</span>
+                                    <div>
+                                        <div class="slip-metric-name">THYAO</div>
+                                        <div class="slip-metric-sub" data-i18n="slip-thyao-sub">Düşük likidite riski</div>
+                                    </div>
+                                </div>
+                                <span class="slip-metric-value bad">%1.2</span>
+                            </div>
+                        </div>
+                        <div class="corr-ts-alert" data-i18n="slip-warning" style="margin-top:14px;">
+                            ⚠️ Şu anki piyasa koşullarında tüm pozisyonlarınızı kapatmaya kalksanız %1.2 slippage yaşayabilirsiniz.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Survival Score -->
+                <div class="widget widget-half" data-widget="survival">
+                    <div class="widget-header">
+                        <h4>Hayatta Kalma Skoru</h4>
+                    </div>
+                    <div class="widget-content" style="text-align:center;padding:20px">
+                        <div class="survival-score-circle" id="survivalScoreCircle">
+                            <span class="survival-number" id="survivalNumber">85</span>
+                            <span class="survival-label">/100</span>
+                        </div>
+                        <div class="survival-status safe" id="survivalStatus">✅ Sağlam — Portföy şoklara dayanıklı</div>
                     </div>
                 </div>
 
@@ -4318,138 +4446,6 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                     </div>
                     <div class="raw-score">78</div>
                 </div>
-
-                <!-- Risk Alerts Widget (Layer 2) -->
-                <div class="widget widget-half risk-alerts-widget" data-widget="risk-alerts">
-                    <div class="widget-header">
-                        <h4 data-i18n="ra-widget-title">🔔 Risk Alarmları</h4>
-                        <span class="ra-severity high">4 Aktif</span>
-                    </div>
-                    <div class="widget-content">
-                        <div class="risk-alert-list">
-                            <div class="risk-alert-item">
-                                <div class="ra-icon volatility">🔥</div>
-                                <div class="ra-content">
-                                    <div class="ra-title" data-i18n="ra-vol-title">Portföy Volatiliten %20 Arttı</div>
-                                    <div class="ra-desc" data-i18n="ra-vol-desc">Son 7 günde portföy volatilitesi normal seviyenin üzerine çıktı. Pozisyon boyutlarınızı gözden geçirin.</div>
-                                    <div class="ra-time">12 dakika önce</div>
-                                </div>
-                                <span class="ra-severity high">YÜKSEK</span>
-                            </div>
-                            <div class="risk-alert-item">
-                                <div class="ra-icon sharpe">📉</div>
-                                <div class="ra-content">
-                                    <div class="ra-title" data-i18n="ra-sharpe-title">Sharpe Oranın Düşüşe Geçti</div>
-                                    <div class="ra-desc" data-i18n="ra-sharpe-desc">Sharpe oranınız 1.82'den 1.24'e geriledi. Riske göre düzeltilmiş getiri azalıyor.</div>
-                                    <div class="ra-time">1 saat önce</div>
-                                </div>
-                                <span class="ra-severity high">YÜKSEK</span>
-                            </div>
-                            <div class="risk-alert-item">
-                                <div class="ra-icon correlation">⚠️</div>
-                                <div class="ra-content">
-                                    <div class="ra-title" data-i18n="ra-corr-title">Korelasyon Yoğunlaşması</div>
-                                    <div class="ra-desc" data-i18n="ra-corr-desc">BTC-ETH korelasyonu 0.94'e yükseldi. Portföyünüz aşırı yoğunlaşmış: benzer hareket eden varlıklar riskinizi artırıyor.</div>
-                                    <div class="ra-time">3 saat önce</div>
-                                </div>
-                                <span class="ra-severity medium">ORTA</span>
-                            </div>
-                            <div class="risk-alert-item">
-                                <div class="ra-icon drawdown">📊</div>
-                                <div class="ra-content">
-                                    <div class="ra-title" data-i18n="ra-dd-title">Maximum Drawdown Uyarısı</div>
-                                    <div class="ra-desc" data-i18n="ra-dd-desc">Portföyünüz -%8.5 drawdown seviyesine ulaştı. Drawdown eşiğinize yaklaşıyorsunuz.</div>
-                                    <div class="ra-time">5 saat önce</div>
-                                </div>
-                                <span class="ra-severity medium">ORTA</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Benchmark Comparison Widget (Layer 1) -->
-                <div class="widget widget-wide" data-widget="benchmark" style="grid-column: span 8;">
-                    <div class="widget-header">
-                        <h4 data-i18n="bench-title">📈 Benchmark Karşılaştırması</h4>
-                        <div class="chart-timeframes">
-                            <button class="tf-btn active" onclick="setBenchTf(this,'1M')">1A</button>
-                            <button class="tf-btn" onclick="setBenchTf(this,'3M')">3A</button>
-                            <button class="tf-btn" onclick="setBenchTf(this,'6M')">6A</button>
-                            <button class="tf-btn" onclick="setBenchTf(this,'1Y')">1Y</button>
-                        </div>
-                    </div>
-                    <div class="widget-content">
-                        <canvas id="benchmarkChart" style="width:100%;height:200px;"></canvas>
-                        <div class="benchmark-legend">
-                            <div class="bench-item">
-                                <span class="bench-dot portfolio"></span>
-                                <span>Portföyüm</span>
-                                <span class="bench-perf positive">+12.4%</span>
-                            </div>
-                            <div class="bench-item">
-                                <span class="bench-dot sp500"></span>
-                                <span>S&P 500</span>
-                                <span class="bench-perf positive">+8.2%</span>
-                            </div>
-                            <div class="bench-item">
-                                <span class="bench-dot gold"></span>
-                                <span>Altın</span>
-                                <span class="bench-perf positive">+5.7%</span>
-                            </div>
-                            <div class="bench-item">
-                                <span class="bench-dot btc"></span>
-                                <span>Bitcoin</span>
-                                <span class="bench-perf positive">+18.3%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slippage Analysis Widget (Elite) -->
-                <div class="widget widget-half slippage-widget" data-widget="slippage">
-                    <div class="widget-header">
-                        <h4 data-i18n="slip-title">💧 Likidite & Kayma Analizi</h4>
-                        <span class="elite-badge-sm">ELITE</span>
-                    </div>
-                    <div class="widget-content">
-                        <div class="slippage-metrics">
-                            <div class="slip-metric">
-                                <div class="slip-metric-label">
-                                    <span class="slip-metric-icon">₿</span>
-                                    <div>
-                                        <div class="slip-metric-name">BTC/USDT</div>
-                                        <div class="slip-metric-sub" data-i18n="slip-btc-sub">Piyasa derinliği yeterli</div>
-                                    </div>
-                                </div>
-                                <span class="slip-metric-value ok">%0.08</span>
-                            </div>
-                            <div class="slip-metric">
-                                <div class="slip-metric-label">
-                                    <span class="slip-metric-icon">Ξ</span>
-                                    <div>
-                                        <div class="slip-metric-name">ETH/USDT</div>
-                                        <div class="slip-metric-sub" data-i18n="slip-eth-sub">Orta derinlik</div>
-                                    </div>
-                                </div>
-                                <span class="slip-metric-value warning">%0.35</span>
-                            </div>
-                            <div class="slip-metric">
-                                <div class="slip-metric-label">
-                                    <span class="slip-metric-icon">🏦</span>
-                                    <div>
-                                        <div class="slip-metric-name">THYAO</div>
-                                        <div class="slip-metric-sub" data-i18n="slip-thyao-sub">Düşük likidite riski</div>
-                                    </div>
-                                </div>
-                                <span class="slip-metric-value bad">%1.2</span>
-                            </div>
-                        </div>
-                        <div class="corr-ts-alert" data-i18n="slip-warning" style="margin-top:14px;">
-                            ⚠️ Şu anki piyasa koşullarında tüm pozisyonlarınızı kapatmaya kalksanız %1.2 slippage yaşayabilirsiniz.
-                        </div>
-                    </div>
-                </div>
-
 
                 <!-- Shadow Backtest Module -->
                 <div class="backtest-module" id="backtestModule">
@@ -5072,7 +5068,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                         <span class="benefit-icon">🎯</span>
                         <div>
                             <strong>Öncelikli Erişim</strong>
-                            <span>İlk kullanıcılar arasında olun</span>
+                            <span>İlk 1.000 kullanıcı arasında olun</span>
                         </div>
                     </div>
                     <div class="waitlist-benefit">
@@ -5094,16 +5090,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                     <input type="hidden" name="_subject" value="Equilyze Bekleme Listesi">
                     <input type="text" name="_honey" style="display:none">
                     <input type="hidden" name="_captcha" value="true">
-                    <div class="waitlist-form-group">
-                        <input type="email" name="email" id="waitlistEmail" class="waitlist-input" placeholder="E-posta adresiniz" required>
-                        <button type="submit" class="btn btn-primary waitlist-submit" id="waitlistSubmitBtn">Ön Kaydol</button>
-                    </div>
-                    <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);text-align:center">
-                        <span>📋 Şimdiye kadar <strong id="waitlistCount">0</strong> kişi kaydoldu</span>
-                    </div>
-                    <div class="waitlist-form-hint">KVKK aydınlatma metnini okudum, kabul ediyorum. (Hukuki inceleme bekliyor)</div>
-                    <div class="waitlist-form-hint" style="margin-top:4px;font-size:0.7rem;">Bu form yalnızca talep sinyali toplar — henüz bir ücretlendirme veya ödeme taahhüdü içermez.</div>
-                    <div class="waitlist-micro-survey" id="microSurvey" style="margin-top:16px;">
+                    <div class="waitlist-micro-survey" id="microSurvey">
                         <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:10px;">🌟 2 soruluk mikro anket (opsiyonel):</p>
                         <div style="margin-bottom:10px;">
                             <label style="font-size:0.8125rem;color:var(--text-secondary);">En çok hangi özellik ilginizi çekiyor?</label>
@@ -5129,6 +5116,15 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                             </select>
                         </div>
                     </div>
+                    <div class="waitlist-form-group">
+                        <input type="email" name="email" id="waitlistEmail" class="waitlist-input" placeholder="E-posta adresiniz" required>
+                        <button type="submit" class="btn btn-primary waitlist-submit" id="waitlistSubmitBtn">Ön Kaydol</button>
+                    </div>
+                    <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);text-align:center">
+                        <span>📋 Şimdiye kadar <strong id="waitlistCount">0</strong> kişi kaydoldu</span>
+                    </div>
+                    <div class="waitlist-form-hint">KVKK aydınlatma metnini okudum, kabul ediyorum. (Hukuki inceleme bekliyor)</div>
+                    <div class="waitlist-form-hint" style="margin-top:4px;font-size:0.7rem;">Bu form yalnızca talep sinyali toplar — henüz bir ücretlendirme veya ödeme taahhüdü içermez.</div>
                 </form>
             </div>
         </div>
@@ -5228,7 +5224,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                         <h3>Erken Erişim Paketi</h3>
                         <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center">
                             <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.12);color:#10b981;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600">💰 6 Ay Ücretsiz</span>
-                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.12);color:#3b82f6;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600">🎯 İlk Kullanıcı</span>
+                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.12);color:#3b82f6;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600">🎯 İlk 1.000 Kullanıcı</span>
                         </div>
                         <div class="pricing-price" style="margin-top:16px">
                             <span class="price-amount">0</span>
@@ -5644,6 +5640,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
    ================================================ */
 
 'use strict';
+console.log('Equilyze JS loaded —', new Date().toISOString());
 
 /* ─────────────────────────────────────────────
    RISK PROFILE TEST — 15 QUESTIONS (5 categories)
@@ -6402,7 +6399,7 @@ function generateBenchData(tf) {
 let currentBenchTf = '1M';
 
 function setBenchTf(btn, tf) {
-    btn.closest('.chart-timeframes').querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+    (btn.closest('.chart-timeframes') || btn.closest('.bm-timeframes')).querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentBenchTf = tf;
     drawBenchmarkChart(generateBenchData(tf));
@@ -6618,11 +6615,28 @@ window.addEventListener('resize', () => { if (document.getElementById('portfolio
 function initHeatmap() {
     const container = document.getElementById('heatmapCalendar');
     if (!container) return;
+    // Seed demo journal data if none exists so heatmap isn't empty
+    let journal = [];
+    try { journal = JSON.parse(localStorage.getItem('equilyze-journal') || '[]'); } catch {}
+    if (journal.length === 0) {
+        const now = new Date();
+        const demoData = [];
+        for (let i = 0; i < 60; i++) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - i);
+            demoData.push({
+                date: d.toISOString().split('T')[0],
+                pnl: Math.round((Math.random() - 0.45) * 12000),
+                symbol: 'DEMO',
+                type: 'crypto'
+            });
+        }
+        try { localStorage.setItem('equilyze-journal', JSON.stringify(demoData)); journal = demoData; } catch {}
+    }
     const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
-    const levels = ['profit-high', 'profit-med', 'profit-low', 'neutral', 'neutral', 'loss-low', 'loss-med', 'loss-high'];
     const now = new Date();
     const dailyPnL = {};
-    try { JSON.parse(localStorage.getItem('equilyze-journal') || []).forEach(t => { if (t.pnl !== null) { const d = new Date(t.date), diff = Math.floor((now - d) / 864e5); if (diff >= 0 && diff < 31) { const k = d.getDate()+'-'+d.getMonth(); dailyPnL[k] = (dailyPnL[k]||0) + t.pnl; } } }); } catch {}
+    try { journal.forEach(t => { if (t.pnl !== null) { const d = new Date(t.date), diff = Math.floor((now - d) / 864e5); if (diff >= 0 && diff < 31) { const k = d.getDate()+'-'+d.getMonth(); dailyPnL[k] = (dailyPnL[k]||0) + t.pnl; } } }); } catch {}
     let html = days.map(d => `<div class="heatmap-day header">${d}</div>`).join('');
     for (let w = 0; w < 5; w++) {
         for (let d = 0; d < 7; d++) {
@@ -6642,6 +6656,23 @@ function initHeatmap() {
         }
     }
     container.innerHTML = html;
+
+    // Update heatmap stats
+    const vals = Object.values(dailyPnL);
+    if (vals.length > 0) {
+        const total = vals.reduce((a, b) => a + b, 0);
+        const best = Math.max(...vals);
+        const worst = Math.min(...vals);
+        const wins = vals.filter(v => v > 0).length;
+        const winRate = Math.round((wins / vals.length) * 100);
+
+        const fmt = v => (v >= 0 ? '+' : '') + '₺' + Math.abs(v).toLocaleString('tr-TR');
+        const el = id => document.getElementById(id);
+        if (el('hmMonthPnL')) el('hmMonthPnL').textContent = fmt(total);
+        if (el('hmBestDay')) el('hmBestDay').textContent = fmt(best);
+        if (el('hmWorstDay')) el('hmWorstDay').textContent = fmt(worst);
+        if (el('hmWinDays')) el('hmWinDays').textContent = '%' + winRate;
+    }
 }
 
 // ─────────────────────────────────────────────
@@ -7375,6 +7406,18 @@ class RiskMetricsEngine {
         this.portfolioValue = portfolioValue;
         this.positions = positions;
         this.dailyReturns = this._generateReturnSeries(756); // ~3 yıl günlük
+        this._bmCache = null;
+    }
+
+    /* ── Box-Muller normal dağılım (Marsaglia polar) ── */
+    boxMuller() {
+        if (this._bmCache != null) { const v = this._bmCache; this._bmCache = null; return v; }
+        let u = 0, v = 0;
+        while (u === 0) u = Math.random();
+        while (v === 0) v = Math.random();
+        const r = Math.sqrt(-2 * Math.log(u));
+        this._bmCache = r * Math.sin(2 * Math.PI * v);
+        return r * Math.cos(2 * Math.PI * v);
     }
 
     /* ── GBM ile sentetik getiri serisi üretimi (Mild, 2026 metodolojisi) ── */
@@ -7827,7 +7870,7 @@ function initFinancialEngines() {
     // Refresh market data every 5 minutes
     setInterval(() => marketEngine.updateMarketWidget().catch(() => {}), 300000);
     renderPositionsList();
-    renderHeatmap();
+    initHeatmap();
     initCorrelationMatrix();
     // Remove skeleton overlay
     const skel = document.getElementById('dashboardSkeleton');
@@ -7946,7 +7989,7 @@ function authLogout() {
 }
 
 /* ── User Portfolio (localStorage, e-posta bazlı) ── */
-function getPortfolioKey(email) { return 'equilyze-porfolio-' + email; }
+function getPortfolioKey(email) { return 'equilyze-portfolio-' + email; }
 function getUserPortfolio(email) {
     try { return JSON.parse(localStorage.getItem(getPortfolioKey(email))); } catch { return null; }
 }
@@ -7993,7 +8036,7 @@ function recreateEnginesWithPortfolio(pf) {
     updateInsightBar(metrics);
     if (marketEngine) marketEngine.updateMarketWidget().catch(() => {});
     renderPositionsList();
-    renderHeatmap();
+    initHeatmap();
     initCorrelationMatrix();
 }
 function openPortfolioModal() {
@@ -8181,7 +8224,7 @@ function openUserPage() {
     } catch { document.getElementById('upRiskProfile').textContent = 'Test edilmedi'; }
     // Journal stats
     try {
-        const trades = JSON.parse(localStorage.getItem('equilyze-trades')) || [];
+        const trades = JSON.parse(localStorage.getItem('equilyze-journal')) || [];
         const closed = trades.filter(t => t.pnl != null);
         const wins = closed.filter(t => t.pnl > 0);
         const totalPnl = closed.reduce((s, t) => s + t.pnl, 0);
@@ -8217,7 +8260,6 @@ function closeUserPage() {
 }
 
 /* ── UI Controller ── */
-let mcEngine = null;
 let mcLastResult = null;
 let mcConfidence = 0.95;
 let mcPathChart = null;
@@ -8290,7 +8332,7 @@ function runMonteCarloUI() {
             // Run actual simulation
             const pf = resolvePortfolio();
             if (!mcEngine) mcEngine = new MonteCarloEngine(pf.value, pf.positions);
-            else { mcEngine.portfolioValue = pf.value; mcEngine.positions = pf.positions; mcEngine._init(); }
+            else { mcEngine.portfolioValue = pf.value; mcEngine.positions = pf.positions; }
             const result = mcEngine.run({
                 simulations: simCount,
                 days,
@@ -8545,17 +8587,6 @@ function exportFullReport() {
     w.document.close();
     showToast('Rapor oluşturuldu! Yazdır > PDF olarak kaydedebilirsiniz.', 'success');
 }
-            },
-            scales: {
-                x: { ticks: { display: false }, grid: { display: false } },
-                y: {
-                    ticks: { color: '#5a7065', font: { size: 10 }, callback: v => '%' + v },
-                    grid: { color: 'rgba(255,255,255,0.04)' }
-                }
-            }
-        }
-    });
-}
 
 function _renderProbTable(probabilities, pv) {
     const tbody = document.getElementById('mcProbTableBody');
@@ -8686,14 +8717,23 @@ function applyRiskParityToPortfolio() {
         return;
     }
     const symbols = portfolio.positions.map(p => p.symbol);
-    const prices = symbols.map(s => window.rmEngine.assetPrices?.[s] || 100);
-    const val = portfolio.totalValue || 1000000;
-    const returnsByAsset = symbols.map(s => window.rmEngine._generateReturns?.(s, 500) || window.rmEngine._normalRandom(500));
+    const prices = symbols.map(() => 100);
+    const val = portfolio.value || 1000000;
+    const returnsByAsset = symbols.map(() => {
+        const r = [];
+        for (let i = 0; i < 500; i++) {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            r.push(Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v) * 0.02 + 0.001);
+        }
+        return r;
+    });
     if (!returnsByAsset || returnsByAsset.length < 2) {
         showToast('Optimizasyon için en az 2 varlık gerekli', 'error');
         return;
     }
-    const ercWeights = window.rmEngine._riskParityWeights(returnsByAsset);
+    const ercWeights = window.rmEngine.calculateRiskParityWeights(returnsByAsset);
     if (!ercWeights || ercWeights.length !== symbols.length) {
         showToast('Ağırlık hesaplanamadı', 'error');
         return;
@@ -8709,7 +8749,7 @@ function applyRiskParityToPortfolio() {
     });
     const newPortfolio = { ...portfolio, positions: newPositions, totalValue: val };
     saveUserPortfolio(session.email, newPortfolio);
-    recreateEnginesWithPortfolio();
+    recreateEnginesWithPortfolio(newPortfolio);
     showToast('Optimize ağırlıklar portföye uygulandı!', 'success');
     document.getElementById('mcApplyBtn').style.display = 'none';
     // Refresh dashboard
@@ -8841,18 +8881,6 @@ const translations = {
         'nav-risk': 'Risk Test',
         'nav-pricing': 'Early Access',
         'hero-subtitle': 'Take data-driven investment decisions with 15-question Risk Test, Monte Carlo Simulation, Macro Shock Engine, Trading Journal, and live API integrations.',
-        'insight-title': 'Daily Status Report',
-        'insight-cta': 'Go to Details →',
-        'crypto-widget-title': 'Crypto Market Indicators',
-        'live': 'Live',
-        'fear-greed': 'Fear & Greed Index',
-        'greed': 'Greed',
-        'survival-rebalance': '🧠 Suggest AI Rebalance',
-        'rwa-title': 'Add Manual Asset (RWA)',
-        'rwa-estate': 'Tokenized Real Estate',
-        'rwa-gold': 'Tokenized Gold',
-        'rwa-commodity': 'Tokenized Commodity',
-        'rwa-bond': 'Tokenized Bond',
         'slippage-title': '💧 Slippage Analysis',
         'slippage-desc': 'Estimated price impact for simulated orders based on current market depth data.',
         'ps-positions': 'Positions',
@@ -8866,17 +8894,7 @@ const translations = {
         'badge-moderate': 'Moderate',
         'badge-aggressive': 'Aggressive',
         'badge-very-aggressive': 'Very Aggressive',
-        'phase-1-desc': 'Dashboard & Data Analytics layer: P&L Heatmap 2.0, Dynamic Correlation Analysis, Benchmark Comparison and Zero-Touch Security Communication.',
-        'phase-2-desc': 'Predictive Intelligence layer: AI-powered portfolio suggestions, NLP Chatbot, Sentiment Analysis and Price Forecasting.',
-        'phase-3-desc': 'Portfolio Automation layer: automated rebalancing, smart stop-loss alerts and basket order management.',
-        'phase-4-desc': 'Open Ecosystem layer: Open source SDK, widget marketplace and third-party developer API.',
         'slip-warning': '⚠️ If you try to close all your positions now, you could experience 1.2% slippage under current market conditions.',
-        // RWA
-        'rwa-title': 'Add Manual Asset (RWA)',
-        'rwa-estate': 'Tokenized Real Estate',
-        'rwa-gold': 'Tokenized Gold',
-        'rwa-commodity': 'Tokenized Commodity',
-        'rwa-bond': 'Tokenized Bond',
         // Methodology
         'meth-title': 'Methodology & Data Source',
         'meth-text': 'This simulation is calculated using the Geometric Brownian Motion (GBM) algorithm with 10 years of market data. CoinGecko API and Yahoo Finance API are used as data sources. Results are predictive in nature and do not constitute investment advice.',
@@ -9304,8 +9322,8 @@ function updateInsightBar(metrics) {
         }
     }
     // VaR threshold notification
-    if (metrics && metrics.var95Pct) {
-        const varPct = Math.abs(metrics.var95Pct);
+    if (metrics && metrics.var95) {
+        const varPct = Math.abs(metrics.var95) * 100;
         const prevVar = parseFloat(localStorage.getItem('equilyze-last-var') || '0');
         localStorage.setItem('equilyze-last-var', varPct.toFixed(2));
         const threshold = parseFloat(localStorage.getItem('equilyze-var-threshold') || '10');
