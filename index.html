@@ -6695,12 +6695,12 @@ function initCorrelationMatrix() {
     // Build correlation matrix from engine's correlation function
     const n = assets.length;
     const matrix = [];
+    const eng = mcEngine || new MonteCarloEngine(pf.value, pf.positions);
     for (let i = 0; i < n; i++) {
         matrix[i] = [];
         for (let j = 0; j < n; j++) {
             if (i === j) { matrix[i][j] = 1; }
             else {
-                const eng = metricsEngine || new RiskMetricsEngine(pf.value, pf.positions);
                 matrix[i][j] = eng._getCorrelation(assets[i].type, assets[j].type, 'normal');
             }
         }
