@@ -6378,12 +6378,20 @@ function runCustomShock() {
     const btc = parseFloat(document.getElementById('customBtc').value) || 0;
     const rate = parseFloat(document.getElementById('customRate').value) || 0;
 
-    const portfolioValue = metricsEngine ? metricsEngine.portfolioValue : DEFAULT_PORTFOLIO_VALUE;
-    const usdExposure = 0.35;
-    const btcExposure = 0.25;
-    const rateImpact = rate * -0.002;
+    const pf = resolvePortfolio();
+    const portfolioValue = pf.value;
+    // Gerçek portföy ağırlıklarından maruziyet
+    const w = { crypto: 0, stock: 0, bond: 0, forex: 0 };
+    pf.positions.forEach(p => { if (!_isCashSymbol(p.symbol)) w[p.type] = (w[p.type] || 0) + p.weight; });
+    const usdExposure = (w.crypto || 0) + (w.forex || 0); // USD-fiyatlı varlıklar
+    const btcExposure = (w.crypto || 0);
+    // USD/TRY artışı: USD-fiyatlı varlıklar TRY cinsinden kazanır; TRY hisseleri hafif kaybeder
+    const usdImpact = (usdTry / 100) * usdExposure - (usdTry / 100) * (w.stock || 0) * 0.15;
+    const btcImpact = (btc / 100) * btcExposure;
+    // Faiz (bp) artışı tahvil ve hisseyi olumsuz etkiler
+    const rateImpact = rate * -0.0002 * ((w.bond || 0) * 1.5 + (w.stock || 0));
 
-    const totalImpact = (usdTry/100 * usdExposure * -0.5) + (btc/100 * btcExposure) + rateImpact;
+    const totalImpact = usdImpact + btcImpact + rateImpact;
     const impactAmount = portfolioValue * totalImpact;
     const impactPct = (totalImpact * 100).toFixed(2);
 
@@ -6789,34 +6797,40 @@ function initCorrelationMatrix() {
 // ─────────────────────────────────────────────
 // MACRO SHOCK ENGINE
 // ─────────────────────────────────────────────
-const shockData = {
-    fed: {
-        name: 'FED Faiz Kararı (+50bp)',
-        impact: '-₺42,150', percent: '-5.0%', volatility: '+45%', warning: '🌩️ Fırtına'
-    },
-    inflation: {
-        name: 'Enflasyon Şoku (Beklenti Üstü)',
-        impact: '-₺38,720', percent: '-4.6%', volatility: '+38%', warning: '⚡ Dikkat'
-    },
-    oil: {
-        name: 'Petrol Fiyatı (+20%)',
-        impact: '-₺25,410', percent: '-3.0%', volatility: '+28%', warning: '🌧️ Orta Risk'
-    },
-    currency: {
-        name: 'Dolar/TL (+15%)',
-        impact: '+₺31,250', percent: '+3.7%', volatility: '+32%', warning: '⚡ Dikkat'
-    },
-    tcmb: {
-        name: 'TCMB Sürpriz Faiz İndirimi (-500bp)',
-        impact: '-₺52,800', percent: '-6.2%', volatility: '+55%', warning: '🌩️ Fırtına'
-    }
+/* ── Portföye duyarlı makro şok modeli ──
+   Her senaryo, varlık tipi bazında yüzde etki (sensitivite) tanımlar.
+   Portföy etkisi = Σ ağırlık_i · sensitivite(tip_i) — gerçek portföye tepki verir. ── */
+const shockModel = {
+    fed:       { name: 'FED Faiz Kararı (+50bp)',              vol: 45, sens: { crypto: -0.060, stock: -0.035, bond: -0.020, forex:  0.010, default: -0.030 } },
+    inflation: { name: 'Enflasyon Şoku (Beklenti Üstü)',       vol: 38, sens: { crypto: -0.040, stock: -0.030, bond: -0.035, forex:  0.005, default: -0.025 } },
+    oil:       { name: 'Petrol Fiyatı (+20%)',                 vol: 28, sens: { crypto: -0.015, stock: -0.025, bond: -0.010, forex: -0.010, default: -0.018 } },
+    currency:  { name: 'Dolar/TL (+15%)',                      vol: 32, sens: { crypto:  0.130, stock: -0.020, bond: -0.030, forex:  0.120, default:  0.010 } },
+    tcmb:      { name: 'TCMB Sürpriz Faiz İndirimi (-500bp)',  vol: 55, sens: { crypto:  0.080, stock:  0.015, bond: -0.045, forex:  0.070, default:  0.010 } },
 };
+function _isCashSymbol(sym) { return /nakit|cash/i.test(sym || ''); }
+function computeShockImpact(scenarioKey) {
+    const pf = resolvePortfolio();
+    const model = shockModel[scenarioKey];
+    if (!model) return null;
+    let pct = 0;
+    pf.positions.forEach(p => {
+        if (_isCashSymbol(p.symbol)) {
+            // Nakit: sadece kur/faiz şoklarında hafif reel etki
+            pct += p.weight * ((scenarioKey === 'currency' || scenarioKey === 'tcmb') ? 0.02 : 0);
+            return;
+        }
+        const s = (model.sens[p.type] !== undefined) ? model.sens[p.type] : model.sens.default;
+        pct += p.weight * s;
+    });
+    return { impactTL: Math.round(pf.value * pct), pct: pct * 100, vol: model.vol, name: model.name };
+}
 
 function runShockScenario(scenario, cardEl) {
     document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('active'));
     if (cardEl) cardEl.classList.add('active');
 
-    const data = shockData[scenario];
+    const data = computeShockImpact(scenario);
+    if (!data) return;
     const result = document.getElementById('shockResult');
     const metrics = document.getElementById('impactMetrics');
     result.style.display = 'block';
@@ -6827,12 +6841,14 @@ function runShockScenario(scenario, cardEl) {
 
     setTimeout(() => {
         document.getElementById('shockLoading').style.display = 'none';
-        document.getElementById('shockImpact').textContent = data.impact;
-        document.getElementById('shockImpact').className = 'value ' + (data.impact.startsWith('-') ? 'negative' : 'positive');
-        document.getElementById('shockPercent').textContent = data.percent;
-        document.getElementById('shockPercent').className = 'value ' + (data.percent.startsWith('-') ? 'negative' : 'positive');
-        document.getElementById('volatilityIncrease').textContent = data.volatility;
-        document.getElementById('shockWarning').textContent = data.warning;
+        const neg = data.impactTL < 0;
+        document.getElementById('shockImpact').textContent = (neg ? '-' : '+') + '₺' + Math.abs(data.impactTL).toLocaleString('tr-TR');
+        document.getElementById('shockImpact').className = 'value ' + (neg ? 'negative' : 'positive');
+        document.getElementById('shockPercent').textContent = (data.pct >= 0 ? '+' : '') + data.pct.toFixed(1) + '%';
+        document.getElementById('shockPercent').className = 'value ' + (data.pct < 0 ? 'negative' : 'positive');
+        document.getElementById('volatilityIncrease').textContent = '+' + data.vol + '%';
+        const sev = Math.abs(data.pct);
+        document.getElementById('shockWarning').textContent = sev >= 5 ? '🌩️ Fırtına' : sev >= 3 ? '⚡ Dikkat' : '🌧️ Orta Risk';
         metrics.style.opacity = '1';
     }, 900);
 }
@@ -6840,20 +6856,24 @@ function runShockScenario(scenario, cardEl) {
 // ─────────────────────────────────────────────
 // BLACK SWAN
 // ─────────────────────────────────────────────
+/* ── Black Swan: senaryo baz düşüşü + varlık tipi crash-beta ──
+   Portföy düşüşü = baseDrop · Σ ağırlık_i · crashBeta(tip_i).
+   Kripto ağırlıklı portföy daha çok, tahvil/nakit ağırlıklı daha az düşer. ── */
 const swanData = {
-    pandemic: {
-        title: 'Pandemi Senaryosu — COVID-19 Benzeri',
-        drop: 0.35, survival: 72, recovery: '14-18 ay'
-    },
-    crash: {
-        title: '2008 Finansal Kriz Senaryosu',
-        drop: 0.45, survival: 58, recovery: '24-36 ay'
-    },
-    war: {
-        title: 'Jeopolitik Kriz Senaryosu',
-        drop: 0.25, survival: 65, recovery: '18-24 ay'
-    }
+    pandemic: { title: 'Pandemi Senaryosu — COVID-19 Benzeri', baseDrop: 0.30 },
+    crash:    { title: '2008 Finansal Kriz Senaryosu',         baseDrop: 0.42 },
+    war:      { title: 'Jeopolitik Kriz Senaryosu',            baseDrop: 0.22 },
 };
+const CRASH_BETA = { crypto: 1.6, stock: 1.0, bond: 0.15, forex: 0.35, default: 0.8 };
+function computePortfolioDrop(baseDrop) {
+    const pf = resolvePortfolio();
+    let eff = 0;
+    pf.positions.forEach(p => {
+        if (_isCashSymbol(p.symbol)) return; // nakit çökmez
+        eff += p.weight * (CRASH_BETA[p.type] ?? CRASH_BETA.default);
+    });
+    return Math.min(0.95, baseDrop * eff);
+}
 
 function runBlackSwan(scenario, cardEl) {
     document.querySelectorAll('.swan-card').forEach(c => c.classList.remove('active'));
@@ -6861,15 +6881,21 @@ function runBlackSwan(scenario, cardEl) {
 
     const d = swanData[scenario];
     const portfolioValue = metricsEngine ? metricsEngine.portfolioValue : resolvePortfolio().value;
-    const loss = portfolioValue * d.drop;
+    const drop = computePortfolioDrop(d.baseDrop);
+    const loss = portfolioValue * drop;
     const remaining = portfolioValue - loss;
+    // Hayatta kalma ve iyileşme portföy düşüşünden türetilir
+    const survival = Math.round(Math.max(5, Math.min(95, 100 - drop * 150)));
+    const recMonths = Math.round(drop * 100 * 0.8);
+    const recovery = Math.max(3, recMonths - 3) + '-' + (recMonths + 5) + ' ay';
 
     const result = document.getElementById('swanResult');
     result.style.display = 'block';
-    document.getElementById('swanScenarioTitle').textContent = d.title;
+    document.getElementById('swanScenarioTitle').textContent = d.title + ' — Portföy düşüşü %' + (drop * 100).toFixed(1);
     document.getElementById('swanLoss').textContent = '-₺' + loss.toLocaleString('tr-TR', { maximumFractionDigits: 0 });
     document.getElementById('swanRemaining').textContent = '₺' + remaining.toLocaleString('tr-TR', { maximumFractionDigits: 0 });
-    document.getElementById('recoveryTime').textContent = d.recovery;
+    document.getElementById('recoveryTime').textContent = recovery;
+    d.survival = survival; // aşağıdaki animasyon için
 
     // Animate survival rate
     const fill = document.getElementById('survivalRate');
