@@ -4803,6 +4803,36 @@ body.dashboard-open .footer { display: none; }
                 <p class="section-desc">Her işleminizi kaydedin, pattern'lerinizi keşfedin, sürekli gelişin.</p>
             </div>
 
+            <!-- Position Sizing Calculator -->
+            <div class="possize-card" style="margin-bottom:24px;padding:20px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+                    <h3 style="margin:0;font-size:1.05rem">📐 Position Sizing Hesaplayıcı</h3>
+                    <span style="font-size:0.72rem;color:var(--text-muted)">Risk-per-trade → pozisyon boyutu → R-multiple</span>
+                </div>
+                <div class="possize-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px">
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Hesap Büyüklüğü (₺)
+                        <input type="number" id="psAccount" value="847250" min="0" step="1000" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Risk / İşlem (%)
+                        <input type="number" id="psRisk" value="1" min="0.1" max="100" step="0.1" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Giriş Fiyatı
+                        <input type="number" id="psEntry" value="100" min="0" step="any" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Stop Fiyatı
+                        <input type="number" id="psStop" value="95" min="0" step="any" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Hedef Fiyat (ops.)
+                        <input type="number" id="psTarget" value="110" min="0" step="any" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Kaldıraç (x)
+                        <input type="number" id="psLeverage" value="1" min="1" max="125" step="1" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                </div>
+                <div class="possize-results" id="psResults" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px"></div>
+                <div id="psWarning" style="margin-top:12px;font-size:0.8rem;line-height:1.5"></div>
+            </div>
+
             <!-- Journal Stats -->
             <div class="journal-stats-grid" id="journalStats">
                 <div class="journal-stat-card">
@@ -7208,6 +7238,50 @@ function renderSetupPerformance(closedTrades) {
             <span style="font-size:0.8rem;font-family:var(--font-mono);color:${pnlColor};min-width:88px;text-align:right">${fmt(r.pnl)}</span>
         </div>`;
     }).join('');
+}
+
+/* ── Position Sizing: risk-per-trade → pozisyon boyutu, teminat, R-multiple ── */
+function calcPositionSize() {
+    const val = id => parseFloat((document.getElementById(id) || {}).value) || 0;
+    const account = val('psAccount'), riskPct = val('psRisk'), entry = val('psEntry'),
+          stop = val('psStop'), target = val('psTarget'), lev = Math.max(1, val('psLeverage'));
+    const res = document.getElementById('psResults');
+    const warn = document.getElementById('psWarning');
+    if (!res) return;
+    if (!entry || !stop || entry === stop || !account || !riskPct) {
+        res.innerHTML = '<div style="color:var(--text-secondary);font-size:0.85rem">Giriş, stop, hesap ve risk değerlerini girin.</div>';
+        if (warn) warn.innerHTML = '';
+        return;
+    }
+    const riskAmount = account * riskPct / 100;
+    const stopDist = Math.abs(entry - stop);
+    const stopPct = stopDist / entry * 100;
+    const size = riskAmount / stopDist;          // birim (adet)
+    const posValue = size * entry;               // pozisyon değeri
+    const margin = posValue / lev;               // gerekli teminat
+    const rr = (target && Math.abs(target - entry) > 0) ? Math.abs(target - entry) / stopDist : null;
+    const rewardAmount = rr !== null ? riskAmount * rr : null;
+    const posPct = posValue / account * 100;
+    const fmtTL = n => '₺' + Math.round(n).toLocaleString('tr-TR');
+    const tile = (label, value, color) => `<div style="padding:12px;background:var(--bg-tertiary);border-radius:10px">
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:4px">${label}</div>
+        <div style="font-size:1.02rem;font-weight:700;font-family:var(--font-mono);color:${color || 'var(--text-primary)'}">${value}</div></div>`;
+    res.innerHTML =
+        tile('Riske Edilen', fmtTL(riskAmount), 'var(--color-danger)') +
+        tile('Stop Mesafesi', stopPct.toFixed(2) + '%') +
+        tile('Pozisyon Boyutu', size.toLocaleString('tr-TR', { maximumFractionDigits: 4 }) + ' adet') +
+        tile('Pozisyon Değeri', fmtTL(posValue)) +
+        tile('Gerekli Teminat', fmtTL(margin), 'var(--color-secondary)') +
+        (rr !== null ? tile('R:R (Ödül:Risk)', rr.toFixed(2) + ' : 1', rr >= 2 ? 'var(--color-success)' : rr >= 1 ? 'var(--color-warning)' : 'var(--color-danger)') : '') +
+        (rewardAmount !== null ? tile('Hedefte Kazanç', '+' + fmtTL(rewardAmount), 'var(--color-success)') : '');
+    // Uyarılar
+    const msgs = [];
+    if (margin > account) msgs.push(`🔴 Gerekli teminat (${fmtTL(margin)}) hesabınızı aşıyor — kaldıraç artırın veya pozisyonu küçültün.`);
+    else if (posPct > 100 && lev === 1) msgs.push(`🟡 Pozisyon değeri hesabın %${posPct.toFixed(0)}'ı — kaldıraç olmadan bu boyut açılamaz.`);
+    if (rr !== null && rr < 1) msgs.push(`🟡 R:R 1'in altında (${rr.toFixed(2)}) — ödül riski karşılamıyor, kurulum zayıf.`);
+    if (riskPct > 2) msgs.push(`🟡 İşlem başına %${riskPct} risk yüksek — çoğu profesyonel %1-2 ile sınırlar.`);
+    if (warn) warn.innerHTML = msgs.length ? msgs.map(m => `<div style="margin-bottom:4px;color:var(--text-secondary)">${m}</div>`).join('') :
+        '<div style="color:var(--color-success)">✅ Pozisyon parametreleri makul aralıkta.</div>';
 }
 
 function filterJournal() {
@@ -10020,6 +10094,12 @@ function updateDynamicDates() {
 document.addEventListener('DOMContentLoaded', () => {
     authInit();
     updateDynamicDates();
+    // Position sizing hesaplayıcı: hesap büyüklüğünü portföyden al
+    try {
+        const psAcc = document.getElementById('psAccount');
+        if (psAcc) psAcc.value = Math.round(resolvePortfolio().value);
+    } catch {}
+    if (typeof calcPositionSize === 'function') calcPositionSize();
     setTimeout(() => {
         initFinancialEngines();
     }, 500);
