@@ -3712,10 +3712,10 @@ body.dashboard-open .footer { display: none; }
                     </div>
                     <div class="seal-content">
                         <div class="seal-title">
-                            Read-Only Certified
-                            <span class="seal-certified">✓ VERIFIED</span>
+                            Read-Only Mimari İlkesi
+                            <span class="seal-certified">DEMO ÖNİZLEME</span>
                         </div>
-                        <p class="seal-desc" data-i18n="seal-desc">API anahtarlarınız yalnızca <strong>okuma yetkisi</strong> ile çalışır. Platformumuz hiçbir koşulda hesabınızda işlem yapma, para çekme veya transfer gerçekleştirme yetkisine sahip değildir.</p>
+                        <p class="seal-desc" data-i18n="seal-desc">Canlı sürümde API anahtarları yalnızca <strong>okuma yetkisi</strong> ile çalışacak; platform hiçbir koşulda işlem, para çekme veya transfer yetkisine sahip olmayacaktır. <strong>Bu bir demo önizlemedir</strong> — henüz canlı borsa bağlantısı yoktur ve gerçek anahtar toplanmaz.</p>
                     </div>
                 </div>
 
@@ -3893,8 +3893,8 @@ body.dashboard-open .footer { display: none; }
                         </div>
                         <div>
                             <div class="psc-label">Açık Pozisyon</div>
-                            <div class="psc-value">5</div>
-                            <div class="psc-change">2 Borsa</div>
+                            <div class="psc-value" id="heroPosCount">5</div>
+                            <div class="psc-change" id="heroExchangeCount">2 Borsa</div>
                         </div>
                     </div>
                     <div class="portfolio-stat-card">
@@ -6365,23 +6365,25 @@ function connectAPI(exchange) {
     const card = document.querySelector(`[data-exchange="${exchange}"]`);
     const status = document.getElementById('status-' + exchange);
     const btn = card.querySelector('button');
-    const key = prompt(`${exchange.charAt(0).toUpperCase() + exchange.slice(1)} API Key girin:`);
-    if (!key) { showToast('Bağlantı iptal edildi.', 'info'); return; }
-    const secret = prompt('Secret Key girin:');
-    if (!secret) { showToast('Bağlantı iptal edildi.', 'info'); return; }
-
+    const name = exchange.charAt(0).toUpperCase() + exchange.slice(1);
+    // GÜVENLİK: Canlı backend/borsa entegrasyonu henüz yok. Gerçek API anahtarı
+    // TOPLANMAZ (statik sitede anahtar saklamak güvensizdir). Bu bir demo önizlemedir.
+    if (!confirm(`${name} — DEMO ÖNİZLEME\n\nCanlı borsa entegrasyonu erken erişimde gelecek. Şu anda gerçek API anahtarı GİRMEYİN — bu demo bağlantı yalnızca örnek verilerle çalışır ve hiçbir bilgi toplamaz.\n\nDemo bağlantıyı başlatmak ister misiniz?`)) {
+        showToast('Bağlantı iptal edildi.', 'info'); return;
+    }
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Bağlanıyor...';
     btn.disabled = true;
     if (status) { status.textContent = 'Bağlanıyor...'; status.className = 'api-status connecting'; }
 
     setTimeout(() => {
-        if (status) { status.textContent = '✓ Bağlı'; status.className = 'api-status connected'; }
-        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Bağlı';
+        if (status) { status.textContent = '✓ Demo Bağlı'; status.className = 'api-status connected'; }
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Demo Bağlı';
         btn.className = 'btn btn-sm btn-connected';
         btn.disabled = true;
-        localStorage.setItem('equilyze-api-' + exchange, JSON.stringify({ key, label: exchange, connectedAt: Date.now() }));
-        showToast(`${exchange.charAt(0).toUpperCase() + exchange.slice(1)} bağlantısı kuruldu!`, 'success');
-    }, 1800);
+        // Yalnızca demo bayrağı saklanır — hiçbir kimlik bilgisi yok
+        localStorage.setItem('equilyze-api-' + exchange, JSON.stringify({ demo: true, label: exchange, connectedAt: Date.now() }));
+        showToast(`${name} demo bağlantısı kuruldu (örnek veri).`, 'success');
+    }, 1400);
 }
 
 // ─────────────────────────────────────────────
@@ -7463,14 +7465,17 @@ class MonteCarloEngine {
     constructor(portfolioValue, positions) {
         this.portfolioValue = portfolioValue;
         this.positions = positions;
+        this._bmCache = null;
+        // Deterministik: aynı portföy + config → aynı simülasyon sonucu
+        this._rand = _mulberry32(_portfolioSeed(portfolioValue, positions));
     }
 
-    // Box-Muller: her çağrıda 2 normal variate üret, 1 döndür 1 sakla
+    // Box-Muller: her çağrıda 2 normal variate üret, 1 döndür 1 sakla (seeded PRNG)
     boxMuller() {
         if (this._bmCache != null) { const v = this._bmCache; this._bmCache = null; return v; }
         let u = 0, v = 0;
-        while (u === 0) u = Math.random();
-        while (v === 0) v = Math.random();
+        while (u === 0) u = this._rand();
+        while (v === 0) v = this._rand();
         const r = Math.sqrt(-2 * Math.log(u));
         this._bmCache = r * Math.sin(2 * Math.PI * v);
         return r * Math.cos(2 * Math.PI * v);
@@ -7505,6 +7510,9 @@ class MonteCarloEngine {
 
     // Main GBM simulation
     run({ simulations = 10000, days = 252, confidenceLevels = [0.95, 0.99], scenarioMode = 'normal' } = {}) {
+        // Config'e göre yeniden seed: aynı ayarlar → tekrarlanabilir sonuç
+        this._rand = _mulberry32(_hashSeed(_portfolioSeed(this.portfolioValue, this.positions) + '|' + simulations + '|' + days + '|' + scenarioMode));
+        this._bmCache = null;
         // Asset parameters (realistic estimates per asset class)
         const assetParams = this._buildAssetParams(scenarioMode);
         const assets = this.positions.map(p => ({
@@ -7855,6 +7863,20 @@ class RiskMetricsEngine {
         }
         comps.sort((a, b) => b.contribPct - a.contribPct);
         return { totalVaRDollar: Math.round(totalVaRDollar), comps };
+    }
+
+    /* ── Risk Parity portföyün max drawdown'ı (Shadow Backtest için) ──
+       Eşit risk katkılı (ERC) ağırlıklarla portföy yeniden kurulur, drawdown ölçülür. ── */
+    getRiskParityDrawdown() {
+        const rpW = this.calculateRiskParityWeights(this.assetReturnSeries);
+        const N = this.portfolioReturns.length;
+        const prices = [100];
+        for (let i = 0; i < N; i++) {
+            let r = 0;
+            for (let a = 0; a < rpW.length; a++) r += rpW[a] * this.assetReturnSeries[a][i];
+            prices.push(prices[prices.length - 1] * Math.exp(r));
+        }
+        return { drawdownPct: this.calculateMaxDrawdown(prices) * 100, weights: rpW };
     }
 
     /* ── Tek varlık sentetik fiyat serisi (grafikler için, seeded & deterministik) ──
@@ -8772,6 +8794,14 @@ function renderPositionsList() {
     const pf = resolvePortfolio();
     const totalVal = pf.value;
     _allPositions = pf.positions;
+    // Hero "Açık Pozisyon" ve borsa sayısını portföyden türet
+    const heroPos = document.getElementById('heroPosCount');
+    if (heroPos) heroPos.textContent = pf.positions.length;
+    const heroExch = document.getElementById('heroExchangeCount');
+    if (heroExch) {
+        const exchSet = new Set(pf.positions.map(p => (p.type === 'crypto' || p.symbol.includes('/')) ? 'Binance' : 'MetaTrader'));
+        heroExch.textContent = exchSet.size + ' Borsa';
+    }
     const showAll = document.getElementById('positionsViewAll');
     if (showAll) {
         if (pf.positions.length > 4) {
@@ -9553,7 +9583,7 @@ const translations = {
         'faq-q6': 'Is it suitable for crypto and stock investors?',
         'faq-a6': 'Absolutely! Equilyze is designed for both crypto (Bitcoin, Ethereum, etc.) and traditional market (BIST, forex) investors. You can analyze all asset types in a single panel.',
         // Security (Layer 4)
-        'seal-desc': 'Your API keys work with <strong>read-only permission</strong> only. Our platform has no authority to execute trades, withdraw funds, or make transfers on your account under any circumstances.',
+        'seal-desc': 'In the live version, API keys will work with <strong>read-only permission</strong> only; the platform will never have authority to trade, withdraw, or transfer funds. <strong>This is a demo preview</strong> — there is no live exchange connection yet and no real keys are collected.',
         'sf-ssl': 'End-to-end encryption',
         'sf-readonly': 'Read-Only API',
         'sf-readonly-sub': 'No trading permission',
@@ -9930,16 +9960,21 @@ function runShadowBacktest() {
             // "Sonra" = risk parity ağırlıklı portföyün max drawdown'ı
     const engine = metricsEngine || new RiskMetricsEngine(resolvePortfolio().value, resolvePortfolio().positions);
             const metrics = engine.calculateAll();
-            
-            // Simulate risk parity improvement
+
+            // Gerçek risk-parity (ERC) portföyünün drawdown'ı — deterministik
             const currentDD = metrics.maxDrawdown;
-            const improvedDD = currentDD * (0.55 + Math.random() * 0.15); // %40-45 iyileşme
-            
+            const rp = engine.getRiskParityDrawdown();
+            const improvedDD = rp.drawdownPct;
+
             beforeEl.textContent = `-${currentDD.toFixed(1)}%`;
             afterEl.textContent = `-${improvedDD.toFixed(1)}%`;
-            
+
             const improvement = Math.round((1 - improvedDD / currentDD) * 100);
-            showToast(`✅ Backtest tamamlandı! Max Drawdown ${currentDD.toFixed(1)}% → ${improvedDD.toFixed(1)}% (${improvement}% iyileşme). Risk Parity optimizasyonu önerilir.`, 'success');
+            if (improvement > 0) {
+                showToast(`✅ Backtest tamamlandı! Max Drawdown ${currentDD.toFixed(1)}% → ${improvedDD.toFixed(1)}% (${improvement}% iyileşme). Risk Parity ağırlıkları drawdown'ı azaltıyor.`, 'success');
+            } else {
+                showToast(`✅ Backtest tamamlandı! Mevcut portföyünüz zaten iyi dengeli — Risk Parity drawdown'ı anlamlı azaltmıyor (${currentDD.toFixed(1)}% → ${improvedDD.toFixed(1)}%).`, 'info');
+            }
         }, 1500);
     }
 }
