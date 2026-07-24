@@ -3712,10 +3712,10 @@ body.dashboard-open .footer { display: none; }
                     </div>
                     <div class="seal-content">
                         <div class="seal-title">
-                            Read-Only Certified
-                            <span class="seal-certified">✓ VERIFIED</span>
+                            Read-Only Mimari İlkesi
+                            <span class="seal-certified">DEMO ÖNİZLEME</span>
                         </div>
-                        <p class="seal-desc" data-i18n="seal-desc">API anahtarlarınız yalnızca <strong>okuma yetkisi</strong> ile çalışır. Platformumuz hiçbir koşulda hesabınızda işlem yapma, para çekme veya transfer gerçekleştirme yetkisine sahip değildir.</p>
+                        <p class="seal-desc" data-i18n="seal-desc">Canlı sürümde API anahtarları yalnızca <strong>okuma yetkisi</strong> ile çalışacak; platform hiçbir koşulda işlem, para çekme veya transfer yetkisine sahip olmayacaktır. <strong>Bu bir demo önizlemedir</strong> — henüz canlı borsa bağlantısı yoktur ve gerçek anahtar toplanmaz.</p>
                     </div>
                 </div>
 
@@ -3893,8 +3893,8 @@ body.dashboard-open .footer { display: none; }
                         </div>
                         <div>
                             <div class="psc-label">Açık Pozisyon</div>
-                            <div class="psc-value">5</div>
-                            <div class="psc-change">2 Borsa</div>
+                            <div class="psc-value" id="heroPosCount">5</div>
+                            <div class="psc-change" id="heroExchangeCount">2 Borsa</div>
                         </div>
                     </div>
                     <div class="portfolio-stat-card">
@@ -3906,8 +3906,8 @@ body.dashboard-open .footer { display: none; }
                         </div>
                         <div>
                             <div class="psc-label">Risk Durumu</div>
-                            <div class="psc-value" style="color: var(--color-success);">Düşük</div>
-                            <div class="psc-change">Beta: 0.85</div>
+                            <div class="psc-value" style="color: var(--color-success);" id="heroRiskStatus">Düşük</div>
+                            <div class="psc-change" id="heroBeta">Beta: 0.85</div>
                         </div>
                     </div>
                 </div>
@@ -4056,7 +4056,7 @@ body.dashboard-open .footer { display: none; }
                                     <span class="info-icon">i</span>
                                     <span class="info-tooltip" data-i18n="tip-cvar">CVaR, VaR eşiğini aşan en kötü senaryoların ORTALAMASINI gösterir. VaR'dan daha güvenilir bir risk ölçütüdür çünkü kuyruk riskini değerlendirir.</span>
                                 </span>
-                                <span class="metric-value negative" id="metricCVar">--</span>
+                                <span class="metric-value negative" id="metricCVaR">--</span>
                             </div>
                             <div class="risk-metric">
                                 <span class="metric-label metric-info">Maksimum Drawdown
@@ -4140,6 +4140,18 @@ body.dashboard-open .footer { display: none; }
                                 ⚠️ BTC ve S&P 500 arasındaki korelasyon son 30 günde 0.40'tan 0.85'e çıktı — yanıltıcı güvene dikkat!
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Component VaR Widget -->
+                <div class="widget widget-medium" data-widget="componentvar">
+                    <div class="widget-header">
+                        <h4>Risk Katkısı <span class="metric-info" style="font-size:0.7rem;color:var(--text-muted)">(Component VaR)</span></h4>
+                        <span class="elite-badge-sm">ELITE</span>
+                    </div>
+                    <div class="widget-content">
+                        <div class="cvar-list" id="componentVarList"></div>
+                        <div class="cvar-note" id="componentVarNote" style="margin-top:10px;font-size:0.75rem;color:var(--text-secondary);line-height:1.5"></div>
                     </div>
                 </div>
 
@@ -4230,8 +4242,8 @@ body.dashboard-open .footer { display: none; }
                             <div class="crypto-ind-card">
                                 <div class="crypto-ind-icon">📈</div>
                                 <div class="crypto-ind-label" data-i18n="market-trend">Piyasa Trendi</div>
-                                <div class="crypto-ind-value positive">▲ Boğa</div>
-                                <div class="crypto-ind-sub" data-i18n="market-trend-sub">200 gün MA üstünde</div>
+                                <div class="crypto-ind-value positive" id="marketTrendValue">▲ Boğa</div>
+                                <div class="crypto-ind-sub" id="marketTrendSub">Duyarlılık + momentum</div>
                             </div>
                         </div>
                     </div>
@@ -4510,7 +4522,7 @@ body.dashboard-open .footer { display: none; }
                         <div class="psych-title">
                             🧠 <span data-i18n="psych-title">Aylık Psikolojik Analiz Raporu</span>
                         </div>
-                        <span class="psych-period" data-i18n="psych-period">📅 Mart 2026</span>
+                        <span class="psych-period" id="psychPeriod" data-i18n="psych-period">📅 Mart 2026</span>
                     </div>
                     <div class="psych-grid">
                         <div class="psych-stat">
@@ -4664,7 +4676,7 @@ body.dashboard-open .footer { display: none; }
                         <h3>📅 Ekonomik Takvim</h3>
                         <p>Yaklaşan kritik veriler ve beklenti aralıkları</p>
                     </div>
-                    <div class="calendar-events">
+                    <div class="calendar-events" id="economicCalendar">
                         <div class="event-item high-impact">
                             <div class="event-date">
                                 <span class="event-day">15</span>
@@ -4791,6 +4803,42 @@ body.dashboard-open .footer { display: none; }
                 <p class="section-desc">Her işleminizi kaydedin, pattern'lerinizi keşfedin, sürekli gelişin.</p>
             </div>
 
+            <!-- Position Sizing Calculator -->
+            <div class="possize-card" style="margin-bottom:24px;padding:20px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+                    <h3 style="margin:0;font-size:1.05rem">📐 Position Sizing Hesaplayıcı</h3>
+                    <span style="font-size:0.72rem;color:var(--text-muted)">Risk-per-trade → pozisyon boyutu → R-multiple</span>
+                </div>
+                <div class="possize-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px">
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Hesap Büyüklüğü (₺)
+                        <input type="number" id="psAccount" value="847250" min="0" step="1000" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Risk / İşlem (%)
+                        <input type="number" id="psRisk" value="1" min="0.1" max="100" step="0.1" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Giriş Fiyatı
+                        <input type="number" id="psEntry" value="100" min="0" step="any" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Stop Fiyatı
+                        <input type="number" id="psStop" value="95" min="0" step="any" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Hedef Fiyat (ops.)
+                        <input type="number" id="psTarget" value="110" min="0" step="any" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Kaldıraç (x)
+                        <input type="number" id="psLeverage" value="1" min="1" max="125" step="1" oninput="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:var(--font-mono)">
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-secondary)">Yön
+                        <select id="psDirection" onchange="calcPositionSize()" style="padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary)">
+                            <option value="long">Long (Alış)</option>
+                            <option value="short">Short (Satış)</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="possize-results" id="psResults" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px"></div>
+                <div id="psWarning" style="margin-top:12px;font-size:0.8rem;line-height:1.5"></div>
+            </div>
+
             <!-- Journal Stats -->
             <div class="journal-stats-grid" id="journalStats">
                 <div class="journal-stat-card">
@@ -4823,6 +4871,20 @@ body.dashboard-open .footer { display: none; }
                     <div class="jsc-value negative" id="stat-worst">₺0</div>
                     <div class="jsc-sub" id="stat-worst-sym">—</div>
                 </div>
+                <div class="journal-stat-card">
+                    <div class="jsc-label">Beklenti (Expectancy)</div>
+                    <div class="jsc-value" id="stat-expectancy">₺0</div>
+                    <div class="jsc-sub">İşlem başına ort.</div>
+                </div>
+            </div>
+
+            <!-- Setup / Etiket Performansı -->
+            <div class="setup-perf-wrap" id="setupPerfWrap" style="display:none;margin:16px 0;padding:16px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+                    <h4 style="margin:0;font-size:0.95rem">🎯 Setup / Etiket Performansı</h4>
+                    <span style="font-size:0.72rem;color:var(--text-muted)">Hangi setup kazandırıyor?</span>
+                </div>
+                <div id="setupPerfList"></div>
             </div>
 
             <!-- Journal Controls -->
@@ -6303,23 +6365,25 @@ function connectAPI(exchange) {
     const card = document.querySelector(`[data-exchange="${exchange}"]`);
     const status = document.getElementById('status-' + exchange);
     const btn = card.querySelector('button');
-    const key = prompt(`${exchange.charAt(0).toUpperCase() + exchange.slice(1)} API Key girin:`);
-    if (!key) { showToast('Bağlantı iptal edildi.', 'info'); return; }
-    const secret = prompt('Secret Key girin:');
-    if (!secret) { showToast('Bağlantı iptal edildi.', 'info'); return; }
-
+    const name = exchange.charAt(0).toUpperCase() + exchange.slice(1);
+    // GÜVENLİK: Canlı backend/borsa entegrasyonu henüz yok. Gerçek API anahtarı
+    // TOPLANMAZ (statik sitede anahtar saklamak güvensizdir). Bu bir demo önizlemedir.
+    if (!confirm(`${name} — DEMO ÖNİZLEME\n\nCanlı borsa entegrasyonu erken erişimde gelecek. Şu anda gerçek API anahtarı GİRMEYİN — bu demo bağlantı yalnızca örnek verilerle çalışır ve hiçbir bilgi toplamaz.\n\nDemo bağlantıyı başlatmak ister misiniz?`)) {
+        showToast('Bağlantı iptal edildi.', 'info'); return;
+    }
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Bağlanıyor...';
     btn.disabled = true;
     if (status) { status.textContent = 'Bağlanıyor...'; status.className = 'api-status connecting'; }
 
     setTimeout(() => {
-        if (status) { status.textContent = '✓ Bağlı'; status.className = 'api-status connected'; }
-        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Bağlı';
+        if (status) { status.textContent = '✓ Demo Bağlı'; status.className = 'api-status connected'; }
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Demo Bağlı';
         btn.className = 'btn btn-sm btn-connected';
         btn.disabled = true;
-        localStorage.setItem('equilyze-api-' + exchange, JSON.stringify({ key, label: exchange, connectedAt: Date.now() }));
-        showToast(`${exchange.charAt(0).toUpperCase() + exchange.slice(1)} bağlantısı kuruldu!`, 'success');
-    }, 1800);
+        // Yalnızca demo bayrağı saklanır — hiçbir kimlik bilgisi yok
+        localStorage.setItem('equilyze-api-' + exchange, JSON.stringify({ demo: true, label: exchange, connectedAt: Date.now() }));
+        showToast(`${name} demo bağlantısı kuruldu (örnek veri).`, 'success');
+    }, 1400);
 }
 
 // ─────────────────────────────────────────────
@@ -6378,12 +6442,20 @@ function runCustomShock() {
     const btc = parseFloat(document.getElementById('customBtc').value) || 0;
     const rate = parseFloat(document.getElementById('customRate').value) || 0;
 
-    const portfolioValue = metricsEngine ? metricsEngine.portfolioValue : DEFAULT_PORTFOLIO_VALUE;
-    const usdExposure = 0.35;
-    const btcExposure = 0.25;
-    const rateImpact = rate * -0.002;
+    const pf = resolvePortfolio();
+    const portfolioValue = pf.value;
+    // Gerçek portföy ağırlıklarından maruziyet
+    const w = { crypto: 0, stock: 0, bond: 0, forex: 0 };
+    pf.positions.forEach(p => { if (!_isCashSymbol(p.symbol)) w[p.type] = (w[p.type] || 0) + p.weight; });
+    const usdExposure = (w.crypto || 0) + (w.forex || 0); // USD-fiyatlı varlıklar
+    const btcExposure = (w.crypto || 0);
+    // USD/TRY artışı: USD-fiyatlı varlıklar TRY cinsinden kazanır; TRY hisseleri hafif kaybeder
+    const usdImpact = (usdTry / 100) * usdExposure - (usdTry / 100) * (w.stock || 0) * 0.15;
+    const btcImpact = (btc / 100) * btcExposure;
+    // Faiz (bp) artışı tahvil ve hisseyi olumsuz etkiler
+    const rateImpact = rate * -0.0002 * ((w.bond || 0) * 1.5 + (w.stock || 0));
 
-    const totalImpact = (usdTry/100 * usdExposure * -0.5) + (btc/100 * btcExposure) + rateImpact;
+    const totalImpact = usdImpact + btcImpact + rateImpact;
     const impactAmount = portfolioValue * totalImpact;
     const impactPct = (totalImpact * 100).toFixed(2);
 
@@ -6421,9 +6493,9 @@ function generateBenchData(tf) {
     const days = { '1M': 21, '3M': 63, '6M': 126, '1Y': 252 };
     const n = days[tf] || 21;
     const engine = metricsEngine || new RiskMetricsEngine(DEFAULT_PORTFOLIO_VALUE, DEFAULT_POSITIONS);
-    const prices = engine._generateReturnSeries(n);
-    const goldPrices = engine._generateReturnSeries(n);
-    const btcPrices = engine._generateReturnSeries(n);
+    const prices = engine._generateReturnSeries(n, 'stock', 'bench-port');
+    const goldPrices = engine._generateReturnSeries(n, 'forex', 'bench-gold');
+    const btcPrices = engine._generateReturnSeries(n, 'crypto', 'bench-btc');
 
     // S&P 500: gerçek aylık getirilerden günlük benchmark
     const sp500Prices = [100];
@@ -6537,7 +6609,7 @@ function generatePortfolioChartData(tf) {
     const n = days[tf] || 12;
     const pf = resolvePortfolio();
     const engine = metricsEngine || new RiskMetricsEngine(pf.value, pf.positions);
-    const prices = engine._generateReturnSeries(n);
+    const prices = engine._generateReturnSeries(n, 'default', 'pchart-' + tf);
     // Scale to start at ~800K and use engine's portfolio value as end
     const base = 800000;
     const endVal = engine.portfolioValue;
@@ -6746,19 +6818,10 @@ function initCorrelationMatrix() {
         return;
     }
 
-    // Build correlation matrix from engine's correlation function
+    // Gerçek korelasyon matrisi: varlık getiri serilerinden (metricsEngine)
     const n = assets.length;
-    const matrix = [];
-    const eng = mcEngine || new MonteCarloEngine(pf.value, pf.positions);
-    for (let i = 0; i < n; i++) {
-        matrix[i] = [];
-        for (let j = 0; j < n; j++) {
-            if (i === j) { matrix[i][j] = 1; }
-            else {
-                matrix[i][j] = eng._getCorrelation(assets[i].type, assets[j].type, 'normal');
-            }
-        }
-    }
+    const eng = (window.rmEngine && window.rmEngine.getCorrelationMatrix) ? window.rmEngine : new RiskMetricsEngine(pf.value, pf.positions);
+    const matrix = eng.getCorrelationMatrix();
 
     container.style.gridTemplateColumns = `60px repeat(${n}, 1fr)`;
     let html = '<div class="correlation-cell header"></div>';
@@ -6775,7 +6838,7 @@ function initCorrelationMatrix() {
             else if (v <= -0.7) cls = 'neg-high';
             else if (v <= -0.4) cls = 'neg-med';
             else if (v <= -0.15) cls = 'neg-low';
-            html += `<div class="correlation-cell ${cls}" title="${assets[i]} / ${assets[j]}: ${v.toFixed(2)}">${v.toFixed(2)}</div>`;
+            html += `<div class="correlation-cell ${cls}" title="${assets[i].label} / ${assets[j].label}: ${v.toFixed(2)}">${v.toFixed(2)}</div>`;
         });
     });
     container.innerHTML = html;
@@ -6793,39 +6856,79 @@ function initCorrelationMatrix() {
         else if (maxCorr > 0.4) warnEl.innerHTML = `En yüksek korelasyon ${pair}: <strong>${maxCorr.toFixed(2)}</strong>. İzlemeye devam edin.`;
         else warnEl.innerHTML = 'Varlıklar arası korelasyon düşük seviyede. Portföy çeşitlendirmeniz iyi görünüyor.';
     }
+
+    renderComponentVaR();
+}
+
+/* ── Component VaR listesi: her pozisyonun portföy riskine katkısı ── */
+function renderComponentVaR() {
+    const list = document.getElementById('componentVarList');
+    if (!list) return;
+    const eng = (window.rmEngine && window.rmEngine.getComponentVaR) ? window.rmEngine : null;
+    if (!eng) { list.innerHTML = ''; return; }
+    const { totalVaRDollar, comps } = eng.getComponentVaR();
+    if (!comps.length) { list.innerHTML = '<div style="color:var(--text-secondary);font-size:0.8rem">Veri yok</div>'; return; }
+    const maxAbs = Math.max(...comps.map(c => Math.abs(c.contribPct)), 1);
+    list.innerHTML = comps.map(c => {
+        const neg = c.contribPct < 0;
+        const barW = Math.min(100, Math.abs(c.contribPct) / maxAbs * 100);
+        const color = neg ? 'var(--color-success)' : (c.contribPct > 40 ? 'var(--color-danger)' : c.contribPct > 20 ? 'var(--color-warning)' : 'var(--color-secondary)');
+        return `<div class="cvar-row" style="margin-bottom:9px">
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:3px">
+                <span style="font-weight:600;color:var(--text-primary)">${c.label}</span>
+                <span style="font-family:var(--font-mono);color:${color}">${c.contribPct >= 0 ? '+' : ''}${c.contribPct.toFixed(1)}% · ₺${Math.abs(c.cVaRDollar).toLocaleString('tr-TR')}</span>
+            </div>
+            <div style="height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden">
+                <div style="height:100%;width:${barW}%;background:${color};border-radius:4px"></div>
+            </div>
+        </div>`;
+    }).join('');
+    const top = comps[0];
+    const noteEl = document.getElementById('componentVarNote');
+    if (noteEl && top) {
+        noteEl.innerHTML = `Toplam günlük VaR (%95): <strong style="color:var(--text-primary)">₺${totalVaRDollar.toLocaleString('tr-TR')}</strong>. ` +
+            `Riskin en büyük kaynağı <strong style="color:var(--text-primary)">${top.label}</strong> (portföy riskinin %${top.contribPct.toFixed(0)}'ı). ` +
+            `Ağırlığı %${(top.weight * 100).toFixed(0)} olmasına rağmen risk katkısı daha yüksekse yoğunlaşma sinyalidir.`;
+    }
 }
 
 // ─────────────────────────────────────────────
 // MACRO SHOCK ENGINE
 // ─────────────────────────────────────────────
-const shockData = {
-    fed: {
-        name: 'FED Faiz Kararı (+50bp)',
-        impact: '-₺42,150', percent: '-5.0%', volatility: '+45%', warning: '🌩️ Fırtına'
-    },
-    inflation: {
-        name: 'Enflasyon Şoku (Beklenti Üstü)',
-        impact: '-₺38,720', percent: '-4.6%', volatility: '+38%', warning: '⚡ Dikkat'
-    },
-    oil: {
-        name: 'Petrol Fiyatı (+20%)',
-        impact: '-₺25,410', percent: '-3.0%', volatility: '+28%', warning: '🌧️ Orta Risk'
-    },
-    currency: {
-        name: 'Dolar/TL (+15%)',
-        impact: '+₺31,250', percent: '+3.7%', volatility: '+32%', warning: '⚡ Dikkat'
-    },
-    tcmb: {
-        name: 'TCMB Sürpriz Faiz İndirimi (-500bp)',
-        impact: '-₺52,800', percent: '-6.2%', volatility: '+55%', warning: '🌩️ Fırtına'
-    }
+/* ── Portföye duyarlı makro şok modeli ──
+   Her senaryo, varlık tipi bazında yüzde etki (sensitivite) tanımlar.
+   Portföy etkisi = Σ ağırlık_i · sensitivite(tip_i) — gerçek portföye tepki verir. ── */
+const shockModel = {
+    fed:       { name: 'FED Faiz Kararı (+50bp)',              vol: 45, sens: { crypto: -0.060, stock: -0.035, bond: -0.020, forex:  0.010, default: -0.030 } },
+    inflation: { name: 'Enflasyon Şoku (Beklenti Üstü)',       vol: 38, sens: { crypto: -0.040, stock: -0.030, bond: -0.035, forex:  0.005, default: -0.025 } },
+    oil:       { name: 'Petrol Fiyatı (+20%)',                 vol: 28, sens: { crypto: -0.015, stock: -0.025, bond: -0.010, forex: -0.010, default: -0.018 } },
+    currency:  { name: 'Dolar/TL (+15%)',                      vol: 32, sens: { crypto:  0.130, stock: -0.020, bond: -0.030, forex:  0.120, default:  0.010 } },
+    tcmb:      { name: 'TCMB Sürpriz Faiz İndirimi (-500bp)',  vol: 55, sens: { crypto:  0.080, stock:  0.015, bond: -0.045, forex:  0.070, default:  0.010 } },
 };
+function _isCashSymbol(sym) { return /nakit|cash/i.test(sym || ''); }
+function computeShockImpact(scenarioKey) {
+    const pf = resolvePortfolio();
+    const model = shockModel[scenarioKey];
+    if (!model) return null;
+    let pct = 0;
+    pf.positions.forEach(p => {
+        if (_isCashSymbol(p.symbol)) {
+            // Nakit: sadece kur/faiz şoklarında hafif reel etki
+            pct += p.weight * ((scenarioKey === 'currency' || scenarioKey === 'tcmb') ? 0.02 : 0);
+            return;
+        }
+        const s = (model.sens[p.type] !== undefined) ? model.sens[p.type] : model.sens.default;
+        pct += p.weight * s;
+    });
+    return { impactTL: Math.round(pf.value * pct), pct: pct * 100, vol: model.vol, name: model.name };
+}
 
 function runShockScenario(scenario, cardEl) {
     document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('active'));
     if (cardEl) cardEl.classList.add('active');
 
-    const data = shockData[scenario];
+    const data = computeShockImpact(scenario);
+    if (!data) return;
     const result = document.getElementById('shockResult');
     const metrics = document.getElementById('impactMetrics');
     result.style.display = 'block';
@@ -6836,12 +6939,14 @@ function runShockScenario(scenario, cardEl) {
 
     setTimeout(() => {
         document.getElementById('shockLoading').style.display = 'none';
-        document.getElementById('shockImpact').textContent = data.impact;
-        document.getElementById('shockImpact').className = 'value ' + (data.impact.startsWith('-') ? 'negative' : 'positive');
-        document.getElementById('shockPercent').textContent = data.percent;
-        document.getElementById('shockPercent').className = 'value ' + (data.percent.startsWith('-') ? 'negative' : 'positive');
-        document.getElementById('volatilityIncrease').textContent = data.volatility;
-        document.getElementById('shockWarning').textContent = data.warning;
+        const neg = data.impactTL < 0;
+        document.getElementById('shockImpact').textContent = (neg ? '-' : '+') + '₺' + Math.abs(data.impactTL).toLocaleString('tr-TR');
+        document.getElementById('shockImpact').className = 'value ' + (neg ? 'negative' : 'positive');
+        document.getElementById('shockPercent').textContent = (data.pct >= 0 ? '+' : '') + data.pct.toFixed(1) + '%';
+        document.getElementById('shockPercent').className = 'value ' + (data.pct < 0 ? 'negative' : 'positive');
+        document.getElementById('volatilityIncrease').textContent = '+' + data.vol + '%';
+        const sev = Math.abs(data.pct);
+        document.getElementById('shockWarning').textContent = sev >= 5 ? '🌩️ Fırtına' : sev >= 3 ? '⚡ Dikkat' : '🌧️ Orta Risk';
         metrics.style.opacity = '1';
     }, 900);
 }
@@ -6849,20 +6954,24 @@ function runShockScenario(scenario, cardEl) {
 // ─────────────────────────────────────────────
 // BLACK SWAN
 // ─────────────────────────────────────────────
+/* ── Black Swan: senaryo baz düşüşü + varlık tipi crash-beta ──
+   Portföy düşüşü = baseDrop · Σ ağırlık_i · crashBeta(tip_i).
+   Kripto ağırlıklı portföy daha çok, tahvil/nakit ağırlıklı daha az düşer. ── */
 const swanData = {
-    pandemic: {
-        title: 'Pandemi Senaryosu — COVID-19 Benzeri',
-        drop: 0.35, survival: 72, recovery: '14-18 ay'
-    },
-    crash: {
-        title: '2008 Finansal Kriz Senaryosu',
-        drop: 0.45, survival: 58, recovery: '24-36 ay'
-    },
-    war: {
-        title: 'Jeopolitik Kriz Senaryosu',
-        drop: 0.25, survival: 65, recovery: '18-24 ay'
-    }
+    pandemic: { title: 'Pandemi Senaryosu — COVID-19 Benzeri', baseDrop: 0.30 },
+    crash:    { title: '2008 Finansal Kriz Senaryosu',         baseDrop: 0.42 },
+    war:      { title: 'Jeopolitik Kriz Senaryosu',            baseDrop: 0.22 },
 };
+const CRASH_BETA = { crypto: 1.6, stock: 1.0, bond: 0.15, forex: 0.35, default: 0.8 };
+function computePortfolioDrop(baseDrop) {
+    const pf = resolvePortfolio();
+    let eff = 0;
+    pf.positions.forEach(p => {
+        if (_isCashSymbol(p.symbol)) return; // nakit çökmez
+        eff += p.weight * (CRASH_BETA[p.type] ?? CRASH_BETA.default);
+    });
+    return Math.min(0.95, baseDrop * eff);
+}
 
 function runBlackSwan(scenario, cardEl) {
     document.querySelectorAll('.swan-card').forEach(c => c.classList.remove('active'));
@@ -6870,15 +6979,21 @@ function runBlackSwan(scenario, cardEl) {
 
     const d = swanData[scenario];
     const portfolioValue = metricsEngine ? metricsEngine.portfolioValue : resolvePortfolio().value;
-    const loss = portfolioValue * d.drop;
+    const drop = computePortfolioDrop(d.baseDrop);
+    const loss = portfolioValue * drop;
     const remaining = portfolioValue - loss;
+    // Hayatta kalma ve iyileşme portföy düşüşünden türetilir
+    const survival = Math.round(Math.max(5, Math.min(95, 100 - drop * 150)));
+    const recMonths = Math.round(drop * 100 * 0.8);
+    const recovery = Math.max(3, recMonths - 3) + '-' + (recMonths + 5) + ' ay';
 
     const result = document.getElementById('swanResult');
     result.style.display = 'block';
-    document.getElementById('swanScenarioTitle').textContent = d.title;
+    document.getElementById('swanScenarioTitle').textContent = d.title + ' — Portföy düşüşü %' + (drop * 100).toFixed(1);
     document.getElementById('swanLoss').textContent = '-₺' + loss.toLocaleString('tr-TR', { maximumFractionDigits: 0 });
     document.getElementById('swanRemaining').textContent = '₺' + remaining.toLocaleString('tr-TR', { maximumFractionDigits: 0 });
-    document.getElementById('recoveryTime').textContent = d.recovery;
+    document.getElementById('recoveryTime').textContent = recovery;
+    d.survival = survival; // aşağıdaki animasyon için
 
     // Animate survival rate
     const fill = document.getElementById('survivalRate');
@@ -7055,7 +7170,7 @@ function updateJournalStats() {
     const grossWin = wins.reduce((s, t) => s + t.pnl, 0);
     const grossLoss = Math.abs(losses.reduce((s, t) => s + t.pnl, 0));
     const pf = grossLoss > 0 ? grossWin / grossLoss : (grossWin > 0 ? Infinity : 0);
-    const rrs = trades.filter(t => t.rr !== null).map(t => t.rr);
+    const rrs = trades.filter(t => t.rr !== null && t.rr !== undefined && isFinite(t.rr)).map(t => t.rr);
     const avgRR = rrs.length > 0 ? rrs.reduce((a, b) => a + b, 0) / rrs.length : 0;
     const bestTrade = closedTrades.sort((a, b) => b.pnl - a.pnl)[0];
     const worstTrade = closedTrades.sort((a, b) => a.pnl - b.pnl)[0];
@@ -7076,7 +7191,7 @@ function updateJournalStats() {
     document.getElementById('stat-pf').textContent = isFinite(pf) ? pf.toFixed(2) : '∞';
     document.getElementById('stat-pf').className = 'jsc-value' + (pf >= 1.5 ? ' positive' : pf < 1 && pf > 0 ? ' negative' : '');
 
-    document.getElementById('stat-rr').textContent = avgRR.toFixed(2);
+    document.getElementById('stat-rr').textContent = isFinite(avgRR) ? avgRR.toFixed(2) : '0.00';
     document.getElementById('stat-rr').className = 'jsc-value' + (avgRR >= 2 ? ' positive' : avgRR > 0 ? '' : '');
 
     if (bestTrade) {
@@ -7087,6 +7202,105 @@ function updateJournalStats() {
         document.getElementById('stat-worst').textContent = '-' + fmt(Math.abs(worstTrade.pnl));
         document.getElementById('stat-worst-sym').textContent = worstTrade.sym;
     }
+
+    // Expectancy = (winRate·ortKazanç) − (lossRate·ortKayıp) — işlem başına beklenen değer
+    const avgWin = wins.length > 0 ? grossWin / wins.length : 0;
+    const avgLoss = losses.length > 0 ? grossLoss / losses.length : 0;
+    const wr = winRate / 100;
+    const expectancy = closedTrades.length > 0 ? (wr * avgWin - (1 - wr) * avgLoss) : 0;
+    const expEl = document.getElementById('stat-expectancy');
+    if (expEl) {
+        expEl.textContent = (expectancy >= 0 ? '+' : '-') + fmt(expectancy);
+        expEl.className = 'jsc-value' + (expectancy > 0 ? ' positive' : expectancy < 0 ? ' negative' : '');
+    }
+
+    renderSetupPerformance(closedTrades);
+}
+
+/* ── Setup/etiket bazlı performans: her etiket için işlem sayısı, kazanma oranı, net K/Z ── */
+function renderSetupPerformance(closedTrades) {
+    const wrap = document.getElementById('setupPerfWrap');
+    const list = document.getElementById('setupPerfList');
+    if (!wrap || !list) return;
+    const byTag = {};
+    closedTrades.forEach(t => {
+        (t.tags && t.tags.length ? t.tags : ['(etiketsiz)']).forEach(tag => {
+            if (!byTag[tag]) byTag[tag] = { n: 0, wins: 0, pnl: 0 };
+            byTag[tag].n++;
+            if (t.pnl > 0) byTag[tag].wins++;
+            byTag[tag].pnl += t.pnl;
+        });
+    });
+    const rows = Object.entries(byTag).map(([tag, s]) => ({ tag, ...s, wr: s.n ? s.wins / s.n * 100 : 0 }))
+        .sort((a, b) => b.pnl - a.pnl);
+    if (rows.length === 0) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    const fmt = (n) => (n >= 0 ? '+' : '-') + '₺' + Math.abs(n).toLocaleString('tr-TR', { maximumFractionDigits: 0 });
+    list.innerHTML = rows.map(r => {
+        const wrColor = r.wr >= 50 ? 'var(--color-success)' : 'var(--color-danger)';
+        const pnlColor = r.pnl >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-subtle)">
+            <span style="flex:1;font-weight:600;font-size:0.85rem">${r.tag}</span>
+            <span style="font-size:0.75rem;color:var(--text-secondary)">${r.n} işlem</span>
+            <span style="font-size:0.8rem;font-family:var(--font-mono);color:${wrColor};min-width:52px;text-align:right">%${r.wr.toFixed(0)}</span>
+            <span style="font-size:0.8rem;font-family:var(--font-mono);color:${pnlColor};min-width:88px;text-align:right">${fmt(r.pnl)}</span>
+        </div>`;
+    }).join('');
+}
+
+/* ── Position Sizing: risk-per-trade → pozisyon boyutu, teminat, R-multiple ── */
+function calcPositionSize() {
+    const val = id => parseFloat((document.getElementById(id) || {}).value) || 0;
+    const account = val('psAccount'), riskPct = val('psRisk'), entry = val('psEntry'),
+          stop = val('psStop'), target = val('psTarget'), lev = Math.max(1, val('psLeverage'));
+    const res = document.getElementById('psResults');
+    const warn = document.getElementById('psWarning');
+    if (!res) return;
+    if (!entry || !stop || entry === stop || !account || !riskPct) {
+        res.innerHTML = '<div style="color:var(--text-secondary);font-size:0.85rem">Giriş, stop, hesap ve risk değerlerini girin.</div>';
+        if (warn) warn.innerHTML = '';
+        return;
+    }
+    const riskAmount = account * riskPct / 100;
+    const stopDist = Math.abs(entry - stop);
+    const stopPct = stopDist / entry * 100;
+    const size = riskAmount / stopDist;          // birim (adet)
+    const posValue = size * entry;               // pozisyon değeri
+    const margin = posValue / lev;               // gerekli teminat
+    const rr = (target && Math.abs(target - entry) > 0) ? Math.abs(target - entry) / stopDist : null;
+    const rewardAmount = rr !== null ? riskAmount * rr : null;
+    const posPct = posValue / account * 100;
+    // Likidasyon (izole marj, ~%0.5 sürdürme marjı varsayımı)
+    const dir = (document.getElementById('psDirection') || {}).value || 'long';
+    const mmr = 0.005;
+    const liqPrice = dir === 'long' ? entry * (1 - 1 / lev + mmr) : entry * (1 + 1 / lev - mmr);
+    const liqDistPct = Math.abs(entry - liqPrice) / entry * 100;
+    const fmtTL = n => '₺' + Math.round(n).toLocaleString('tr-TR');
+    const tile = (label, value, color) => `<div style="padding:12px;background:var(--bg-tertiary);border-radius:10px">
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:4px">${label}</div>
+        <div style="font-size:1.02rem;font-weight:700;font-family:var(--font-mono);color:${color || 'var(--text-primary)'}">${value}</div></div>`;
+    res.innerHTML =
+        tile('Riske Edilen', fmtTL(riskAmount), 'var(--color-danger)') +
+        tile('Stop Mesafesi', stopPct.toFixed(2) + '%') +
+        tile('Pozisyon Boyutu', size.toLocaleString('tr-TR', { maximumFractionDigits: 4 }) + ' adet') +
+        tile('Pozisyon Değeri', fmtTL(posValue)) +
+        tile('Gerekli Teminat', fmtTL(margin), 'var(--color-secondary)') +
+        (rr !== null ? tile('R:R (Ödül:Risk)', rr.toFixed(2) + ' : 1', rr >= 2 ? 'var(--color-success)' : rr >= 1 ? 'var(--color-warning)' : 'var(--color-danger)') : '') +
+        (rewardAmount !== null ? tile('Hedefte Kazanç', '+' + fmtTL(rewardAmount), 'var(--color-success)') : '') +
+        (lev > 1 ? tile('Likidasyon Fiyatı', liqPrice.toLocaleString('tr-TR', { maximumFractionDigits: 4 }), 'var(--color-danger)') : '') +
+        (lev > 1 ? tile('Likidasyona Mesafe', liqDistPct.toFixed(2) + '%', liqDistPct < 5 ? 'var(--color-danger)' : liqDistPct < 15 ? 'var(--color-warning)' : 'var(--text-primary)') : '');
+    // Uyarılar
+    const msgs = [];
+    if (margin > account) msgs.push(`🔴 Gerekli teminat (${fmtTL(margin)}) hesabınızı aşıyor — kaldıraç artırın veya pozisyonu küçültün.`);
+    else if (posPct > 100 && lev === 1) msgs.push(`🟡 Pozisyon değeri hesabın %${posPct.toFixed(0)}'ı — kaldıraç olmadan bu boyut açılamaz.`);
+    // Likidasyon vs stop: kritik
+    const stopBeyondLiq = (dir === 'long' && stop <= liqPrice) || (dir === 'short' && stop >= liqPrice);
+    if (lev > 1 && stopBeyondLiq) msgs.push(`🔴 KRİTİK: Stop'unuz (${stop}) likidasyon fiyatının (${liqPrice.toFixed(2)}) ötesinde — stop tetiklenmeden LİKİDE OLURSUNUZ. Kaldıracı düşürün.`);
+    else if (lev > 1 && liqDistPct < stopPct * 1.5) msgs.push(`🟡 Likidasyon mesafesi (${liqDistPct.toFixed(1)}%) stop mesafesine (${stopPct.toFixed(1)}%) çok yakın — küçük bir dalgalanma likide edebilir.`);
+    if (rr !== null && rr < 1) msgs.push(`🟡 R:R 1'in altında (${rr.toFixed(2)}) — ödül riski karşılamıyor, kurulum zayıf.`);
+    if (riskPct > 2) msgs.push(`🟡 İşlem başına %${riskPct} risk yüksek — çoğu profesyonel %1-2 ile sınırlar.`);
+    if (warn) warn.innerHTML = msgs.length ? msgs.map(m => `<div style="margin-bottom:4px;color:var(--text-secondary)">${m}</div>`).join('') :
+        '<div style="color:var(--color-success)">✅ Pozisyon parametreleri makul aralıkta.</div>';
 }
 
 function filterJournal() {
@@ -7251,14 +7465,17 @@ class MonteCarloEngine {
     constructor(portfolioValue, positions) {
         this.portfolioValue = portfolioValue;
         this.positions = positions;
+        this._bmCache = null;
+        // Deterministik: aynı portföy + config → aynı simülasyon sonucu
+        this._rand = _mulberry32(_portfolioSeed(portfolioValue, positions));
     }
 
-    // Box-Muller: her çağrıda 2 normal variate üret, 1 döndür 1 sakla
+    // Box-Muller: her çağrıda 2 normal variate üret, 1 döndür 1 sakla (seeded PRNG)
     boxMuller() {
         if (this._bmCache != null) { const v = this._bmCache; this._bmCache = null; return v; }
         let u = 0, v = 0;
-        while (u === 0) u = Math.random();
-        while (v === 0) v = Math.random();
+        while (u === 0) u = this._rand();
+        while (v === 0) v = this._rand();
         const r = Math.sqrt(-2 * Math.log(u));
         this._bmCache = r * Math.sin(2 * Math.PI * v);
         return r * Math.cos(2 * Math.PI * v);
@@ -7293,6 +7510,9 @@ class MonteCarloEngine {
 
     // Main GBM simulation
     run({ simulations = 10000, days = 252, confidenceLevels = [0.95, 0.99], scenarioMode = 'normal' } = {}) {
+        // Config'e göre yeniden seed: aynı ayarlar → tekrarlanabilir sonuç
+        this._rand = _mulberry32(_hashSeed(_portfolioSeed(this.portfolioValue, this.positions) + '|' + simulations + '|' + days + '|' + scenarioMode));
+        this._bmCache = null;
         // Asset parameters (realistic estimates per asset class)
         const assetParams = this._buildAssetParams(scenarioMode);
         const assets = this.positions.map(p => ({
@@ -7460,6 +7680,37 @@ class MonteCarloEngine {
 const RISK_FREE_RATE = 0.0455;  // 10Y Treasury, Temmuz 2026
 const FED_FUNDS_RATE = 0.0363;
 
+/* ── Deterministik seeded PRNG (mulberry32) ──
+   Aynı portföy → aynı metrikler. Metriklerin her sayfa yenilemesinde
+   zıplamasını engeller; portföy değişince yeniden hesaplanır. ── */
+function _hashSeed(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) {
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = (h << 13) | (h >>> 19);
+    }
+    return (h ^ (h >>> 16)) >>> 0;
+}
+function _mulberry32(seed) {
+    let a = seed >>> 0;
+    return function () {
+        a |= 0; a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+function _portfolioSeed(portfolioValue, positions) {
+    const key = Math.round(portfolioValue) + '|' +
+        (positions || []).map(p => `${p.symbol}:${p.type}:${Number(p.weight).toFixed(4)}`).join(',');
+    return _hashSeed(key);
+}
+/* Demo pozisyon P&L'i için gün-içinde sabit, günlük değişen faktör (0..1) */
+function demoDailyFactor(symbol) {
+    const day = new Date().toISOString().slice(0, 10);
+    return _mulberry32(_hashSeed((symbol || '') + '|' + day))();
+}
+
 // S&P 500 benchmark aylık getirileri (2024-2026, FRED verisi)
 const SP500_MONTHLY_RETURNS = [
     0.052, 0.043, 0.029, -0.041, 0.038, 0.056, 0.033, 0.018, 0.024, -0.012, 0.047, 0.031,
@@ -7471,24 +7722,166 @@ class RiskMetricsEngine {
     constructor(portfolioValue, positions) {
         this.portfolioValue = portfolioValue;
         this.positions = positions;
-        this.dailyReturns = this._generateReturnSeries(756); // ~3 yıl günlük
         this._bmCache = null;
+        // Deterministik seed: aynı portföy → aynı metrikler (yenilemede zıplama yok)
+        this._rand = _mulberry32(_portfolioSeed(portfolioValue, positions));
+        this._buildPortfolioSeries(756); // ~3 yıl günlük
     }
 
-    /* ── Box-Muller normal dağılım (Marsaglia polar) ── */
+    /* ── Box-Muller normal dağılım (seeded PRNG kullanır) ── */
     boxMuller() {
         if (this._bmCache != null) { const v = this._bmCache; this._bmCache = null; return v; }
         let u = 0, v = 0;
-        while (u === 0) u = Math.random();
-        while (v === 0) v = Math.random();
+        while (u === 0) u = this._rand();
+        while (v === 0) v = this._rand();
         const r = Math.sqrt(-2 * Math.log(u));
         this._bmCache = r * Math.sin(2 * Math.PI * v);
         return r * Math.cos(2 * Math.PI * v);
     }
 
-    /* ── GBM ile sentetik getiri serisi üretimi (Mild, 2026 metodolojisi) ── */
-    _generateReturnSeries(days, assetType) {
-        const series = [];
+    /* ── Faktör modeli ile portföy + varlık getiri serileri üretimi ──
+       r_i = (L_market·market + L_type·typeFactor + L_idio·idio) / norm  (birim varyans)
+       Ortak market faktörü + tip faktörleri gerçekçi korelasyon yapısı üretir:
+       aynı tip yüksek (0.7-0.85), çapraz tip orta (~0.3), tahvil market'e negatif. ── */
+    _buildPortfolioSeries(days) {
+        const positions = (this.positions && this.positions.length)
+            ? this.positions : [{ symbol: 'PORT', type: 'default', weight: 1 }];
+        const params = {
+            crypto: { drift: 0.12, vol: 0.45 },
+            stock:  { drift: 0.08, vol: 0.20 },
+            bond:   { drift: 0.04, vol: 0.08 },
+            forex:  { drift: 0.02, vol: 0.10 },
+            default:{ drift: 0.08, vol: 0.22 },
+        };
+        // Faktör yüklemeleri (market, tip, idiyosenkratik)
+        const fmMap = {
+            crypto: { m: 0.50, t: 0.70, i: 0.55 },
+            stock:  { m: 0.60, t: 0.50, i: 0.55 },
+            bond:   { m: -0.30, t: 0.60, i: 0.45 },
+            forex:  { m: 0.20, t: 0.40, i: 0.60 },
+            default:{ m: 0.40, t: 0.40, i: 0.60 },
+        };
+        const N = days;
+        // Ortak market + tip faktör serileri (seeded)
+        const market = Array.from({ length: N }, () => this.boxMuller());
+        const typeKeys = ['crypto', 'stock', 'bond', 'forex', 'default'];
+        const typeFactor = {};
+        typeKeys.forEach(k => typeFactor[k] = Array.from({ length: N }, () => this.boxMuller()));
+
+        const totalW = positions.reduce((s, p) => s + Math.abs(Number(p.weight) || 0), 0) || 1;
+        this.weights = positions.map(p => (Number(p.weight) || 0) / totalW);
+        this.assetLabels = positions.map(p => (p.symbol || '').split('/')[0] || p.symbol || '—');
+        this.assetReturnSeries = [];
+        this.assetPriceSeries = [];
+
+        positions.forEach(p => {
+            const fm = fmMap[p.type] || fmMap.default;
+            const norm = Math.sqrt(fm.m * fm.m + fm.t * fm.t + fm.i * fm.i) || 1;
+            const q = params[p.type] || params.default;
+            const mu = q.drift / 252;
+            const sigma = q.vol / Math.sqrt(252);
+            const tf = typeFactor[p.type] || typeFactor.default;
+            let price = 100;
+            const prices = [price], rets = [];
+            for (let i = 0; i < N; i++) {
+                const idio = this.boxMuller();
+                const shock = (fm.m * market[i] + fm.t * tf[i] + fm.i * idio) / norm; // ~N(0,1)
+                const r = (mu - 0.5 * sigma * sigma) + sigma * shock;
+                price *= Math.exp(r);
+                prices.push(price);
+                rets.push(r);
+            }
+            this.assetPriceSeries.push(prices);
+            this.assetReturnSeries.push(rets);
+        });
+
+        // Portföy log-getirisi = Σ w_i · r_i ; fiyat serisi yeniden kurulur
+        const portReturns = [];
+        const portPrices = [100];
+        for (let i = 0; i < N; i++) {
+            let r = 0;
+            for (let a = 0; a < positions.length; a++) r += this.weights[a] * this.assetReturnSeries[a][i];
+            portReturns.push(r);
+            portPrices.push(portPrices[portPrices.length - 1] * Math.exp(r));
+        }
+        this.portfolioReturns = portReturns;
+        this.dailyReturns = portPrices; // fiyat serisi (maxDrawdown/calmar geriye uyumlu)
+    }
+
+    /* ── Gerçek korelasyon matrisi (varlık getiri serilerinden, Pearson) ── */
+    getCorrelationMatrix() {
+        const n = this.assetReturnSeries.length;
+        const M = [];
+        for (let i = 0; i < n; i++) {
+            M[i] = [];
+            for (let j = 0; j < n; j++) {
+                M[i][j] = i === j ? 1 : this.calculateCorrelation(this.assetReturnSeries[i], this.assetReturnSeries[j]);
+            }
+        }
+        return M;
+    }
+    /* ── Ortalama ikili korelasyon (gerçek serilerden) ── */
+    getAverageCorrelation() {
+        const n = this.assetReturnSeries.length;
+        if (n < 2) return 0;
+        let sum = 0, count = 0;
+        for (let i = 0; i < n; i++)
+            for (let j = i + 1; j < n; j++) {
+                sum += this.calculateCorrelation(this.assetReturnSeries[i], this.assetReturnSeries[j]);
+                count++;
+            }
+        return count === 0 ? 0 : sum / count;
+    }
+
+    /* ── Component VaR: her pozisyonun portföy riskine katkısı ──
+       Component VaR_i = w_i · β_i,p · VaR_p ;  Σ Component VaR_i = VaR_p
+       β_i,p = Cov(r_i, r_p) / Var(r_p). Katkı yüzdeleri toplamı %100. ── */
+    getComponentVaR() {
+        const n = this.assetReturnSeries.length;
+        const rp = this.portfolioReturns;
+        const meanP = rp.reduce((a, b) => a + b, 0) / rp.length;
+        const varP = rp.reduce((a, v) => a + (v - meanP) ** 2, 0) / rp.length;
+        if (varP === 0) return { totalVaRDollar: 0, comps: [] };
+        const z = 1.645; // %95
+        const varP95Frac = Math.abs(meanP - z * Math.sqrt(varP)); // günlük VaR (kesir)
+        const totalVaRDollar = varP95Frac * this.portfolioValue;
+        const comps = [];
+        for (let i = 0; i < n; i++) {
+            const ri = this.assetReturnSeries[i];
+            const meanI = ri.reduce((a, b) => a + b, 0) / ri.length;
+            let cov = 0;
+            for (let k = 0; k < ri.length; k++) cov += (ri[k] - meanI) * (rp[k] - meanP);
+            cov /= ri.length;
+            const betaIP = cov / varP;
+            const contribFrac = this.weights[i] * betaIP; // toplamı 1
+            comps.push({
+                label: this.assetLabels[i],
+                weight: this.weights[i],
+                contribPct: contribFrac * 100,
+                cVaRDollar: Math.round(contribFrac * totalVaRDollar),
+            });
+        }
+        comps.sort((a, b) => b.contribPct - a.contribPct);
+        return { totalVaRDollar: Math.round(totalVaRDollar), comps };
+    }
+
+    /* ── Risk Parity portföyün max drawdown'ı (Shadow Backtest için) ──
+       Eşit risk katkılı (ERC) ağırlıklarla portföy yeniden kurulur, drawdown ölçülür. ── */
+    getRiskParityDrawdown() {
+        const rpW = this.calculateRiskParityWeights(this.assetReturnSeries);
+        const N = this.portfolioReturns.length;
+        const prices = [100];
+        for (let i = 0; i < N; i++) {
+            let r = 0;
+            for (let a = 0; a < rpW.length; a++) r += rpW[a] * this.assetReturnSeries[a][i];
+            prices.push(prices[prices.length - 1] * Math.exp(r));
+        }
+        return { drawdownPct: this.calculateMaxDrawdown(prices) * 100, weights: rpW };
+    }
+
+    /* ── Tek varlık sentetik fiyat serisi (grafikler için, seeded & deterministik) ──
+       salt farklı çağrılarda ayrışan seriler üretir; aynı (tf,salt) → aynı seri. ── */
+    _generateReturnSeries(days, assetType, salt) {
         const params = {
             crypto: { drift: 0.12, vol: 0.45 },
             stock:  { drift: 0.08, vol: 0.20 },
@@ -7499,11 +7892,21 @@ class RiskMetricsEngine {
         const p = params[assetType] || params.default;
         const mu = p.drift / 252;
         const sigma = p.vol / Math.sqrt(252);
-        
+        const rand = _mulberry32(_hashSeed(_portfolioSeed(this.portfolioValue, this.positions) + '|' + (assetType || 'd') + '|' + (salt || '') + '|' + days));
+        let cache = null;
+        const bm = () => {
+            if (cache != null) { const v = cache; cache = null; return v; }
+            let u = 0, v = 0;
+            while (u === 0) u = rand();
+            while (v === 0) v = rand();
+            const r = Math.sqrt(-2 * Math.log(u));
+            cache = r * Math.sin(2 * Math.PI * v);
+            return r * Math.cos(2 * Math.PI * v);
+        };
         let price = 100;
+        const series = [];
         for (let i = 0; i < days; i++) {
-            const z = this.boxMuller();
-            price *= Math.exp((mu - 0.5 * sigma * sigma) + sigma * z);
+            price *= Math.exp((mu - 0.5 * sigma * sigma) + sigma * bm());
             series.push(price);
         }
         return series;
@@ -7764,7 +8167,8 @@ class RiskMetricsEngine {
     */
     calculateSurvivalScore(metrics) {
         const sharpeScore = Math.min(20, Math.max(0, (metrics.sharpe / 2) * 20));
-        const ddScore = Math.min(20, Math.max(0, (1 - metrics.maxDrawdown / 0.40) * 20));
+        // maxDrawdown yüzde olarak gelir (ör. 23.8); 40% referansa göre normalize
+        const ddScore = Math.min(20, Math.max(0, (1 - metrics.maxDrawdown / 40) * 20));
         const varScore = Math.min(15, Math.max(0, (1 - Math.abs(metrics.var95) / 0.15) * 15));
         const sortinoScore = Math.min(10, Math.max(0, (metrics.sortino / 3) * 10));
         const calmarScore = Math.min(10, Math.max(0, (metrics.calmar / 2) * 10));
@@ -7802,9 +8206,8 @@ class RiskMetricsEngine {
         const calmar = this.calculateCalmar(portReturns, this.dailyReturns);
         const rollingVol = this.calculateRollingVolatility(portReturns);
 
-        // Asset korelasyonları
-        const assetTypes = this.positions.map(p => p.type);
-        const avgCorr = this._averageCorrelation(assetTypes);
+        // Asset korelasyonları — gerçek varlık getiri serilerinden
+        const avgCorr = this.getAverageCorrelation();
 
         // VaR/CVaR dolar cinsinden
         const var95Dollar = this.portfolioValue * Math.abs(var95);
@@ -7860,8 +8263,19 @@ class RiskMetricsEngine {
         };
 
         setText('metricBeta', metrics.beta.toFixed(2));
-        setText('metricVar', `-${new Intl.NumberFormat('tr-TR').format(metrics.var95Dollar)}`);
-        setText('metricCVaR', `-${new Intl.NumberFormat('tr-TR').format(metrics.cvar95Dollar)}`);
+        // Hero "Risk Durumu" kartını hesaplanan beta ile senkronize et (tutarsızlık önleme)
+        setText('heroBeta', 'Beta: ' + metrics.beta.toFixed(2));
+        const absBeta = Math.abs(metrics.beta);
+        const heroStatusEl = document.getElementById('heroRiskStatus');
+        if (heroStatusEl) {
+            const level = absBeta < 1 ? { t: 'Düşük', c: 'var(--color-success)' }
+                        : absBeta < 1.5 ? { t: 'Orta', c: 'var(--color-warning)' }
+                        : { t: 'Yüksek', c: 'var(--color-danger)' };
+            heroStatusEl.textContent = level.t;
+            heroStatusEl.style.color = level.c;
+        }
+        setText('metricVar', `-₺${new Intl.NumberFormat('tr-TR').format(metrics.var95Dollar)}`);
+        setText('metricCVaR', `-₺${new Intl.NumberFormat('tr-TR').format(metrics.cvar95Dollar)}`);
         setText('metricSharpe', metrics.sharpe.toFixed(2));
         setText('metricSortino', metrics.sortino.toFixed(2));
         setText('metricTreynor', metrics.treynor.toFixed(2));
@@ -8000,6 +8414,20 @@ class MarketDataEngine {
             );
             const marker = document.getElementById('fearGreedMarker');
             if (marker) marker.style.left = Math.min(95, Math.max(5, parseInt(fng.value))) + '%';
+            // Piyasa trendini F&G + BTC momentumundan türet (F&G ile tutarlı olsun)
+            const fg = parseInt(fng.value);
+            const btcChg = (btc && typeof btc.change24h === 'number') ? btc.change24h : 0;
+            const tv = document.getElementById('marketTrendValue');
+            const ts = document.getElementById('marketTrendSub');
+            if (tv) {
+                let label, cls, sub;
+                if (fg >= 55 && btcChg >= 0) { label = '▲ Boğa'; cls = 'crypto-ind-value positive'; sub = 'Duyarlılık pozitif, momentum yukarı'; }
+                else if (fg <= 45 || btcChg < -3) { label = '▼ Ayı'; cls = 'crypto-ind-value negative'; sub = 'Korku baskın, momentum zayıf'; }
+                else { label = '◆ Nötr'; cls = 'crypto-ind-value'; sub = 'Karışık sinyaller, kararsız piyasa'; }
+                tv.textContent = label;
+                tv.className = cls;
+                if (ts) ts.textContent = sub;
+            }
         }
         this.fetchDominance();
     }
@@ -8380,6 +8808,14 @@ function renderPositionsList() {
     const pf = resolvePortfolio();
     const totalVal = pf.value;
     _allPositions = pf.positions;
+    // Hero "Açık Pozisyon" ve borsa sayısını portföyden türet
+    const heroPos = document.getElementById('heroPosCount');
+    if (heroPos) heroPos.textContent = pf.positions.length;
+    const heroExch = document.getElementById('heroExchangeCount');
+    if (heroExch) {
+        const exchSet = new Set(pf.positions.map(p => (p.type === 'crypto' || p.symbol.includes('/')) ? 'Binance' : 'MetaTrader'));
+        heroExch.textContent = exchSet.size + ' Borsa';
+    }
     const showAll = document.getElementById('positionsViewAll');
     if (showAll) {
         if (pf.positions.length > 4) {
@@ -8397,7 +8833,7 @@ function renderPositionsList() {
         const dir = p.weight >= 0 ? 'A' : 'S';
         const dirClass = p.weight >= 0 ? 'long' : 'short';
         // Approximate PnL: random walk based on weight (demo only)
-        const pnlPct = (Math.random() * 0.1 - 0.02) * p.weight * 100;
+        const pnlPct = (demoDailyFactor(p.symbol) * 0.1 - 0.02) * p.weight * 100;
         const pnl = Math.round(totalVal * p.weight * pnlPct);
         const pnlClass = pnl >= 0 ? 'positive' : 'negative';
         const pnlStr = (pnl >= 0 ? '+' : '') + '₺' + Math.abs(pnl).toLocaleString('tr-TR');
@@ -8432,7 +8868,7 @@ function showAllPositions() {
         const symClass = isCrypto ? 'asset-crypto' : 'asset-bist';
         const dir = p.weight >= 0 ? 'A' : 'S';
         const dirClass = p.weight >= 0 ? 'long' : 'short';
-        const pnlPct = (Math.random() * 0.1 - 0.02) * p.weight * 100;
+        const pnlPct = (demoDailyFactor(p.symbol) * 0.1 - 0.02) * p.weight * 100;
         const pnl = Math.round(totalVal * p.weight * pnlPct);
         const pnlClass = pnl >= 0 ? 'positive' : 'negative';
         const pnlStr = (pnl >= 0 ? '+' : '') + '₺' + Math.abs(pnl).toLocaleString('tr-TR');
@@ -9161,7 +9597,7 @@ const translations = {
         'faq-q6': 'Is it suitable for crypto and stock investors?',
         'faq-a6': 'Absolutely! Equilyze is designed for both crypto (Bitcoin, Ethereum, etc.) and traditional market (BIST, forex) investors. You can analyze all asset types in a single panel.',
         // Security (Layer 4)
-        'seal-desc': 'Your API keys work with <strong>read-only permission</strong> only. Our platform has no authority to execute trades, withdraw funds, or make transfers on your account under any circumstances.',
+        'seal-desc': 'In the live version, API keys will work with <strong>read-only permission</strong> only; the platform will never have authority to trade, withdraw, or transfer funds. <strong>This is a demo preview</strong> — there is no live exchange connection yet and no real keys are collected.',
         'sf-ssl': 'End-to-end encryption',
         'sf-readonly': 'Read-Only API',
         'sf-readonly-sub': 'No trading permission',
@@ -9538,16 +9974,21 @@ function runShadowBacktest() {
             // "Sonra" = risk parity ağırlıklı portföyün max drawdown'ı
     const engine = metricsEngine || new RiskMetricsEngine(resolvePortfolio().value, resolvePortfolio().positions);
             const metrics = engine.calculateAll();
-            
-            // Simulate risk parity improvement
+
+            // Gerçek risk-parity (ERC) portföyünün drawdown'ı — deterministik
             const currentDD = metrics.maxDrawdown;
-            const improvedDD = currentDD * (0.55 + Math.random() * 0.15); // %40-45 iyileşme
-            
+            const rp = engine.getRiskParityDrawdown();
+            const improvedDD = rp.drawdownPct;
+
             beforeEl.textContent = `-${currentDD.toFixed(1)}%`;
             afterEl.textContent = `-${improvedDD.toFixed(1)}%`;
-            
+
             const improvement = Math.round((1 - improvedDD / currentDD) * 100);
-            showToast(`✅ Backtest tamamlandı! Max Drawdown ${currentDD.toFixed(1)}% → ${improvedDD.toFixed(1)}% (${improvement}% iyileşme). Risk Parity optimizasyonu önerilir.`, 'success');
+            if (improvement > 0) {
+                showToast(`✅ Backtest tamamlandı! Max Drawdown ${currentDD.toFixed(1)}% → ${improvedDD.toFixed(1)}% (${improvement}% iyileşme). Risk Parity ağırlıkları drawdown'ı azaltıyor.`, 'success');
+            } else {
+                showToast(`✅ Backtest tamamlandı! Mevcut portföyünüz zaten iyi dengeli — Risk Parity drawdown'ı anlamlı azaltmıyor (${currentDD.toFixed(1)}% → ${improvedDD.toFixed(1)}%).`, 'info');
+            }
         }, 1500);
     }
 }
@@ -9668,8 +10109,63 @@ function updateInsightBar(metrics) {
     }
 }
 
+/* ── Dinamik tarihler: ekonomik takvim + psikoloji raporu ayı ──
+   Bayat "Mart 2026" gibi sabit tarihlerin yerine bugüne göre güncel değerler. ── */
+const TR_MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const TR_MON_ABBR = ['OCA','ŞUB','MAR','NİS','MAY','HAZ','TEM','AĞU','EYL','EKİ','KAS','ARA'];
+function updateDynamicDates() {
+    const now = new Date();
+    // Psikoloji raporu: içinde bulunulan ay
+    const trPsych = '📅 ' + TR_MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+    const enPsych = '📅 ' + EN_MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+    const isEn = (typeof currentLang !== 'undefined' && currentLang === 'en');
+    const psychEl = document.getElementById('psychPeriod');
+    if (psychEl) {
+        psychEl.textContent = isEn ? enPsych : trPsych;
+        psychEl.dataset.i18nOriginal = trPsych; // TR'ye dönüşte doğru değer
+    }
+    if (typeof translations !== 'undefined' && translations.en) {
+        translations.en['psych-period'] = enPsych;
+    }
+    // Ekonomik takvim: bugünden ileriye doğru örnek makro olaylar
+    const cal = document.getElementById('economicCalendar');
+    if (cal) {
+        const events = [
+            { off: 4,  cls: 'high-impact',   badge: 'high',   badgeText: 'Yüksek', title: 'FED Faiz Kararı',        detail: 'Beklenti: %4.50 &nbsp;|&nbsp; Önceki: %4.75', vol: '+45% vol.' },
+            { off: 8,  cls: 'medium-impact', badge: 'medium', badgeText: 'Orta',   title: 'TÜFE (ABD)',             detail: 'Beklenti: %3.1 &nbsp;|&nbsp; Önceki: %3.3',  vol: '+25% vol.' },
+            { off: 12, cls: 'high-impact',   badge: 'high',   badgeText: 'Yüksek', title: 'Tarım Dışı İstihdam',    detail: 'Beklenti: 180K &nbsp;|&nbsp; Önceki: 175K',  vol: '+40% vol.' },
+            { off: 18, cls: 'low-impact',    badge: 'low',    badgeText: 'Düşük',  title: 'TCMB Faiz Kararı',       detail: 'Beklenti: %42.50 &nbsp;|&nbsp; Önceki: %45.00', vol: '+15% vol.' },
+        ];
+        cal.innerHTML = events.map(e => {
+            const d = new Date(now.getTime() + e.off * 86400000);
+            return `<div class="event-item ${e.cls}">
+                <div class="event-date">
+                    <span class="event-day">${String(d.getDate()).padStart(2,'0')}</span>
+                    <span class="event-month">${TR_MON_ABBR[d.getMonth()]}</span>
+                </div>
+                <div class="event-info">
+                    <h5>${e.title}</h5>
+                    <p>${e.detail}</p>
+                </div>
+                <div class="event-impact">
+                    <span class="impact-badge ${e.badge}">${e.badgeText}</span>
+                    <span class="volatility-est">${e.vol}</span>
+                </div>
+            </div>`;
+        }).join('');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     authInit();
+    updateDynamicDates();
+    // Position sizing hesaplayıcı: hesap büyüklüğünü portföyden al
+    try {
+        const psAcc = document.getElementById('psAccount');
+        if (psAcc) psAcc.value = Math.round(resolvePortfolio().value);
+    } catch {}
+    if (typeof calcPositionSize === 'function') calcPositionSize();
     setTimeout(() => {
         initFinancialEngines();
     }, 500);
