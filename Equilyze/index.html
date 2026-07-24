@@ -4510,7 +4510,7 @@ body.dashboard-open .footer { display: none; }
                         <div class="psych-title">
                             🧠 <span data-i18n="psych-title">Aylık Psikolojik Analiz Raporu</span>
                         </div>
-                        <span class="psych-period" data-i18n="psych-period">📅 Mart 2026</span>
+                        <span class="psych-period" id="psychPeriod" data-i18n="psych-period">📅 Mart 2026</span>
                     </div>
                     <div class="psych-grid">
                         <div class="psych-stat">
@@ -4664,7 +4664,7 @@ body.dashboard-open .footer { display: none; }
                         <h3>📅 Ekonomik Takvim</h3>
                         <p>Yaklaşan kritik veriler ve beklenti aralıkları</p>
                     </div>
-                    <div class="calendar-events">
+                    <div class="calendar-events" id="economicCalendar">
                         <div class="event-item high-impact">
                             <div class="event-date">
                                 <span class="event-day">15</span>
@@ -7999,8 +7999,8 @@ class RiskMetricsEngine {
             heroStatusEl.textContent = level.t;
             heroStatusEl.style.color = level.c;
         }
-        setText('metricVar', `-${new Intl.NumberFormat('tr-TR').format(metrics.var95Dollar)}`);
-        setText('metricCVaR', `-${new Intl.NumberFormat('tr-TR').format(metrics.cvar95Dollar)}`);
+        setText('metricVar', `-₺${new Intl.NumberFormat('tr-TR').format(metrics.var95Dollar)}`);
+        setText('metricCVaR', `-₺${new Intl.NumberFormat('tr-TR').format(metrics.cvar95Dollar)}`);
         setText('metricSharpe', metrics.sharpe.toFixed(2));
         setText('metricSortino', metrics.sortino.toFixed(2));
         setText('metricTreynor', metrics.treynor.toFixed(2));
@@ -9807,8 +9807,57 @@ function updateInsightBar(metrics) {
     }
 }
 
+/* ── Dinamik tarihler: ekonomik takvim + psikoloji raporu ayı ──
+   Bayat "Mart 2026" gibi sabit tarihlerin yerine bugüne göre güncel değerler. ── */
+const TR_MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const TR_MON_ABBR = ['OCA','ŞUB','MAR','NİS','MAY','HAZ','TEM','AĞU','EYL','EKİ','KAS','ARA'];
+function updateDynamicDates() {
+    const now = new Date();
+    // Psikoloji raporu: içinde bulunulan ay
+    const trPsych = '📅 ' + TR_MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+    const enPsych = '📅 ' + EN_MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+    const isEn = (typeof currentLang !== 'undefined' && currentLang === 'en');
+    const psychEl = document.getElementById('psychPeriod');
+    if (psychEl) {
+        psychEl.textContent = isEn ? enPsych : trPsych;
+        psychEl.dataset.i18nOriginal = trPsych; // TR'ye dönüşte doğru değer
+    }
+    if (typeof translations !== 'undefined' && translations.en) {
+        translations.en['psych-period'] = enPsych;
+    }
+    // Ekonomik takvim: bugünden ileriye doğru örnek makro olaylar
+    const cal = document.getElementById('economicCalendar');
+    if (cal) {
+        const events = [
+            { off: 4,  cls: 'high-impact',   badge: 'high',   badgeText: 'Yüksek', title: 'FED Faiz Kararı',        detail: 'Beklenti: %4.50 &nbsp;|&nbsp; Önceki: %4.75', vol: '+45% vol.' },
+            { off: 8,  cls: 'medium-impact', badge: 'medium', badgeText: 'Orta',   title: 'TÜFE (ABD)',             detail: 'Beklenti: %3.1 &nbsp;|&nbsp; Önceki: %3.3',  vol: '+25% vol.' },
+            { off: 12, cls: 'high-impact',   badge: 'high',   badgeText: 'Yüksek', title: 'Tarım Dışı İstihdam',    detail: 'Beklenti: 180K &nbsp;|&nbsp; Önceki: 175K',  vol: '+40% vol.' },
+            { off: 18, cls: 'low-impact',    badge: 'low',    badgeText: 'Düşük',  title: 'TCMB Faiz Kararı',       detail: 'Beklenti: %42.50 &nbsp;|&nbsp; Önceki: %45.00', vol: '+15% vol.' },
+        ];
+        cal.innerHTML = events.map(e => {
+            const d = new Date(now.getTime() + e.off * 86400000);
+            return `<div class="event-item ${e.cls}">
+                <div class="event-date">
+                    <span class="event-day">${String(d.getDate()).padStart(2,'0')}</span>
+                    <span class="event-month">${TR_MON_ABBR[d.getMonth()]}</span>
+                </div>
+                <div class="event-info">
+                    <h5>${e.title}</h5>
+                    <p>${e.detail}</p>
+                </div>
+                <div class="event-impact">
+                    <span class="impact-badge ${e.badge}">${e.badgeText}</span>
+                    <span class="volatility-est">${e.vol}</span>
+                </div>
+            </div>`;
+        }).join('');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     authInit();
+    updateDynamicDates();
     setTimeout(() => {
         initFinancialEngines();
     }, 500);
