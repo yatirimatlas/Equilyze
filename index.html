@@ -3006,6 +3006,9 @@ body.dashboard-open .footer { display: none; }
     .rwa-grid { grid-template-columns: 1fr; }
     .insight-bar { flex-direction: column; text-align: center; }
     .insight-cta { width: 100%; }
+    .survival-score-card { flex-wrap: wrap; }
+    .survival-score-card .insight-cta { width: 100%; margin-top: 6px; }
+    .survival-body { min-width: 0; }
     .quick-scenarios { grid-template-columns: 1fr; }
     .psych-grid { grid-template-columns: repeat(2, 1fr); }
     .info-tooltip { width: 180px; }
@@ -3467,6 +3470,33 @@ body.dashboard-open .footer { display: none; }
 .waitlist-input:focus { outline: none; border-color: var(--color-primary); }
 .waitlist-submit { padding: 12px 24px; white-space: nowrap; }
 .waitlist-form-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; }
+
+/* ── Waitlist micro-survey (site tasarım sistemiyle uyumlu) ── */
+.waitlist-micro-survey {
+    max-width: 480px;
+    margin: 0 auto 16px;
+    padding: 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    text-align: left;
+}
+.waitlist-micro-survey .wms-title {
+    font-size: 0.875rem; color: var(--text-secondary);
+    margin-bottom: 14px; font-weight: 600;
+}
+.waitlist-micro-survey .wms-field { margin-bottom: 12px; }
+.waitlist-micro-survey .wms-field:last-child { margin-bottom: 0; }
+.waitlist-micro-survey label {
+    display: block; font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 6px;
+}
+.waitlist-micro-survey select {
+    width: 100%; padding: 10px 12px;
+    background: var(--bg-tertiary); border: 1px solid var(--border-color);
+    border-radius: var(--radius-md); color: var(--text-primary);
+    font-size: 0.875rem; cursor: pointer; transition: border-color 0.2s;
+}
+.waitlist-micro-survey select:focus { outline: none; border-color: var(--color-primary); }
 
 /* ── Responsive for new sections ── */
 @media (max-width: 768px) {
@@ -5176,10 +5206,10 @@ body.dashboard-open .footer { display: none; }
                     <input type="text" name="_honey" style="display:none">
                     <input type="hidden" name="_captcha" value="true">
                     <div class="waitlist-micro-survey" id="microSurvey">
-                        <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:10px;">🌟 2 soruluk mikro anket (opsiyonel):</p>
-                        <div style="margin-bottom:10px;">
-                            <label style="font-size:0.8125rem;color:var(--text-secondary);">En çok hangi özellik ilginizi çekiyor?</label>
-                            <select name="feature_interest" style="width:100%;margin-top:4px;padding:8px;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);">
+                        <p class="wms-title">🌟 2 soruluk mikro anket (opsiyonel)</p>
+                        <div class="wms-field">
+                            <label>En çok hangi özellik ilginizi çekiyor?</label>
+                            <select name="feature_interest">
                                 <option value="">Seçiniz</option>
                                 <option value="risk_test">Risk Profili Testi</option>
                                 <option value="monte_carlo">Monte Carlo Simülasyonu</option>
@@ -5189,9 +5219,9 @@ body.dashboard-open .footer { display: none; }
                                 <option value="korrelasyon">Korelasyon Analizi</option>
                             </select>
                         </div>
-                        <div>
-                            <label style="font-size:0.8125rem;color:var(--text-secondary);">Bunun için aylık ne ödersiniz?</label>
-                            <select name="price_signal" style="width:100%;margin-top:4px;padding:8px;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);">
+                        <div class="wms-field">
+                            <label>Bunun için aylık ne ödersiniz?</label>
+                            <select name="price_signal">
                                 <option value="">Seçiniz</option>
                                 <option value="0">Ücretsiz olmalı</option>
                                 <option value="100">100 TL'ye kadar</option>
