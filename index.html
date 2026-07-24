@@ -9,6 +9,8 @@
     <meta name="theme-color" content="#0a0f0d">
     <title>Equilyze | Profesyonel Portföy & Trading Analiz Platformu</title>
     <meta name="description" content="Equilyze ile portföyünüzü analiz edin, risk profilinizi öğrenin, API bağlantılarıyla tüm hesaplarınızı tek yerden yönetin.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2310b981'/><stop offset='1' stop-color='%2306b6d4'/></linearGradient></defs><rect width='32' height='32' rx='7' fill='url(%23g)'/><g fill='none' stroke='white' stroke-width='2.3' stroke-linejoin='round' stroke-linecap='round'><path d='M16 6 6 11l10 5 10-5-10-5z'/><path d='M6 21l10 5 10-5'/><path d='M6 16l10 5 10-5'/></g></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2310b981'/><stop offset='1' stop-color='%2306b6d4'/></linearGradient></defs><rect width='32' height='32' rx='7' fill='url(%23g)'/><g fill='none' stroke='white' stroke-width='2.3' stroke-linejoin='round' stroke-linecap='round'><path d='M16 6 6 11l10 5 10-5-10-5z'/><path d='M6 21l10 5 10-5'/><path d='M6 16l10 5 10-5'/></g></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1696,6 +1698,36 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
 body.dashboard-open .hero, body.dashboard-open .section:not(#dashboard) { display: none; }
 body.dashboard-open #dashboard { padding-top: 80px; display: block; min-height: 100vh; }
 body.dashboard-open .footer { display: none; }
+body.user-page-open .footer { display: none; }
+body.user-page-open .mobile-bottom-nav { display: none; }
+
+/* ── Dashboard: ana sayfada kompakt teaser, Dashboard sayfasında tam içerik ── */
+body:not(.dashboard-open) #dashboard .dashboard-inner { display: none; }
+body.dashboard-open #dashboard .dashboard-teaser { display: none; }
+.dashboard-teaser { max-width: 720px; margin: 0 auto; text-align: center; }
+.dashboard-teaser-preview { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 22px; }
+.dt-stat { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 16px; text-align: left; }
+.dt-stat-label { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+.dt-stat-value { font-size: 1.15rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+.dashboard-teaser-features { list-style: none; text-align: left; max-width: 440px; margin: 0 auto 24px; display: grid; gap: 9px; }
+.dashboard-teaser-features li { font-size: 0.9rem; color: var(--text-secondary); }
+.dashboard-teaser-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; }
+@media (min-width: 640px) { .dashboard-teaser-preview { grid-template-columns: repeat(4, 1fr); } }
+
+/* ── Bağımsız sayfalar (Blog, Eğitim) — ana sayfadan ayrı, footer'dan erişilir ── */
+.overlay-page { display: none; padding: 96px 0 64px; min-height: 100vh; }
+.overlay-page.open { display: block; animation: fadeInUp 0.4s ease; }
+body.overlay-open .hero,
+body.overlay-open .section:not(.overlay-page),
+body.overlay-open .footer,
+body.overlay-open .mobile-bottom-nav { display: none; }
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 8px; }
+.blog-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 24px; transition: border-color 0.2s, transform 0.2s; cursor: default; }
+.blog-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+.blog-card-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-primary); background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 999px; margin-bottom: 12px; }
+.blog-card h3 { font-size: 1.05rem; margin-bottom: 8px; color: var(--text-primary); line-height: 1.4; }
+.blog-card p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
+.blog-card-meta { font-size: 0.75rem; color: var(--text-muted); }
 .user-container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
 .user-header { display: flex; align-items: center; gap: 20px; margin-bottom: 32px; flex-wrap: wrap; }
 .user-avatar-large { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 700; color: #fff; flex-shrink: 0; }
@@ -3730,6 +3762,27 @@ body.dashboard-open .footer { display: none; }
                 <button class="btn btn-sm btn-ghost" onclick="closeDashboardPage()" id="dashboardBackBtn" style="display:none">← Ana Sayfa</button>
             </div>
 
+            <!-- Dashboard Teaser (yalnızca ana sayfada; tam dashboard ayrı sayfada) -->
+            <div class="dashboard-teaser">
+                <div class="dashboard-teaser-preview">
+                    <div class="dt-stat"><span class="dt-stat-label">Portföy Değeri</span><span class="dt-stat-value" id="dtPortfolio">₺847.250</span></div>
+                    <div class="dt-stat"><span class="dt-stat-label">Hayatta Kalma Skoru</span><span class="dt-stat-value" id="dtSurvival" style="color:var(--color-warning)">—</span></div>
+                    <div class="dt-stat"><span class="dt-stat-label">Açık Pozisyon</span><span class="dt-stat-value" id="dtPositions">—</span></div>
+                    <div class="dt-stat"><span class="dt-stat-label">Value at Risk (95%)</span><span class="dt-stat-value" id="dtVar" style="color:var(--color-danger)">—</span></div>
+                </div>
+                <ul class="dashboard-teaser-features">
+                    <li>📊 Canlı pozisyonlar, P&amp;L ısı haritası, risk metrikleri</li>
+                    <li>🎲 Monte Carlo simülasyonu + Component VaR</li>
+                    <li>🔗 Korelasyon matrisi, likidite &amp; kayma analizi</li>
+                    <li>🧠 Hayatta kalma skoru + AI içgörüler</li>
+                </ul>
+                <button class="btn btn-primary btn-lg" onclick="openDashboardPage()">Dashboard'u Aç →</button>
+                <p class="dashboard-teaser-hint">Tüm analiz araçları tek ekranda — ana sayfayı yormadan.</p>
+            </div>
+
+            <!-- Full dashboard (yalnızca Dashboard sayfası modunda görünür) -->
+            <div class="dashboard-inner">
+
             <!-- API Panel -->
             <div class="api-panel" id="apiPanel">
                 <!-- Read-Only Certified Seal -->
@@ -4582,6 +4635,7 @@ body.dashboard-open .footer { display: none; }
                 </div>
 
             </div><!-- end dashboard-grid -->
+            </div><!-- end dashboard-inner -->
         </div>
     </section>
 
@@ -5121,9 +5175,10 @@ body.dashboard-open .footer { display: none; }
     </section>
 
     <!-- Education / Glossary Section -->
-    <section class="section section-education" id="education">
+    <section class="section overlay-page section-education" id="educationPage">
         <div class="container">
             <div class="section-header">
+                <button class="btn btn-sm btn-ghost" onclick="closeOverlayPage()" style="margin-bottom:14px">← Ana Sayfa</button>
                 <span class="section-badge badge-green">ÜCRETSİZ</span>
                 <h2 class="section-title" data-i18n="edu-title">Yatırım <span class="gradient-text">Rehberi</span></h2>
                 <p class="section-desc" data-i18n="edu-desc">Yeni başlayanlardan deneyimli trader'lara — temel kavramları öğrenin.</p>
@@ -5429,6 +5484,57 @@ body.dashboard-open .footer { display: none; }
         </div>
     </section>
 
+    <!-- Blog Page (bağımsız sayfa) -->
+    <section class="section overlay-page" id="blogPage">
+        <div class="container">
+            <div class="section-header">
+                <button class="btn btn-sm btn-ghost" onclick="closeOverlayPage()" style="margin-bottom:14px">← Ana Sayfa</button>
+                <span class="section-badge">BLOG</span>
+                <h2 class="section-title">Equilyze <span class="gradient-text">Blog</span></h2>
+                <p class="section-desc">Piyasa, risk yönetimi ve kantitatif analiz üzerine yazılar.</p>
+            </div>
+            <div class="blog-grid">
+                <article class="blog-card">
+                    <div class="blog-card-tag">Risk Yönetimi</div>
+                    <h3>Component VaR: Riskin Gerçek Kaynağını Bulmak</h3>
+                    <p>Bir varlık, portföydeki ağırlığından çok daha fazla risk taşıyabilir. Component VaR ile toplam riskin yüzde kaçının hangi pozisyondan geldiğini ölçüp yoğunlaşmayı erkenden yakalayın.</p>
+                    <div class="blog-card-meta">5 dk okuma · Temmuz 2026</div>
+                </article>
+                <article class="blog-card">
+                    <div class="blog-card-tag">Simülasyon</div>
+                    <h3>Monte Carlo ile Portföyünüzün Geleceğini Görün</h3>
+                    <p>Geometric Brownian Motion tabanlı 10.000 senaryo ile portföyünüzün olası sonuçlarını, VaR ve CVaR değerlerini nasıl yorumlayacağınızı adım adım anlatıyoruz.</p>
+                    <div class="blog-card-meta">7 dk okuma · Temmuz 2026</div>
+                </article>
+                <article class="blog-card">
+                    <div class="blog-card-tag">Position Sizing</div>
+                    <h3>Kaldıraç ve Likidasyon: Stop'unuz Nerede Olmalı?</h3>
+                    <p>Kaldıraçlı işlemde stop'unuz likidasyon fiyatının ötesindeyse, stop tetiklenmeden pozisyonunuz kapanır. Doğru pozisyon boyutu ve likidasyon mesafesi hesabını öğrenin.</p>
+                    <div class="blog-card-meta">6 dk okuma · Temmuz 2026</div>
+                </article>
+                <article class="blog-card">
+                    <div class="blog-card-tag">Davranışsal Finans</div>
+                    <h3>FOMO Sizi Neden Zarara Uğratıyor?</h3>
+                    <p>İşlem günlüğü verileri, en çok kaybın "FOMO" anındaki işlemlerden geldiğini gösteriyor. Duygu takibi ile hangi ruh halinde daha çok hata yaptığınızı keşfedin.</p>
+                    <div class="blog-card-meta">4 dk okuma · Temmuz 2026</div>
+                </article>
+                <article class="blog-card">
+                    <div class="blog-card-tag">Korelasyon</div>
+                    <h3>Çeşitlendirme Yanılsaması: Korelasyon 1'e Yaklaşınca</h3>
+                    <p>Kripto varlıklar arası korelasyon kriz anlarında hızla yükselir. "Çeşitlendirdim" sandığınız portföy, tek bir şokta birlikte düşebilir. Korelasyon matrisini okumayı öğrenin.</p>
+                    <div class="blog-card-meta">5 dk okuma · Temmuz 2026</div>
+                </article>
+                <article class="blog-card">
+                    <div class="blog-card-tag">Makro</div>
+                    <h3>Makro Şoklar Portföyünüzü Nasıl Etkiler?</h3>
+                    <p>FED faiz kararı, enflasyon sürprizi veya kur hareketi — her makro olayın portföyünüze etkisi kompozisyonunuza bağlıdır. Şok senaryolarını kendi portföyünüzle test edin.</p>
+                    <div class="blog-card-meta">6 dk okuma · Temmuz 2026</div>
+                </article>
+            </div>
+            <p style="text-align:center;margin-top:32px;font-size:0.85rem;color:var(--text-muted)">Yeni yazılar yakında — erken erişim listesine katılın.</p>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -5464,11 +5570,11 @@ body.dashboard-open .footer { display: none; }
                     <a href="#risk-test">Risk Testi</a>
                 </div>
                 <div class="footer-links">
-                    <h4>Şirket</h4>
+                    <h4>Kaynaklar</h4>
+                    <a href="javascript:void(0)" onclick="openOverlayPage('blogPage')">Blog</a>
+                    <a href="javascript:void(0)" onclick="openOverlayPage('educationPage')">Eğitim / Rehber</a>
                     <a href="#">Hakkımızda</a>
-                    <a href="#">Blog</a>
-                    <a href="#">İletişim</a>
-                    <a href="#">KVKK & Gizlilik</a>
+                    <a href="#">KVKK &amp; Gizlilik</a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -6017,11 +6123,11 @@ function handleWaitlistSubmit(event) {
     if (registrations.find(r => r.email === email)) { showToast('Bu e-posta zaten kayıtlı!', 'info'); btn.disabled = false; btn.textContent = 'Ön Kaydol'; return; }
     registrations.push({ email, timestamp: new Date().toISOString() });
     localStorage.setItem('equilyze-waitlist', JSON.stringify(registrations));
-    // Submit to FormSubmit async
+    // Kayıt bildirimi + append-only yedek (endpoint boşken güvenli no-op)
     const form = document.getElementById('waitlistForm');
-    const fd = new FormData(form);
-    fd.set('_captcha', 'false'); // bypass CAPTCHA for async
-    fetch(form.action, { method: 'POST', body: fd }).catch(() => {});
+    const featureInterest = form.querySelector('[name="feature_interest"]')?.value || '';
+    const priceSignal = form.querySelector('[name="price_signal"]')?.value || '';
+    notifyRegistration('waitlist', { email, featureInterest, priceSignal });
     showToast('✅ Kaydınız alındı! Lansmanda haberdar edileceksiniz.', 'success');
     // Reset micro survey UI
     document.querySelectorAll('.waitlist-micro-survey select').forEach(s => s.selectedIndex = 0);
@@ -8312,6 +8418,12 @@ class RiskMetricsEngine {
         setText('metricAlpha', (metrics.alpha >= 0 ? '+' : '') + metrics.alpha.toFixed(2) + '%');
         document.getElementById('metricAlpha').style.color = metrics.alpha >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
         setText('metricMaxDD', `-${metrics.maxDrawdown.toFixed(1)}%`);
+        // Dashboard teaser (ana sayfa) senkron
+        setText('dtPortfolio', '₺' + this.portfolioValue.toLocaleString('tr-TR'));
+        setText('dtSurvival', metrics.survivalScore + '/100');
+        setText('dtVar', `-₺${new Intl.NumberFormat('tr-TR').format(metrics.var95Dollar)}`);
+        const dtSurvEl = document.getElementById('dtSurvival');
+        if (dtSurvEl) dtSurvEl.style.color = metrics.survivalScore >= 70 ? 'var(--color-success)' : metrics.survivalScore >= 40 ? 'var(--color-warning)' : 'var(--color-danger)';
 
         // Survival score
         const ssEl = document.getElementById('survivalNumber');
@@ -8581,6 +8693,48 @@ function initFinancialEngines() {
 }
 
 /* ── AUTH SYSTEM (localStorage tabanlı) ── */
+/* ── Kayıt bildirimi & kalıcılık ──
+   NOTIFY_ENDPOINT ayarlanınca (ör. FormSubmit) kayıt/waitlist maili gönderilir.
+   Boşken güvenli no-op (kırık fetch yok). Kayıtlar localStorage'da kalıcı; ayrıca
+   append-only yedek + owner için JSON export (konsoldan equilyzeExport()). ── */
+const NOTIFY_ENDPOINT = ''; // ör: 'https://formsubmit.co/ajax/TOKEN' — boşken bildirim gönderilmez
+function notifyRegistration(type, data) {
+    // Append-only yedek — üye kayıtlarının kaybolmasını önler
+    try {
+        const log = JSON.parse(localStorage.getItem('equilyze-members') || '[]');
+        log.push({ type, ...data, at: new Date().toISOString() });
+        localStorage.setItem('equilyze-members', JSON.stringify(log));
+    } catch {}
+    // Email bildirimi (yalnızca endpoint ayarlıysa)
+    if (NOTIFY_ENDPOINT) {
+        try {
+            fetch(NOTIFY_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ _subject: 'Equilyze — yeni ' + type, ...data })
+            }).catch(() => {});
+        } catch {}
+    }
+}
+/* Owner: tüm kayıtları JSON indir — tarayıcı konsolunda equilyzeExport() çalıştır */
+function equilyzeExport() {
+    const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || d); } catch { return JSON.parse(d); } };
+    const dump = {
+        exportedAt: new Date().toISOString(),
+        users: read('equilyze-users', '{}'),
+        members: read('equilyze-members', '[]'),
+        waitlist: read('equilyze-waitlist', '[]'),
+    };
+    const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'equilyze-kayitlar-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click(); URL.revokeObjectURL(url);
+    console.log('Equilyze export: ' + Object.keys(dump.users).length + ' üye, ' + dump.waitlist.length + ' waitlist');
+    return dump;
+}
+if (typeof window !== 'undefined') window.equilyzeExport = equilyzeExport;
+
 function getUsers() {
     try { return JSON.parse(localStorage.getItem('equilyze-users')) || {}; } catch { return {}; }
 }
@@ -8645,6 +8799,7 @@ function authRegister(event) {
     if (users[email]) { setAuthLoading(false); errEl.textContent = 'Bu e-posta zaten kayıtlı.'; return; }
     users[email] = { name, email, password: hashPass(pass), registeredAt: new Date().toISOString(), riskProfile: null };
     saveUsers(users);
+    notifyRegistration('üye kaydı', { name, email }); // yedek + (endpoint varsa) email
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
@@ -8841,6 +8996,8 @@ function renderPositionsList() {
     // Hero "Açık Pozisyon" ve borsa sayısını portföyden türet
     const heroPos = document.getElementById('heroPosCount');
     if (heroPos) heroPos.textContent = pf.positions.length;
+    const dtPos = document.getElementById('dtPositions');
+    if (dtPos) dtPos.textContent = pf.positions.length;
     const heroExch = document.getElementById('heroExchangeCount');
     if (heroExch) {
         const exchSet = new Set(pf.positions.map(p => (p.type === 'crypto' || p.symbol.includes('/')) ? 'Binance' : 'MetaTrader'));
@@ -9050,6 +9207,22 @@ function closeDashboardPage() {
     document.body.classList.remove('dashboard-open');
     const backBtn = document.getElementById('dashboardBackBtn');
     if (backBtn) backBtn.style.display = 'none';
+}
+
+/* ── Bağımsız sayfalar (Blog, Eğitim) ── */
+function openOverlayPage(id) {
+    document.body.classList.remove('user-page-open', 'dashboard-open');
+    const up = document.getElementById('userPage'); if (up) { up.classList.remove('open'); up.style.display = 'none'; }
+    document.body.classList.add('overlay-open');
+    document.querySelectorAll('.overlay-page').forEach(p => p.classList.remove('open'));
+    const pg = document.getElementById(id);
+    if (pg) pg.classList.add('open');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function closeOverlayPage() {
+    document.body.classList.remove('overlay-open');
+    document.querySelectorAll('.overlay-page').forEach(p => p.classList.remove('open'));
+    window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
 /* ── UI Controller ── */
