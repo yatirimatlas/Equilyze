@@ -481,7 +481,7 @@ input, select, textarea { font-family: var(--font-sans); }
 }
 .section-header {
     text-align: center;
-    margin-bottom: 56px;
+    margin-bottom: 40px;
 }
 .section-badge {
     display: inline-block;
@@ -728,7 +728,7 @@ input, select, textarea { font-family: var(--font-sans); }
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     padding: 24px 28px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 .api-header {
     display: flex;
@@ -837,6 +837,9 @@ input, select, textarea { font-family: var(--font-sans); }
 }
 .widget-header h4 { font-size: 0.9375rem; font-weight: 600; }
 .widget-content { padding: 16px 20px 20px; position: relative; }
+.widget[data-widget="chart"] { display: flex; flex-direction: column; }
+.widget[data-widget="chart"] .widget-content { flex: 1; display: flex; flex-direction: column; }
+.widget[data-widget="chart"] canvas { flex: 1; }
 .widget-content::after {
     content: '⚠ Bu görsel yatırım tavsiyesi değildir. Yalnızca analiz ve farkındalık amaçlıdır.';
     display: block;
@@ -1821,7 +1824,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
     .alloc-item { min-width: 70px; padding: 10px 8px; }
     
     /* Dashboard */
-    .api-panel { padding: 16px; }
+    .api-panel { padding: 16px; margin-bottom: 12px; }
     .api-connections { grid-template-columns: 1fr; }
     .dashboard-grid { grid-template-columns: 1fr; gap: 12px; }
     .dashboard-row { grid-template-columns: repeat(2,1fr); }
@@ -3907,7 +3910,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                         </div>
                     </div>
                     <div class="widget-content">
-                        <canvas id="portfolioChart" style="width:100%;height:200px;"></canvas>
+                        <canvas id="portfolioChart" style="width:100%;min-height:240px;"></canvas>
                     </div>
                 </div>
 
@@ -3989,6 +3992,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                             <span class="risk-dot green"></span>
                             <span>Düşük Risk</span>
                         </div>
+                    </div>
                     </div>
                     <div class="widget-content">
                         <div class="risk-metrics">
@@ -6515,11 +6519,12 @@ function drawChart(data) {
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
-    canvas.height = 200 * dpr;
-    canvas.style.height = '200px';
+    const availH = Math.max(canvas.parentElement.clientHeight - 4, 240);
+    canvas.height = availH * dpr;
+    canvas.style.height = availH + 'px';
     ctx.scale(dpr, dpr);
 
-    const W = rect.width, H = 200;
+    const W = rect.width, H = availH;
     ctx.clearRect(0, 0, W, H);
 
     const min = Math.min(...data), max = Math.max(...data);
