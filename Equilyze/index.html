@@ -4143,6 +4143,18 @@ body.dashboard-open .footer { display: none; }
                     </div>
                 </div>
 
+                <!-- Component VaR Widget -->
+                <div class="widget widget-medium" data-widget="componentvar">
+                    <div class="widget-header">
+                        <h4>Risk Katkısı <span class="metric-info" style="font-size:0.7rem;color:var(--text-muted)">(Component VaR)</span></h4>
+                        <span class="elite-badge-sm">ELITE</span>
+                    </div>
+                    <div class="widget-content">
+                        <div class="cvar-list" id="componentVarList"></div>
+                        <div class="cvar-note" id="componentVarNote" style="margin-top:10px;font-size:0.75rem;color:var(--text-secondary);line-height:1.5"></div>
+                    </div>
+                </div>
+
                 <!-- Recent Activity + Risk Alerts row -->
                 <div class="widget widget-half" data-widget="activity">
                     <div class="widget-header">
@@ -6792,6 +6804,40 @@ function initCorrelationMatrix() {
         else if (maxCorr > 0.4) warnEl.innerHTML = `En yüksek korelasyon ${pair}: <strong>${maxCorr.toFixed(2)}</strong>. İzlemeye devam edin.`;
         else warnEl.innerHTML = 'Varlıklar arası korelasyon düşük seviyede. Portföy çeşitlendirmeniz iyi görünüyor.';
     }
+
+    renderComponentVaR();
+}
+
+/* ── Component VaR listesi: her pozisyonun portföy riskine katkısı ── */
+function renderComponentVaR() {
+    const list = document.getElementById('componentVarList');
+    if (!list) return;
+    const eng = (window.rmEngine && window.rmEngine.getComponentVaR) ? window.rmEngine : null;
+    if (!eng) { list.innerHTML = ''; return; }
+    const { totalVaRDollar, comps } = eng.getComponentVaR();
+    if (!comps.length) { list.innerHTML = '<div style="color:var(--text-secondary);font-size:0.8rem">Veri yok</div>'; return; }
+    const maxAbs = Math.max(...comps.map(c => Math.abs(c.contribPct)), 1);
+    list.innerHTML = comps.map(c => {
+        const neg = c.contribPct < 0;
+        const barW = Math.min(100, Math.abs(c.contribPct) / maxAbs * 100);
+        const color = neg ? 'var(--color-success)' : (c.contribPct > 40 ? 'var(--color-danger)' : c.contribPct > 20 ? 'var(--color-warning)' : 'var(--color-secondary)');
+        return `<div class="cvar-row" style="margin-bottom:9px">
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:3px">
+                <span style="font-weight:600;color:var(--text-primary)">${c.label}</span>
+                <span style="font-family:var(--font-mono);color:${color}">${c.contribPct >= 0 ? '+' : ''}${c.contribPct.toFixed(1)}% · ₺${Math.abs(c.cVaRDollar).toLocaleString('tr-TR')}</span>
+            </div>
+            <div style="height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden">
+                <div style="height:100%;width:${barW}%;background:${color};border-radius:4px"></div>
+            </div>
+        </div>`;
+    }).join('');
+    const top = comps[0];
+    const noteEl = document.getElementById('componentVarNote');
+    if (noteEl && top) {
+        noteEl.innerHTML = `Toplam günlük VaR (%95): <strong style="color:var(--text-primary)">₺${totalVaRDollar.toLocaleString('tr-TR')}</strong>. ` +
+            `Riskin en büyük kaynağı <strong style="color:var(--text-primary)">${top.label}</strong> (portföy riskinin %${top.contribPct.toFixed(0)}'ı). ` +
+            `Ağırlığı %${(top.weight * 100).toFixed(0)} olmasına rağmen risk katkısı daha yüksekse yoğunlaşma sinyalidir.`;
+    }
 }
 
 // ─────────────────────────────────────────────
@@ -7628,6 +7674,38 @@ class RiskMetricsEngine {
                 count++;
             }
         return count === 0 ? 0 : sum / count;
+    }
+
+    /* ── Component VaR: her pozisyonun portföy riskine katkısı ──
+       Component VaR_i = w_i · β_i,p · VaR_p ;  Σ Component VaR_i = VaR_p
+       β_i,p = Cov(r_i, r_p) / Var(r_p). Katkı yüzdeleri toplamı %100. ── */
+    getComponentVaR() {
+        const n = this.assetReturnSeries.length;
+        const rp = this.portfolioReturns;
+        const meanP = rp.reduce((a, b) => a + b, 0) / rp.length;
+        const varP = rp.reduce((a, v) => a + (v - meanP) ** 2, 0) / rp.length;
+        if (varP === 0) return { totalVaRDollar: 0, comps: [] };
+        const z = 1.645; // %95
+        const varP95Frac = Math.abs(meanP - z * Math.sqrt(varP)); // günlük VaR (kesir)
+        const totalVaRDollar = varP95Frac * this.portfolioValue;
+        const comps = [];
+        for (let i = 0; i < n; i++) {
+            const ri = this.assetReturnSeries[i];
+            const meanI = ri.reduce((a, b) => a + b, 0) / ri.length;
+            let cov = 0;
+            for (let k = 0; k < ri.length; k++) cov += (ri[k] - meanI) * (rp[k] - meanP);
+            cov /= ri.length;
+            const betaIP = cov / varP;
+            const contribFrac = this.weights[i] * betaIP; // toplamı 1
+            comps.push({
+                label: this.assetLabels[i],
+                weight: this.weights[i],
+                contribPct: contribFrac * 100,
+                cVaRDollar: Math.round(contribFrac * totalVaRDollar),
+            });
+        }
+        comps.sort((a, b) => b.contribPct - a.contribPct);
+        return { totalVaRDollar: Math.round(totalVaRDollar), comps };
     }
 
     /* ── Tek varlık sentetik fiyat serisi (grafikler için, seeded & deterministik) ──
