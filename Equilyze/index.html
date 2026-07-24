@@ -4835,6 +4835,20 @@ body.dashboard-open .footer { display: none; }
                     <div class="jsc-value negative" id="stat-worst">₺0</div>
                     <div class="jsc-sub" id="stat-worst-sym">—</div>
                 </div>
+                <div class="journal-stat-card">
+                    <div class="jsc-label">Beklenti (Expectancy)</div>
+                    <div class="jsc-value" id="stat-expectancy">₺0</div>
+                    <div class="jsc-sub">İşlem başına ort.</div>
+                </div>
+            </div>
+
+            <!-- Setup / Etiket Performansı -->
+            <div class="setup-perf-wrap" id="setupPerfWrap" style="display:none;margin:16px 0;padding:16px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+                    <h4 style="margin:0;font-size:0.95rem">🎯 Setup / Etiket Performansı</h4>
+                    <span style="font-size:0.72rem;color:var(--text-muted)">Hangi setup kazandırıyor?</span>
+                </div>
+                <div id="setupPerfList"></div>
             </div>
 
             <!-- Journal Controls -->
@@ -7150,6 +7164,50 @@ function updateJournalStats() {
         document.getElementById('stat-worst').textContent = '-' + fmt(Math.abs(worstTrade.pnl));
         document.getElementById('stat-worst-sym').textContent = worstTrade.sym;
     }
+
+    // Expectancy = (winRate·ortKazanç) − (lossRate·ortKayıp) — işlem başına beklenen değer
+    const avgWin = wins.length > 0 ? grossWin / wins.length : 0;
+    const avgLoss = losses.length > 0 ? grossLoss / losses.length : 0;
+    const wr = winRate / 100;
+    const expectancy = closedTrades.length > 0 ? (wr * avgWin - (1 - wr) * avgLoss) : 0;
+    const expEl = document.getElementById('stat-expectancy');
+    if (expEl) {
+        expEl.textContent = (expectancy >= 0 ? '+' : '-') + fmt(expectancy);
+        expEl.className = 'jsc-value' + (expectancy > 0 ? ' positive' : expectancy < 0 ? ' negative' : '');
+    }
+
+    renderSetupPerformance(closedTrades);
+}
+
+/* ── Setup/etiket bazlı performans: her etiket için işlem sayısı, kazanma oranı, net K/Z ── */
+function renderSetupPerformance(closedTrades) {
+    const wrap = document.getElementById('setupPerfWrap');
+    const list = document.getElementById('setupPerfList');
+    if (!wrap || !list) return;
+    const byTag = {};
+    closedTrades.forEach(t => {
+        (t.tags && t.tags.length ? t.tags : ['(etiketsiz)']).forEach(tag => {
+            if (!byTag[tag]) byTag[tag] = { n: 0, wins: 0, pnl: 0 };
+            byTag[tag].n++;
+            if (t.pnl > 0) byTag[tag].wins++;
+            byTag[tag].pnl += t.pnl;
+        });
+    });
+    const rows = Object.entries(byTag).map(([tag, s]) => ({ tag, ...s, wr: s.n ? s.wins / s.n * 100 : 0 }))
+        .sort((a, b) => b.pnl - a.pnl);
+    if (rows.length === 0) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    const fmt = (n) => (n >= 0 ? '+' : '-') + '₺' + Math.abs(n).toLocaleString('tr-TR', { maximumFractionDigits: 0 });
+    list.innerHTML = rows.map(r => {
+        const wrColor = r.wr >= 50 ? 'var(--color-success)' : 'var(--color-danger)';
+        const pnlColor = r.pnl >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-subtle)">
+            <span style="flex:1;font-weight:600;font-size:0.85rem">${r.tag}</span>
+            <span style="font-size:0.75rem;color:var(--text-secondary)">${r.n} işlem</span>
+            <span style="font-size:0.8rem;font-family:var(--font-mono);color:${wrColor};min-width:52px;text-align:right">%${r.wr.toFixed(0)}</span>
+            <span style="font-size:0.8rem;font-family:var(--font-mono);color:${pnlColor};min-width:88px;text-align:right">${fmt(r.pnl)}</span>
+        </div>`;
+    }).join('');
 }
 
 function filterJournal() {
