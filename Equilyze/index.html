@@ -4242,8 +4242,8 @@ body.dashboard-open .footer { display: none; }
                             <div class="crypto-ind-card">
                                 <div class="crypto-ind-icon">📈</div>
                                 <div class="crypto-ind-label" data-i18n="market-trend">Piyasa Trendi</div>
-                                <div class="crypto-ind-value positive">▲ Boğa</div>
-                                <div class="crypto-ind-sub" data-i18n="market-trend-sub">200 gün MA üstünde</div>
+                                <div class="crypto-ind-value positive" id="marketTrendValue">▲ Boğa</div>
+                                <div class="crypto-ind-sub" id="marketTrendSub">Duyarlılık + momentum</div>
                             </div>
                         </div>
                     </div>
@@ -8414,6 +8414,20 @@ class MarketDataEngine {
             );
             const marker = document.getElementById('fearGreedMarker');
             if (marker) marker.style.left = Math.min(95, Math.max(5, parseInt(fng.value))) + '%';
+            // Piyasa trendini F&G + BTC momentumundan türet (F&G ile tutarlı olsun)
+            const fg = parseInt(fng.value);
+            const btcChg = (btc && typeof btc.change24h === 'number') ? btc.change24h : 0;
+            const tv = document.getElementById('marketTrendValue');
+            const ts = document.getElementById('marketTrendSub');
+            if (tv) {
+                let label, cls, sub;
+                if (fg >= 55 && btcChg >= 0) { label = '▲ Boğa'; cls = 'crypto-ind-value positive'; sub = 'Duyarlılık pozitif, momentum yukarı'; }
+                else if (fg <= 45 || btcChg < -3) { label = '▼ Ayı'; cls = 'crypto-ind-value negative'; sub = 'Korku baskın, momentum zayıf'; }
+                else { label = '◆ Nötr'; cls = 'crypto-ind-value'; sub = 'Karışık sinyaller, kararsız piyasa'; }
+                tv.textContent = label;
+                tv.className = cls;
+                if (ts) ts.textContent = sub;
+            }
         }
         this.fetchDominance();
     }
