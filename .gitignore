@@ -16,3 +16,7 @@ Icon?
 __pycache__/
 *.pyc
 *.pyo
+
+# Other
+TestTr/
+files 2/

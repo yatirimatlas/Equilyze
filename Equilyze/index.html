@@ -1686,6 +1686,7 @@ input, select, textarea { font-family: var(--font-sans); }
 /* ── USER PAGE ── */
 .user-page { display: none; padding: 100px 0 60px; min-height: 100vh; }
 .user-page.open { display: block; animation: fadeInUp 0.4s ease; }
+body.user-page-open .auth-user-card { display: none; } /* hide nav avatar when on profile page */
 @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeScale { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
 @keyframes toastIn { from { opacity:0; transform:translateX(100%); } to { opacity:1; transform:translateX(0); } }
@@ -1809,6 +1810,8 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
     .hero-title { font-size: 2.2rem; }
     .toast-container { top: auto; bottom: calc(var(--mobile-nav-h) + 12px); right: 12px; left: 12px; }
     .toast { max-width: 100%; min-width: 0; }
+    .waitlist-form-group { flex-direction: column; }
+    .waitlist-benefits { flex-direction: column; align-items: center; }
 }
 
 /* ========================================
@@ -3926,7 +3929,7 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                 </div>
 
                 <!-- Portfolio Chart Widget -->
-                <div class="widget widget-wide" data-widget="chart">
+                <div class="widget widget-half" data-widget="chart">
                     <div class="widget-header">
                         <h4>Portföy Performansı</h4>
                         <div class="chart-timeframes">
@@ -3937,18 +3940,21 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                         </div>
                     </div>
                     <div class="widget-content">
-                        <canvas id="portfolioChart" style="width:100%;min-height:240px;"></canvas>
+                        <canvas id="portfolioChart" style="width:100%;min-height:180px;max-height:260px;"></canvas>
                     </div>
                 </div>
 
                 <!-- Live Positions Widget -->
-                <div class="widget" data-widget="positions">
+                <div class="widget widget-half" data-widget="positions">
                     <div class="widget-header">
                         <h4>Canlı Pozisyonlar</h4>
                         <span class="live-dot"><span class="dot-pulse"></span>Canlı</span>
                     </div>
                     <div class="widget-content">
                         <div class="positions-list" id="positionsList"></div>
+                        <div id="positionsViewAll" style="display:none;margin-top:8px;text-align:center">
+                            <button class="btn btn-sm btn-ghost" onclick="showAllPositions()">⬇ Tümünü Gör (--)</button>
+                        </div>
                         <!-- What-If Result -->
                         <div class="whatif-result" id="whatifResult"></div>
                         <!-- RWA Section -->
@@ -4068,6 +4074,20 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                                     <span class="info-tooltip" data-i18n="tip-sortino">Sharpe'a benzer ama sadece aşağı yönlü riski hesaba katar. Yüksek Sortino = sadece düşüşlere karşı iyi korunuyorsunuz.</span>
                                 </span>
                                 <span class="metric-value positive" id="metricSortino">--</span>
+                            </div>
+                            <div class="risk-metric">
+                                <span class="metric-label metric-info">Treynor Oranı
+                                    <span class="info-icon">i</span>
+                                    <span class="info-tooltip">Sistematik riske göre getiri performansı. (Rp - Rf) / Beta. Yüksek Treynor = beta başına daha iyi getiri.</span>
+                                </span>
+                                <span class="metric-value positive" id="metricTreynor">--</span>
+                            </div>
+                            <div class="risk-metric">
+                                <span class="metric-label metric-info">Jensen Alpha (Yıllık)
+                                    <span class="info-icon">i</span>
+                                    <span class="info-tooltip">CAPM modeline göre beklenen getirinin üzerinde kazanılan getiri. Pozitif alpha = piyasayı yenme.</span>
+                                </span>
+                                <span class="metric-value positive" id="metricAlpha">--</span>
                             </div>
                         </div>
                     </div>
@@ -5119,9 +5139,6 @@ body.user-page-open .hero, body.user-page-open .section:not(.user-page) { displa
                         <input type="email" name="email" id="waitlistEmail" class="waitlist-input" placeholder="E-posta adresiniz" required>
                         <button type="submit" class="btn btn-primary waitlist-submit" id="waitlistSubmitBtn">Ön Kaydol</button>
                     </div>
-                    <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);text-align:center">
-                        <span>📋 Şimdiye kadar <strong id="waitlistCount">0</strong> kişi kaydoldu</span>
-                    </div>
                     <div class="waitlist-form-hint">KVKK aydınlatma metnini okudum, kabul ediyorum. (Hukuki inceleme bekliyor)</div>
                     <div class="waitlist-form-hint" style="margin-top:4px;font-size:0.7rem;">Bu form yalnızca talep sinyali toplar — henüz bir ücretlendirme veya ödeme taahhüdü içermez.</div>
                 </form>
@@ -5840,7 +5857,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     initSmoothScroll();
     initParticles();
-    updateWaitlistCount();
     renderQuestion();
     initHeatmap();
     initCorrelationMatrix();
@@ -5883,7 +5899,6 @@ function handleWaitlistSubmit(event) {
     if (registrations.find(r => r.email === email)) { showToast('Bu e-posta zaten kayıtlı!', 'info'); btn.disabled = false; btn.textContent = 'Ön Kaydol'; return; }
     registrations.push({ email, timestamp: new Date().toISOString() });
     localStorage.setItem('equilyze-waitlist', JSON.stringify(registrations));
-    updateWaitlistCount();
     // Submit to FormSubmit async
     const form = document.getElementById('waitlistForm');
     const fd = new FormData(form);
@@ -5895,12 +5910,6 @@ function handleWaitlistSubmit(event) {
     btn.disabled = false; btn.textContent = 'Ön Kaydol';
     // Track conversion
     localStorage.setItem('equilyze-waitlist-conversion', JSON.stringify({ count: registrations.length, lastEmail: email, lastDate: new Date().toISOString() }));
-}
-
-function updateWaitlistCount() {
-    let registrations = []; try { registrations = JSON.parse(localStorage.getItem('equilyze-waitlist') || '[]'); } catch {}
-    const el = document.getElementById('waitlistCount');
-    if (el) el.textContent = registrations.length;
 }
 
 // ─────────────────────────────────────────────
@@ -7267,16 +7276,25 @@ class MonteCarloEngine {
         }
 
         const sorted = Array.from(finalValues).sort((a, b) => a - b);
+        const mcStats = this._stats(sorted);
+        const var95_ = this._var(sorted, [0.95])[0.95];
+        const cvar95_ = this._cvar(sorted, [0.95])[0.95];
+        const mcMeanRet = sorted.reduce((a, b) => a + b, 0) / sorted.length / this.portfolioValue - 1;
+        const mcStd = mcStats.stdDev / this.portfolioValue;
         return {
             paths: samplePaths,
             sorted,
             simulations,
             days,
-            stats: this._stats(sorted),
+            stats: mcStats,
             var: this._var(sorted, confidenceLevels),
             cvar: this._cvar(sorted, confidenceLevels),
             distribution: this._distribution(sorted, 40),
             probabilities: this._probabilities(sorted),
+            sharpeRatio: mcStd > 0 ? mcMeanRet / mcStd * Math.sqrt(252) : 0,
+            portfolioVolatility: mcStd * Math.sqrt(252) * 100,
+            varPct: var95_.pct,
+            cvarPct: cvar95_.pct,
         };
     }
 
@@ -7537,6 +7555,74 @@ class RiskMetricsEngine {
         return num / Math.sqrt(dx * dy || 1);
     }
 
+    /* ── Parametrik VaR (Variance-Covariance, normal dağılım varsayımı) ── */
+    calculateParametricVaR(returns, confidence = 0.95) {
+        const n = returns.length;
+        const mean = returns.reduce((a, b) => a + b, 0) / n;
+        const variance = returns.reduce((a, v) => a + (v - mean) ** 2, 0) / (n - 1);
+        const std = Math.sqrt(variance);
+        const z = confidence === 0.99 ? 2.326 : confidence === 0.975 ? 1.96 : 1.645;
+        return mean - z * std;
+    }
+
+    /* ── Treynor Oranı (Rp - Rf) / βp ── */
+    calculateTreynor(returns, beta, riskFreeRate = RISK_FREE_RATE) {
+        const n = returns.length;
+        const meanRet = returns.reduce((a, b) => a + b, 0) / n;
+        const annualExcess = (meanRet - riskFreeRate / 252) * 252;
+        return Math.abs(beta) < 0.01 ? 0 : annualExcess / beta;
+    }
+
+    /* ── Information Ratio (Rp - Rb) / Tracking Error ── */
+    calculateInformationRatio(portfolioReturns, benchmarkReturns) {
+        const n = Math.min(portfolioReturns.length, benchmarkReturns.length);
+        const rp = portfolioReturns.slice(-n);
+        const rb = benchmarkReturns.slice(-n);
+        const meanRp = rp.reduce((a, b) => a + b, 0) / n;
+        const meanRb = rb.reduce((a, b) => a + b, 0) / n;
+        const diff = rp.map((r, i) => r - rb[i]);
+        const meanDiff = diff.reduce((a, b) => a + b, 0) / n;
+        const te = Math.sqrt(diff.reduce((a, v) => a + (v - meanDiff) ** 2, 0) / (n - 1)) * Math.sqrt(252);
+        return te === 0 ? 0 : ((meanRp - meanRb) * 252) / te;
+    }
+
+    /* ── Jensen's Alpha (CAPM: Rp - [Rf + β * (Rm - Rf)]) ── */
+    calculateAlpha(returns, beta, benchmarkReturns, riskFreeRate = RISK_FREE_RATE) {
+        const n = Math.min(returns.length, benchmarkReturns.length);
+        const rp = returns.slice(-n);
+        const rb = benchmarkReturns.slice(-n);
+        const meanRp = rp.reduce((a, b) => a + b, 0) / n;
+        const meanRb = rb.reduce((a, b) => a + b, 0) / n;
+        const dailyRf = riskFreeRate / 252;
+        const expectedRet = dailyRf + beta * (meanRb - dailyRf);
+        return (meanRp - expectedRet) * 252;
+    }
+
+    /* ── Rollayan Volatilite (21 günlük pencere) ── */
+    calculateRollingVolatility(returns, window = 21) {
+        if (returns.length < window) return Math.sqrt(returns.reduce((a, v) => a + v ** 2, 0) / returns.length) * Math.sqrt(252);
+        const vols = [];
+        for (let i = window; i <= returns.length; i++) {
+            const slice = returns.slice(i - window, i);
+            const mean = slice.reduce((a, b) => a + b, 0) / window;
+            const var_ = slice.reduce((a, v) => a + (v - mean) ** 2, 0) / (window - 1);
+            vols.push(Math.sqrt(var_) * Math.sqrt(252));
+        }
+        return vols;
+    }
+
+    /* ── Portföy Volatilitesi (kovaryans matrisi ile) ── */
+    calculatePortfolioVolatility(returnsByAsset, weights) {
+        const n = returnsByAsset.length;
+        if (n === 0 || weights.length !== n) return 0;
+        const cov = this._covarianceMatrix(returnsByAsset);
+        let var_ = 0;
+        for (let i = 0; i < n; i++)
+            for (let j = 0; j < n; j++)
+                var_ += weights[i] * weights[j] * cov[i][j];
+        return Math.sqrt(Math.max(0, var_)) * Math.sqrt(252);
+    }
+
     /* ── Risk Parity Ağırlıkları (Bridgewater All Weather metodolojisi) ── */
     calculateRiskParityWeights(returnsByAsset) {
         // Equal risk contribution (ERC) via numerical optimization
@@ -7599,22 +7685,28 @@ class RiskMetricsEngine {
 
     /* ── Hayatta Kalma Skoru (100 üzerinden) ── */
     /* 
-       Composite scoring methodology:
-       • Sharpe (normalized 0-25):  >=2 -> 25, <=0 -> 0
-       • Max Drawdown (0-25):  <=10% -> 25, >=40% -> 0
-       • VaR/CVaR ratio (0-20):  low VaR -> higher score
-       • Diversification (0-15):  based on correlation concentration
-       • Beta alignment (0-15):  based on profile-implied vs actual beta
+       Quant-level composite scoring:
+       • Sharpe (0-20):  >=2 -> 20, <=0 -> 0
+       • Max Drawdown (0-20):  <=10% -> 20, >=40% -> 0
+       • VaR/CVaR ratio (0-15):  low VaR -> higher score
+       • Sortino (0-10):  >=3 -> 10, <=0 -> 0
+       • Calmar (0-10):  >=2 -> 10, <=0 -> 0
+       • Diversification (0-10):  inverse of avg correlation
+       • Alpha (0-10):  positive alpha -> higher score
+       • Beta alignment (0-5):  near 1.0 -> higher score
     */
     calculateSurvivalScore(metrics) {
-        const sharpeScore = Math.min(25, Math.max(0, (metrics.sharpe / 2) * 25));
-        const ddScore = Math.min(25, Math.max(0, (1 - metrics.maxDrawdown / 0.40) * 25));
-        const varScore = Math.min(20, Math.max(0, (1 - Math.abs(metrics.var95) / 0.15) * 20));
-        const corrPenalty = metrics.avgCorrelation > 0.7 ? (metrics.avgCorrelation - 0.7) * 50 : 0;
-        const diversificationScore = Math.max(0, 15 - corrPenalty);
-        const betaAlignment = Math.min(15, Math.max(0, (1 - Math.abs(metrics.beta - 1) / 2) * 15));
+        const sharpeScore = Math.min(20, Math.max(0, (metrics.sharpe / 2) * 20));
+        const ddScore = Math.min(20, Math.max(0, (1 - metrics.maxDrawdown / 0.40) * 20));
+        const varScore = Math.min(15, Math.max(0, (1 - Math.abs(metrics.var95) / 0.15) * 15));
+        const sortinoScore = Math.min(10, Math.max(0, (metrics.sortino / 3) * 10));
+        const calmarScore = Math.min(10, Math.max(0, (metrics.calmar / 2) * 10));
+        const corrPenalty = metrics.avgCorrelation > 0.7 ? (metrics.avgCorrelation - 0.7) * 33 : 0;
+        const diversificationScore = Math.max(0, 10 - corrPenalty);
+        const alphaScore = Math.min(10, Math.max(0, (metrics.alpha || 0) / 0.10 * 10));
+        const betaAlignment = Math.min(5, Math.max(0, (1 - Math.abs(metrics.beta - 1) / 2) * 5));
         
-        return Math.min(100, Math.round(sharpeScore + ddScore + varScore + diversificationScore + betaAlignment));
+        return Math.min(100, Math.round(sharpeScore + ddScore + varScore + sortinoScore + calmarScore + diversificationScore + alphaScore + betaAlignment));
     }
 
     /* ── Tüm metrikleri tek çağrıda hesapla ── */
@@ -7631,12 +7723,17 @@ class RiskMetricsEngine {
         const beta = this.calculateBeta(portReturns, benchReturns);
         const var95 = this.calculateVaR(portReturns, 0.95);
         const var99 = this.calculateVaR(portReturns, 0.99);
+        const var95Parametric = this.calculateParametricVaR(portReturns, 0.95);
         const cvar95 = this.calculateCVaR(portReturns, 0.95);
         const svar = this.calculateStressedVaR(portReturns);
         const sharpe = this.calculateSharpe(portReturns);
         const sortino = this.calculateSortino(portReturns);
+        const treynor = this.calculateTreynor(portReturns, beta);
+        const alpha = this.calculateAlpha(portReturns, beta, benchReturns);
+        const informationRatio = this.calculateInformationRatio(portReturns, benchReturns);
         const maxDrawdown = this.calculateMaxDrawdown(this.dailyReturns);
         const calmar = this.calculateCalmar(portReturns, this.dailyReturns);
+        const rollingVol = this.calculateRollingVolatility(portReturns);
 
         // Asset korelasyonları
         const assetTypes = this.positions.map(p => p.type);
@@ -7650,16 +7747,21 @@ class RiskMetricsEngine {
             beta: Math.round(beta * 100) / 100,
             var95: var95,
             var95Dollar: Math.round(var95Dollar),
+            var95Parametric: var95Parametric,
             var99: var99,
             cvar95: cvar95,
             cvar95Dollar: Math.round(cvar95Dollar),
             svar: svar,
             sharpe: Math.round(sharpe * 100) / 100,
             sortino: Math.round(sortino * 100) / 100,
+            treynor: Math.round(treynor * 100) / 100,
+            alpha: Math.round(alpha * 100) / 100,
+            informationRatio: Math.round(informationRatio * 100) / 100,
             maxDrawdown: Math.round(maxDrawdown * 1000) / 10,
             calmar: Math.round(calmar * 100) / 100,
             avgCorrelation: Math.round(avgCorr * 100) / 100,
-            survivalScore: 0, // will be calculated below
+            rollingVol: rollingVol.length > 0 ? Math.round(rollingVol[rollingVol.length - 1] * 100) / 100 : 0,
+            survivalScore: 0,
         };
     }
 
@@ -7695,6 +7797,9 @@ class RiskMetricsEngine {
         setText('metricCVaR', `-${new Intl.NumberFormat('tr-TR').format(metrics.cvar95Dollar)}`);
         setText('metricSharpe', metrics.sharpe.toFixed(2));
         setText('metricSortino', metrics.sortino.toFixed(2));
+        setText('metricTreynor', metrics.treynor.toFixed(2));
+        setText('metricAlpha', (metrics.alpha >= 0 ? '+' : '') + metrics.alpha.toFixed(2) + '%');
+        document.getElementById('metricAlpha').style.color = metrics.alpha >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
         setText('metricMaxDD', `-${metrics.maxDrawdown.toFixed(1)}%`);
 
         // Survival score
@@ -7830,6 +7935,34 @@ class MarketDataEngine {
             if (marker) marker.style.left = Math.min(95, Math.max(5, parseInt(fng.value))) + '%';
         }
         this.fetchDominance();
+    }
+
+    // Stock price via Yahoo Finance (CORS proxy)
+    async fetchStockPrice(symbol) {
+        const now = Date.now();
+        const cacheKey = 'stock_' + symbol;
+        if (this.cache[cacheKey] && now - this.cache[cacheKey].timestamp < this.cacheDuration) {
+            return this.cache[cacheKey];
+        }
+        try {
+            const proxy = 'https://api.allorigins.win/raw?url=';
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=5d`;
+            const resp = await fetch(proxy + encodeURIComponent(url));
+            const data = await resp.json();
+            if (data?.chart?.result?.[0]) {
+                const quotes = data.chart.result[0].indicators.quote[0];
+                const close = quotes.close.filter(c => c != null);
+                const price = close[close.length - 1];
+                const prevClose = close[close.length - 2] || price;
+                const change24h = prevClose > 0 ? (price - prevClose) / prevClose * 100 : 0;
+                const result = { price, change24h, timestamp: now };
+                this.cache[cacheKey] = result;
+                this._saveCache();
+                return result;
+            }
+        } catch { /* fallback */ }
+        if (this.cache[cacheKey]) return this.cache[cacheKey];
+        return { price: 0, change24h: 0, timestamp: now };
     }
 
     async fetchDominance() {
@@ -8173,12 +8306,24 @@ function savePortfolio() {
     recreateEnginesWithPortfolio(pf);
     showToast('Portföy kaydedildi! Metrikler yeniden hesaplandı.', 'success');
 }
+let _allPositions = [];
 function renderPositionsList() {
     const container = document.getElementById('positionsList');
     if (!container) return;
     const pf = resolvePortfolio();
     const totalVal = pf.value;
-    container.innerHTML = pf.positions.map(p => {
+    _allPositions = pf.positions;
+    const showAll = document.getElementById('positionsViewAll');
+    if (showAll) {
+        if (pf.positions.length > 4) {
+            showAll.style.display = 'block';
+            showAll.querySelector('button').innerHTML = `⬇ Tümünü Gör (${pf.positions.length})`;
+        } else {
+            showAll.style.display = 'none';
+        }
+    }
+    const items = pf.positions.slice(0, 4);
+    container.innerHTML = items.map(p => {
         const isCrypto = p.type === 'crypto' || p.symbol.includes('/');
         const exchange = isCrypto ? 'Binance' : 'MetaTrader';
         const symClass = isCrypto ? 'asset-crypto' : 'asset-bist';
@@ -8209,6 +8354,41 @@ function renderPositionsList() {
             </div>`;
     }).join('');
 }
+function showAllPositions() {
+    const container = document.getElementById('positionsList');
+    if (!container) return;
+    const pf = resolvePortfolio();
+    const totalVal = pf.value;
+    container.innerHTML = _allPositions.map(p => {
+        const isCrypto = p.type === 'crypto' || p.symbol.includes('/');
+        const exchange = isCrypto ? 'Binance' : 'MetaTrader';
+        const symClass = isCrypto ? 'asset-crypto' : 'asset-bist';
+        const dir = p.weight >= 0 ? 'A' : 'S';
+        const dirClass = p.weight >= 0 ? 'long' : 'short';
+        const pnlPct = (Math.random() * 0.1 - 0.02) * p.weight * 100;
+        const pnl = Math.round(totalVal * p.weight * pnlPct);
+        const pnlClass = pnl >= 0 ? 'positive' : 'negative';
+        const pnlStr = (pnl >= 0 ? '+' : '') + '₺' + Math.abs(pnl).toLocaleString('tr-TR');
+        const size = (p.weight * totalVal / 100000).toFixed(2) + ' ' + p.symbol.split('/')[0];
+        return `
+            <div class="position-item ${dirClass} ${symClass}">
+                <div class="pos-dir ${dir === 'S' ? 's' : ''}">${dir}</div>
+                <div class="position-info">
+                    <span class="position-symbol">${p.symbol}</span>
+                    <span class="position-exchange">${exchange}</span>
+                    <div class="whatif-controls">
+                        <button class="whatif-btn remove" onclick="whatIfRemove('${p.symbol}',0.85)">−</button>
+                        <button class="whatif-btn add" onclick="whatIfAdd('${p.symbol}',0.85)">+</button>
+                    </div>
+                </div>
+                <div class="position-details">
+                    <span class="position-size">${size}</span>
+                    <span class="position-pnl ${pnlClass}">${pnlStr}</span>
+                </div>
+            </div>`;
+    }).join('');
+    document.getElementById('positionsViewAll').style.display = 'none';
+}
 function applyAuthState(email) {
     const users = getUsers();
     const user = users[email];
@@ -8228,7 +8408,7 @@ function applyAuthState(email) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 Profilim
             </button>
-            <button class="auth-dropdown-item" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'});event.stopPropagation();">
+            <button class="auth-dropdown-item" onclick="if(document.body.classList.contains('user-page-open')){closeUserPage()}else{document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})}event.stopPropagation();">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
                 Dashboard
             </button>
@@ -8312,11 +8492,13 @@ function openUserPage() {
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function closeUserPage() {
+function closeUserPage(scrollToDashboard = true) {
     document.body.classList.remove('user-page-open');
     document.getElementById('userPage').classList.remove('open');
     document.getElementById('userPage').style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (scrollToDashboard) {
+        setTimeout(() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' }), 100);
+    }
 }
 
 /* ── UI Controller ── */
