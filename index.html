@@ -1714,6 +1714,25 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 .dashboard-teaser-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; }
 @media (min-width: 640px) { .dashboard-teaser-preview { grid-template-columns: repeat(4, 1fr); } }
 
+/* ── Dashboard toolbar (Kontrol Merkezi) ── */
+.dashboard-toolbar {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    padding: 14px 18px; margin-bottom: 20px;
+    background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05), var(--bg-card));
+    border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+    position: sticky; top: 68px; z-index: 40; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.dash-toolbar-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
+.dash-toolbar-sub { font-size: 0.72rem; font-weight: 500; color: var(--text-muted); margin-left: 4px; }
+.dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); animation: dashPulse 2s infinite; }
+@keyframes dashPulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); } 70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+.dash-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 600px) {
+    .dashboard-toolbar { position: static; }
+    .dash-toolbar-actions { width: 100%; }
+    .dash-toolbar-actions .btn { flex: 1; min-width: 0; }
+}
+
 /* ── Bağımsız sayfalar (Blog, Eğitim) — ana sayfadan ayrı, footer'dan erişilir ── */
 .overlay-page { display: none; padding: 96px 0 64px; min-height: 100vh; }
 .overlay-page.open { display: block; animation: fadeInUp 0.4s ease; }
@@ -3783,6 +3802,22 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             <!-- Full dashboard (yalnızca Dashboard sayfası modunda görünür) -->
             <div class="dashboard-inner">
 
+            <!-- Dashboard Toolbar (hızlı aksiyonlar) -->
+            <div class="dashboard-toolbar">
+                <div class="dash-toolbar-title">
+                    <span class="dash-live-dot"></span>
+                    <span>Kontrol Merkezi</span>
+                    <span class="dash-toolbar-sub" id="dashToolbarSub">Canlı izleme & analiz</span>
+                </div>
+                <div class="dash-toolbar-actions">
+                    <button class="btn btn-sm btn-outline" onclick="refreshDashboard()" title="Metrikleri yenile">🔄 Yenile</button>
+                    <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()" title="Portföyünü düzenle">✎ Portföy</button>
+                    <button class="btn btn-sm btn-outline" onclick="goToJournal()" title="Trading Journal">📓 Journal</button>
+                    <button class="btn btn-sm btn-outline" onclick="document.getElementById('dashCalendar')?.scrollIntoView({behavior:'smooth',block:'center'})" title="Ekonomik takvim">📅 Takvim</button>
+                    <button class="btn btn-sm btn-primary" onclick="exportFullReport()" title="Tam raporu indir">📄 Rapor Al</button>
+                </div>
+            </div>
+
             <!-- API Panel -->
             <div class="api-panel" id="apiPanel">
                 <!-- Read-Only Certified Seal -->
@@ -4235,6 +4270,17 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="widget-content">
                         <div class="cvar-list" id="componentVarList"></div>
                         <div class="cvar-note" id="componentVarNote" style="margin-top:10px;font-size:0.75rem;color:var(--text-secondary);line-height:1.5"></div>
+                    </div>
+                </div>
+
+                <!-- Economic Calendar Widget -->
+                <div class="widget widget-medium" data-widget="calendar" id="dashCalendar">
+                    <div class="widget-header">
+                        <h4>📅 Ekonomik Takvim</h4>
+                        <span style="font-size:0.7rem;color:var(--text-muted)">Yaklaşan kritik veriler</span>
+                    </div>
+                    <div class="widget-content">
+                        <div class="calendar-events" id="economicCalendar"></div>
                     </div>
                 </div>
 
@@ -4755,71 +4801,6 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
                 
                 <!-- Economic Calendar -->
-                <div class="macro-card economic-calendar">
-                    <div class="macro-header">
-                        <h3>📅 Ekonomik Takvim</h3>
-                        <p>Yaklaşan kritik veriler ve beklenti aralıkları</p>
-                    </div>
-                    <div class="calendar-events" id="economicCalendar">
-                        <div class="event-item high-impact">
-                            <div class="event-date">
-                                <span class="event-day">15</span>
-                                <span class="event-month">MAR</span>
-                            </div>
-                            <div class="event-info">
-                                <h5>FED Faiz Kararı</h5>
-                                <p>Beklenti: %5.50 &nbsp;|&nbsp; Önceki: %5.25</p>
-                            </div>
-                            <div class="event-impact">
-                                <span class="impact-badge high">Yüksek</span>
-                                <span class="volatility-est">+45% vol.</span>
-                            </div>
-                        </div>
-                        <div class="event-item medium-impact">
-                            <div class="event-date">
-                                <span class="event-day">12</span>
-                                <span class="event-month">MAR</span>
-                            </div>
-                            <div class="event-info">
-                                <h5>TÜFE (ABD)</h5>
-                                <p>Beklenti: %3.7 &nbsp;|&nbsp; Önceki: %3.9</p>
-                            </div>
-                            <div class="event-impact">
-                                <span class="impact-badge medium">Orta</span>
-                                <span class="volatility-est">+25% vol.</span>
-                            </div>
-                        </div>
-                        <div class="event-item high-impact">
-                            <div class="event-date">
-                                <span class="event-day">08</span>
-                                <span class="event-month">MAR</span>
-                            </div>
-                            <div class="event-info">
-                                <h5>Tarım Dışı İstihdam</h5>
-                                <p>Beklenti: 185K &nbsp;|&nbsp; Önceki: 177K</p>
-                            </div>
-                            <div class="event-impact">
-                                <span class="impact-badge high">Yüksek</span>
-                                <span class="volatility-est">+40% vol.</span>
-                            </div>
-                        </div>
-                        <div class="event-item low-impact">
-                            <div class="event-date">
-                                <span class="event-day">22</span>
-                                <span class="event-month">MAR</span>
-                            </div>
-                            <div class="event-info">
-                                <h5>TCMB Faiz Kararı</h5>
-                                <p>Beklenti: %47.50 &nbsp;|&nbsp; Önceki: %47.50</p>
-                            </div>
-                            <div class="event-impact">
-                                <span class="impact-badge low">Düşük</span>
-                                <span class="volatility-est">+15% vol.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- Black Swan Test -->
                 <div class="macro-card black-swan">
                     <div class="macro-header">
@@ -5827,6 +5808,34 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="user-stat"><span class="user-stat-label">MC Simülasyon</span><span class="user-stat-value" id="upMCCount">0</span></div>
                     <div class="user-stat"><span class="user-stat-label">Şok Testi</span><span class="user-stat-value" id="upShockCount">0</span></div>
                     <div class="user-stat"><span class="user-stat-label">Kayıt Tarihi</span><span class="user-stat-value" id="upRegDate">--</span></div>
+                </div>
+                <div class="user-card">
+                    <h3>🎯 Detaylı Risk Metrikleri</h3>
+                    <div class="user-stat"><span class="user-stat-label">Sortino Oranı</span><span class="user-stat-value" id="upSortino">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">Treynor Oranı</span><span class="user-stat-value" id="upTreynor">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">Jensen Alpha (Yıllık)</span><span class="user-stat-value" id="upAlpha">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">Value at Risk (95%)</span><span class="user-stat-value" id="upVar">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">Conditional VaR (95%)</span><span class="user-stat-value" id="upCVar">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">Yıllık Volatilite</span><span class="user-stat-value" id="upVol">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">Ort. Korelasyon</span><span class="user-stat-value" id="upCorr">--</span></div>
+                </div>
+                <div class="user-card">
+                    <h3>📓 Trading İstatistikleri</h3>
+                    <div class="user-stat"><span class="user-stat-label">Profit Factor</span><span class="user-stat-value" id="upPF">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">Beklenti (Expectancy)</span><span class="user-stat-value" id="upExpectancy">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">Ort. Risk/Ödül</span><span class="user-stat-value" id="upAvgRR">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">En İyi İşlem</span><span class="user-stat-value positive" id="upBest">--</span></div>
+                    <div class="user-stat"><span class="user-stat-label">En Kötü İşlem</span><span class="user-stat-value negative" id="upWorst">--</span></div>
+                </div>
+            </div>
+            <div class="user-card">
+                <h3>⚡ Hızlı İşlemler</h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px">
+                    <button class="btn btn-sm btn-primary" onclick="closeUserPage(false);openDashboardPage()">📊 Dashboard</button>
+                    <button class="btn btn-sm btn-outline" onclick="closeUserPage(false);goToJournal()">📓 Trading Journal</button>
+                    <button class="btn btn-sm btn-outline" onclick="exportFullReport()">📄 Rapor Al</button>
+                    <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()">✎ Portföyü Düzenle</button>
+                    <button class="btn btn-sm btn-outline" onclick="exportMyData()">⬇ Verilerimi İndir</button>
                 </div>
             </div>
             <div class="user-card">
@@ -8735,6 +8744,29 @@ function equilyzeExport() {
 }
 if (typeof window !== 'undefined') window.equilyzeExport = equilyzeExport;
 
+/* Kullanıcı: kendi verilerini JSON indir (profil sayfasındaki buton) */
+function exportMyData() {
+    const s = getSession();
+    if (!s) { showToast('Lütfen önce giriş yapın.', 'error'); return; }
+    const users = getUsers();
+    const u = users[s.email] || {};
+    const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || d); } catch { return JSON.parse(d); } };
+    const dump = {
+        exportedAt: new Date().toISOString(),
+        profile: { name: u.name, email: u.email, registeredAt: u.registeredAt },
+        riskProfile: read('equilyze-risk-profile', 'null'),
+        portfolio: read('equilyze-portfolio-' + s.email, 'null') || read('equilyze-portfolio', 'null'),
+        journal: read('equilyze-journal', '[]'),
+    };
+    const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'equilyze-verilerim-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click(); URL.revokeObjectURL(url);
+    showToast('Verileriniz indirildi.', 'success');
+}
+if (typeof window !== 'undefined') window.exportMyData = exportMyData;
+
 function getUsers() {
     try { return JSON.parse(localStorage.getItem('equilyze-users')) || {}; } catch { return {}; }
 }
@@ -9152,6 +9184,15 @@ function openUserPage() {
         document.getElementById('upMaxDD').textContent = '-' + m.maxDrawdown.toFixed(1) + '%';
         document.getElementById('upSurvival').textContent = m.survivalScore + '/100';
         document.getElementById('upSurvival').style.color = m.survivalScore >= 70 ? 'var(--color-success)' : m.survivalScore >= 40 ? 'var(--color-warning)' : 'var(--color-danger)';
+        // Detaylı risk metrikleri
+        const setU = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        setU('upSortino', m.sortino.toFixed(2));
+        setU('upTreynor', m.treynor.toFixed(2));
+        setU('upAlpha', (m.alpha >= 0 ? '+' : '') + m.alpha.toFixed(2) + '%');
+        setU('upVar', '-₺' + new Intl.NumberFormat('tr-TR').format(m.var95Dollar));
+        setU('upCVar', '-₺' + new Intl.NumberFormat('tr-TR').format(m.cvar95Dollar));
+        setU('upVol', (m.rollingVol * 100).toFixed(1) + '%');
+        setU('upCorr', m.avgCorrelation.toFixed(2));
     }
     // Risk profile
     try {
@@ -9168,6 +9209,26 @@ function openUserPage() {
         document.getElementById('upPNL').textContent = (totalPnl >= 0 ? '+' : '') + '₺' + Math.round(totalPnl).toLocaleString('tr-TR');
         document.getElementById('upPNL').className = 'user-stat-value ' + (totalPnl >= 0 ? 'positive' : 'negative');
         document.getElementById('upWinRate').textContent = closed.length > 0 ? '%' + Math.round(wins.length / closed.length * 100) : '%0';
+        // Detaylı trading istatistikleri
+        const setU = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        const losses = closed.filter(t => t.pnl < 0);
+        const grossWin = wins.reduce((s, t) => s + t.pnl, 0);
+        const grossLoss = Math.abs(losses.reduce((s, t) => s + t.pnl, 0));
+        const pf = grossLoss > 0 ? grossWin / grossLoss : (grossWin > 0 ? Infinity : 0);
+        setU('upPF', isFinite(pf) ? pf.toFixed(2) : (pf === Infinity ? '∞' : '--'));
+        const wr = closed.length ? wins.length / closed.length : 0;
+        const avgWin = wins.length ? grossWin / wins.length : 0;
+        const avgLoss = losses.length ? grossLoss / losses.length : 0;
+        const exp = closed.length ? (wr * avgWin - (1 - wr) * avgLoss) : 0;
+        setU('upExpectancy', (exp >= 0 ? '+' : '-') + '₺' + Math.abs(Math.round(exp)).toLocaleString('tr-TR'));
+        const rrs = trades.filter(t => t.rr != null && isFinite(t.rr)).map(t => t.rr);
+        setU('upAvgRR', rrs.length ? (rrs.reduce((a, b) => a + b, 0) / rrs.length).toFixed(2) : '--');
+        if (closed.length) {
+            const best = closed.reduce((a, b) => b.pnl > a.pnl ? b : a);
+            const worst = closed.reduce((a, b) => b.pnl < a.pnl ? b : a);
+            setU('upBest', '+₺' + Math.round(best.pnl).toLocaleString('tr-TR') + ' · ' + best.sym);
+            setU('upWorst', '-₺' + Math.abs(Math.round(worst.pnl)).toLocaleString('tr-TR') + ' · ' + worst.sym);
+        }
     } catch {}
     // MC + shock counts
     document.getElementById('upMCCount').textContent = localStorage.getItem('equilyze-mc-count') || '0';
@@ -9213,6 +9274,24 @@ function closeDashboardPage() {
     document.body.classList.remove('dashboard-open');
     const backBtn = document.getElementById('dashboardBackBtn');
     if (backBtn) backBtn.style.display = 'none';
+}
+
+/* ── Dashboard hızlı aksiyonlar ── */
+function refreshDashboard() {
+    if (metricsEngine) metricsEngine.updateDashboard();
+    if (marketEngine) marketEngine.updateMarketWidget().catch(() => {});
+    renderPositionsList();
+    renderActivityList();
+    if (typeof initHeatmap === 'function') initHeatmap();
+    if (typeof updateDynamicDates === 'function') updateDynamicDates();
+    showToast('Dashboard yenilendi', 'success');
+}
+function goToJournal() {
+    closeDashboardPage();
+    document.body.classList.remove('overlay-open', 'user-page-open');
+    document.querySelectorAll('.overlay-page').forEach(p => p.classList.remove('open'));
+    const up = document.getElementById('userPage'); if (up) { up.classList.remove('open'); up.style.display = 'none'; }
+    setTimeout(() => { document.getElementById('journal')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120);
 }
 
 /* ── Bağımsız sayfalar (Blog, Eğitim) ── */
