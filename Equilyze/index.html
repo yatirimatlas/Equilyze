@@ -9269,6 +9269,12 @@ function openDashboardPage() {
     renderPositionsList();
     renderActivityList();
     if (typeof initHeatmap === 'function') initHeatmap();
+    // Grafikleri yeniden çiz: dashboard artık görünür (gizliyken çizilirse canvas 0px kalır)
+    setTimeout(() => {
+        try { if (document.getElementById('portfolioChart') && typeof drawChart === 'function') drawChart(generatePortfolioChartData(typeof currentTf !== 'undefined' ? currentTf : '1H')); } catch (e) {}
+        try { if (document.getElementById('benchmarkChart') && typeof drawBenchmarkChart === 'function') drawBenchmarkChart(generateBenchData(typeof currentBenchTf !== 'undefined' ? currentBenchTf : '1M')); } catch (e) {}
+        try { if (typeof drawCorrTimeseries === 'function') drawCorrTimeseries(); } catch (e) {}
+    }, 80);
 }
 function closeDashboardPage() {
     document.body.classList.remove('dashboard-open');
@@ -9284,6 +9290,9 @@ function refreshDashboard() {
     renderActivityList();
     if (typeof initHeatmap === 'function') initHeatmap();
     if (typeof updateDynamicDates === 'function') updateDynamicDates();
+    try { if (document.getElementById('portfolioChart') && typeof drawChart === 'function') drawChart(generatePortfolioChartData(typeof currentTf !== 'undefined' ? currentTf : '1H')); } catch (e) {}
+    try { if (document.getElementById('benchmarkChart') && typeof drawBenchmarkChart === 'function') drawBenchmarkChart(generateBenchData(typeof currentBenchTf !== 'undefined' ? currentBenchTf : '1M')); } catch (e) {}
+    try { if (typeof drawCorrTimeseries === 'function') drawCorrTimeseries(); } catch (e) {}
     showToast('Dashboard yenilendi', 'success');
 }
 function goToJournal() {
