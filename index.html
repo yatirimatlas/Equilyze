@@ -1714,6 +1714,17 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 .dashboard-teaser-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; }
 @media (min-width: 640px) { .dashboard-teaser-preview { grid-template-columns: repeat(4, 1fr); } }
 
+/* ── Dashboard sıralaması: önce veri, API/güvenlik en altta ── */
+.dashboard-inner { display: flex; flex-direction: column; }
+.dashboard-inner > .dashboard-toolbar { order: 1; }
+.dashboard-inner > #dashboardGrid { order: 2; }
+.dashboard-inner > #apiPanel { order: 3; margin-top: 16px; }
+.dashboard-inner > #apiPanel::before {
+    content: "🔌 API & Güvenlik";
+    display: block; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);
+    margin-bottom: 14px; padding-top: 8px; border-top: 1px solid var(--border-subtle);
+}
+
 /* ── Dashboard toolbar (Kontrol Merkezi) ── */
 .dashboard-toolbar {
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
