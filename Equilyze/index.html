@@ -1760,6 +1760,17 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 .al-cond { font-weight: 600; color: var(--text-primary); }
 .al-now { margin-left: auto; color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.76rem; }
 .al-fired { margin-left: auto; color: var(--color-success); font-weight: 700; font-size: 0.76rem; }
+
+/* ── Gerçek Backtest ── */
+.bt-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 8px; }
+.bt-controls label { display: flex; flex-direction: column; gap: 4px; font-size: 0.72rem; color: var(--text-secondary); }
+.bt-controls input, .bt-controls select { padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-secondary); color: var(--text-primary); font-size: 0.85rem; }
+.bt-controls input[type="text"] { width: 90px; } .bt-controls input[type="number"] { width: 90px; }
+.bt-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 10px; }
+.bt-kpi { background: var(--bg-tertiary); border-radius: 10px; padding: 12px; }
+.bt-kpi-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+.bt-kpi-val { font-size: 1.1rem; font-weight: 800; font-family: var(--font-mono); }
+.bt-note { margin-top: 12px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
 .dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); animation: dashPulse 2s infinite; }
 @keyframes dashPulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); } 70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
 .dash-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -4347,6 +4358,42 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     </div>
                 </div>
 
+                <!-- Gerçek Strateji Backtest Widget -->
+                <div class="widget widget-full" data-widget="backtest" id="realBacktestWidget" style="grid-column:1/-1">
+                    <div class="widget-header">
+                        <h4>🔬 Strateji Backtest <span style="font-size:0.7rem;color:var(--text-muted)">(Gerçek Binance Verisi)</span></h4>
+                        <span class="live-data-badge" style="display:inline-flex">📡 CANLI</span>
+                    </div>
+                    <div class="widget-content">
+                        <div class="bt-controls">
+                            <label>Sembol
+                                <input type="text" id="btSymbol" value="BTC" maxlength="10">
+                            </label>
+                            <label>Strateji
+                                <select id="btStrategy">
+                                    <option value="sma">SMA Kesişimi (Hızlı/Yavaş)</option>
+                                    <option value="rsi">RSI (aşırı satım/alım)</option>
+                                </select>
+                            </label>
+                            <label>Hızlı / Periyot
+                                <input type="number" id="btFast" value="20" min="2" max="100">
+                            </label>
+                            <label>Yavaş / Eşik
+                                <input type="number" id="btSlow" value="50" min="3" max="200">
+                            </label>
+                            <label>Gün
+                                <input type="number" id="btDays" value="365" min="60" max="1000">
+                            </label>
+                            <button class="btn btn-primary" onclick="runRealBacktest()" id="btRunBtn">▶ Backtest Çalıştır</button>
+                        </div>
+                        <div class="bt-results" id="btResults" style="display:none">
+                            <div class="bt-kpis" id="btKpis"></div>
+                            <canvas id="btEquityChart" style="width:100%;height:220px;margin-top:12px"></canvas>
+                            <div class="bt-note" id="btNote"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Recent Activity + Risk Alerts row -->
                 <div class="widget widget-half" data-widget="activity">
                     <div class="widget-header">
@@ -5043,6 +5090,14 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                         </svg>
                         CSV Dışa Aktar
                     </button>
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('tradeImportFile').click()" title="Borsa CSV geçmişini içe aktar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        CSV İçe Aktar
+                    </button>
+                    <input type="file" id="tradeImportFile" accept=".csv" style="display:none" onchange="importTradesCSV(this.files[0])">
                     <button class="btn btn-primary" onclick="openTradeModal()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -7637,6 +7692,55 @@ function exportCSV() {
     showToast('CSV dışa aktarıldı!', 'success');
 }
 
+/* ── Borsa CSV geçmişini içe aktar (esnek kolon algılama) ── */
+function importTradesCSV(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const text = String(e.target.result || '').replace(/\r/g, '');
+            const lines = text.split('\n').filter(l => l.trim());
+            if (lines.length < 2) { showToast('CSV boş veya geçersiz.', 'error'); return; }
+            const delim = (lines[0].match(/;/g) || []).length > (lines[0].match(/,/g) || []).length ? ';' : ',';
+            const parseLine = l => l.split(delim).map(c => c.replace(/^"|"$/g, '').trim());
+            const header = parseLine(lines[0]).map(h => h.toLowerCase());
+            const find = (...names) => header.findIndex(h => names.some(n => h.includes(n)));
+            const iDate = find('date', 'time', 'tarih');
+            const iSym = find('symbol', 'pair', 'market', 'sembol', 'coin');
+            const iSide = find('side', 'type', 'yön', 'yon', 'işlem', 'islem', 'direction');
+            const iPrice = find('price', 'fiyat');
+            const iQty = find('amount', 'qty', 'quantity', 'miktar', 'size', 'adet');
+            if (iSym < 0 || iPrice < 0) { showToast('CSV kolonları tanınamadı (sembol/fiyat gerekli).', 'error'); return; }
+            let added = 0;
+            const newTrades = [];
+            for (let i = 1; i < lines.length; i++) {
+                const c = parseLine(lines[i]);
+                if (c.length < 2) continue;
+                const sym = (c[iSym] || '').toUpperCase().replace(/USDT|USD|TRY|\/| /g, '');
+                const price = parseFloat((c[iPrice] || '').replace(',', '.'));
+                if (!sym || !isFinite(price) || price <= 0) continue;
+                const sideRaw = (iSide >= 0 ? c[iSide] : 'buy').toLowerCase();
+                const type = /sell|sat|short/.test(sideRaw) ? 'sell' : 'buy';
+                let date = iDate >= 0 ? c[iDate] : '';
+                const dm = date.match(/(\d{4}-\d{2}-\d{2})|(\d{2}[./]\d{2}[./]\d{4})/);
+                if (dm) { date = dm[1] || dm[2].replace(/[./]/g, '-').split('-').reverse().join('-'); }
+                else date = new Date().toISOString().slice(0, 10);
+                const size = iQty >= 0 ? Math.abs(parseFloat((c[iQty] || '1').replace(',', '.'))) || 1 : 1;
+                newTrades.push({ id: Date.now() + i, sym, date, type, size, entry: price, exit: null, stop: null, tp: null, pnl: null, rr: null, note: 'CSV import', tags: ['import'], sentiment: null, screenshot: null });
+                added++;
+            }
+            if (!added) { showToast('İçe aktarılacak geçerli satır bulunamadı.', 'error'); return; }
+            trades = newTrades.concat(trades);
+            trades.sort((a, b) => new Date(b.date) - new Date(a.date));
+            localStorage.setItem('equilyze-journal', JSON.stringify(trades));
+            updateJournalStats(); filterJournal(); renderActivityList();
+            showToast(`✅ ${added} işlem içe aktarıldı.`, 'success', 5000);
+        } catch (err) { showToast('İçe aktarma hatası: ' + err.message, 'error'); }
+        document.getElementById('tradeImportFile').value = '';
+    };
+    reader.readAsText(file);
+}
+
 // ─────────────────────────────────────────────
 // TOAST NOTIFICATIONS
 // ─────────────────────────────────────────────
@@ -8076,6 +8180,106 @@ function startWatchlistPolling() {
     if (_watchlistTimer) clearInterval(_watchlistTimer);
     renderWatchlist();
     _watchlistTimer = setInterval(() => { if (document.body.classList.contains('dashboard-open')) renderWatchlist(); }, 45000);
+}
+
+/* ═══════════════════════════════════════════════
+   GERÇEK STRATEJİ BACKTEST (Binance OHLCV)
+   ═══════════════════════════════════════════════ */
+async function fetchKlineCloses(pair, days) {
+    const r = await fetch(`${BINANCE_BASE}/klines?symbol=${pair}&interval=1d&limit=${days}`);
+    if (!r.ok) throw new Error('klines ' + r.status);
+    const d = await r.json();
+    return d.map(k => ({ t: k[0], close: parseFloat(k[4]) }));
+}
+function _sma(arr, period, idx) { if (idx < period - 1) return null; let s = 0; for (let i = idx - period + 1; i <= idx; i++) s += arr[i]; return s / period; }
+function _rsi(arr, period, idx) {
+    if (idx < period) return null;
+    let gain = 0, loss = 0;
+    for (let i = idx - period + 1; i <= idx; i++) { const ch = arr[i] - arr[i - 1]; if (ch >= 0) gain += ch; else loss -= ch; }
+    const rs = loss === 0 ? 100 : gain / loss;
+    return 100 - 100 / (1 + rs);
+}
+function _backtest(closes, strategy, a, b) {
+    const prices = closes.map(c => c.close);
+    let position = 0, equity = 1, buyHold = 1, entry = 0, wins = 0, tradeCount = 0, entries = 0;
+    const curve = [], eqReturns = [];
+    for (let i = 1; i < prices.length; i++) {
+        const ret = prices[i] / prices[i - 1] - 1;
+        if (position === 1) { equity *= (1 + ret); eqReturns.push(ret); } else eqReturns.push(0);
+        buyHold *= (1 + ret);
+        // sinyal
+        let wantLong = position === 1;
+        if (strategy === 'sma') {
+            const f = _sma(prices, a, i), s = _sma(prices, b, i);
+            if (f != null && s != null) wantLong = f > s;
+        } else { // rsi: <a al, >b sat  (a=oversold eşiği, b=overbought)
+            const rsi = _rsi(prices, a, i);
+            if (rsi != null) { if (rsi < 30) wantLong = true; else if (rsi > 70) wantLong = false; }
+        }
+        if (wantLong && position === 0) { position = 1; entry = prices[i]; entries++; }
+        else if (!wantLong && position === 1) { position = 0; if (prices[i] > entry) wins++; tradeCount++; }
+        curve.push({ t: closes[i].t, strat: equity, hold: buyHold });
+    }
+    // metrikler
+    let peak = curve[0]?.strat || 1, maxDD = 0;
+    curve.forEach(p => { if (p.strat > peak) peak = p.strat; const dd = (peak - p.strat) / peak; if (dd > maxDD) maxDD = dd; });
+    const mean = eqReturns.reduce((x, y) => x + y, 0) / (eqReturns.length || 1);
+    const variance = eqReturns.reduce((x, v) => x + (v - mean) ** 2, 0) / (eqReturns.length || 1);
+    const sharpe = variance > 0 ? (mean * 252) / (Math.sqrt(variance) * Math.sqrt(252)) : 0;
+    return {
+        totalReturn: (equity - 1) * 100, buyHoldReturn: (buyHold - 1) * 100,
+        trades: entries, winRate: tradeCount ? wins / tradeCount * 100 : 0,
+        maxDD: maxDD * 100, sharpe, curve,
+    };
+}
+let _btChart = null;
+async function runRealBacktest() {
+    const base = (document.getElementById('btSymbol').value || 'BTC').trim().toUpperCase();
+    const pair = toBinancePair(base) || (base + 'USDT');
+    const strategy = document.getElementById('btStrategy').value;
+    const a = parseInt(document.getElementById('btFast').value) || 20;
+    const b = parseInt(document.getElementById('btSlow').value) || 50;
+    const days = Math.min(1000, parseInt(document.getElementById('btDays').value) || 365);
+    const btn = document.getElementById('btRunBtn');
+    btn.disabled = true; btn.textContent = '⏳ Veri çekiliyor…';
+    try {
+        const closes = await fetchKlineCloses(pair, days);
+        if (closes.length < 30) throw new Error('yetersiz veri');
+        const res = _backtest(closes, strategy, a, b);
+        document.getElementById('btResults').style.display = 'block';
+        const beat = res.totalReturn - res.buyHoldReturn;
+        const kpi = (label, val, color) => `<div class="bt-kpi"><div class="bt-kpi-label">${label}</div><div class="bt-kpi-val" style="color:${color || 'var(--text-primary)'}">${val}</div></div>`;
+        document.getElementById('btKpis').innerHTML =
+            kpi('Strateji Getirisi', (res.totalReturn >= 0 ? '+' : '') + res.totalReturn.toFixed(1) + '%', res.totalReturn >= 0 ? 'var(--color-success)' : 'var(--color-danger)') +
+            kpi('Al-Tut Getirisi', (res.buyHoldReturn >= 0 ? '+' : '') + res.buyHoldReturn.toFixed(1) + '%') +
+            kpi('Fark (Alpha)', (beat >= 0 ? '+' : '') + beat.toFixed(1) + '%', beat >= 0 ? 'var(--color-success)' : 'var(--color-danger)') +
+            kpi('İşlem Sayısı', res.trades) +
+            kpi('Kazanma Oranı', res.winRate.toFixed(0) + '%') +
+            kpi('Max Drawdown', '-' + res.maxDD.toFixed(1) + '%', 'var(--color-danger)') +
+            kpi('Sharpe', res.sharpe.toFixed(2), res.sharpe >= 1 ? 'var(--color-success)' : '');
+        // equity curve
+        const ctx = document.getElementById('btEquityChart');
+        if (_btChart) _btChart.destroy();
+        const labels = res.curve.map(p => new Date(p.t).toLocaleDateString('tr-TR', { month: 'short', day: 'numeric' }));
+        _btChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'Strateji', data: res.curve.map(p => (p.strat * 100).toFixed(1)), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.08)', fill: true, pointRadius: 0, borderWidth: 2, tension: 0.1 },
+                    { label: 'Al-Tut', data: res.curve.map(p => (p.hold * 100).toFixed(1)), borderColor: '#6b7280', pointRadius: 0, borderWidth: 1.5, borderDash: [4, 4], tension: 0.1 },
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#a3b3a8', boxWidth: 12 } } }, scales: { x: { ticks: { color: '#5a7065', maxTicksLimit: 8 }, grid: { display: false } }, y: { ticks: { color: '#5a7065', callback: v => v + '' }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+        });
+        const stratName = strategy === 'sma' ? `SMA ${a}/${b} kesişimi` : `RSI(${a}) 30/70`;
+        document.getElementById('btNote').innerHTML = `<strong>${base}</strong> · ${stratName} · son ${closes.length} gün. ` +
+            (beat >= 0 ? `Strateji al-tut'u <strong style="color:var(--color-success)">%${beat.toFixed(1)}</strong> geçti.` : `Strateji al-tut'un <strong style="color:var(--color-danger)">%${Math.abs(beat).toFixed(1)}</strong> altında kaldı — bu dönemde al-tut daha iyiydi.`) +
+            ` <span style="color:var(--text-muted)">Geçmiş performans gelecek getiriyi garanti etmez; komisyon/kayma hariçtir.</span>`;
+        showToast('Backtest tamamlandı: ' + base + ' ' + stratName, 'success');
+    } catch (e) {
+        showToast('Backtest başarısız: ' + e.message, 'error');
+    } finally { btn.disabled = false; btn.textContent = '▶ Backtest Çalıştır'; }
 }
 
 // S&P 500 benchmark aylık getirileri (2024-2026, FRED verisi)
