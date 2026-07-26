@@ -1785,6 +1785,14 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 .pwa-install-btn:hover { transform: translateY(-2px); }
 @keyframes pwaPulse { 0%,100% { box-shadow: 0 6px 24px rgba(16,185,129,0.30); } 50% { box-shadow: 0 6px 30px rgba(16,185,129,0.55); } }
 @media (min-width: 1025px) { .pwa-install-btn { bottom: 24px; } }
+
+/* ── AI Günlük Brief kartı ── */
+.daily-brief { background: linear-gradient(135deg, rgba(139,92,246,0.10), rgba(6,182,212,0.06), var(--bg-card)); border: 1px solid rgba(139,92,246,0.25); border-radius: var(--radius-lg); padding: 16px 18px; }
+.db-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.db-title { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
+.db-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; }
+.db-body { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; }
+.db-body strong { color: var(--text-primary); }
 .dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); animation: dashPulse 2s infinite; }
 @keyframes dashPulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); } 70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
 .dash-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -3872,6 +3880,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <span class="dash-toolbar-sub" id="dashToolbarSub">Veri yükleniyor…</span>
                 </div>
                 <div class="dash-toolbar-actions">
+                    <button class="btn btn-sm btn-outline" onclick="generateDailyBrief()" title="AI günlük brief">🌅 Brief</button>
                     <button class="btn btn-sm btn-outline" onclick="refreshDashboard()" title="Metrikleri yenile">🔄 Yenile</button>
                     <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()" title="Portföyünü düzenle">✎ Portföy</button>
                     <button class="btn btn-sm btn-outline" onclick="goToJournal()" title="Trading Journal">📓 Journal</button>
@@ -4016,6 +4025,15 @@ body.overlay-open .mobile-bottom-nav { display: none; }
 
             <!-- Dashboard Widgets -->
             <div class="dashboard-grid" id="dashboardGrid">
+
+                <!-- AI Günlük Brief -->
+                <div class="daily-brief" id="dailyBrief" style="grid-column:1/-1;display:none">
+                    <div class="db-head">
+                        <span class="db-title">🌅 Günlük AI Brief</span>
+                        <button class="db-close" onclick="document.getElementById('dailyBrief').style.display='none'">✕</button>
+                    </div>
+                    <div class="db-body" id="dailyBriefBody"></div>
+                </div>
 
                 <!-- Skeleton overlay shown during init -->
                 <div id="dashboardSkeleton" style="grid-column:1/-1;display:grid;gap:12px;grid-template-columns:2fr 1fr">
@@ -4509,40 +4527,11 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                         <span class="elite-badge-sm">ELITE</span>
                     </div>
                     <div class="widget-content">
-                        <div class="slippage-metrics">
-                            <div class="slip-metric">
-                                <div class="slip-metric-label">
-                                    <span class="slip-metric-icon">₿</span>
-                                    <div>
-                                        <div class="slip-metric-name">BTC/USDT</div>
-                                        <div class="slip-metric-sub" data-i18n="slip-btc-sub">Piyasa derinliği yeterli</div>
-                                    </div>
-                                </div>
-                                <span class="slip-metric-value ok">%0.08</span>
-                            </div>
-                            <div class="slip-metric">
-                                <div class="slip-metric-label">
-                                    <span class="slip-metric-icon">Ξ</span>
-                                    <div>
-                                        <div class="slip-metric-name">ETH/USDT</div>
-                                        <div class="slip-metric-sub" data-i18n="slip-eth-sub">Orta derinlik</div>
-                                    </div>
-                                </div>
-                                <span class="slip-metric-value warning">%0.35</span>
-                            </div>
-                            <div class="slip-metric">
-                                <div class="slip-metric-label">
-                                    <span class="slip-metric-icon">🏦</span>
-                                    <div>
-                                        <div class="slip-metric-name">THYAO</div>
-                                        <div class="slip-metric-sub" data-i18n="slip-thyao-sub">Düşük likidite riski</div>
-                                    </div>
-                                </div>
-                                <span class="slip-metric-value bad">%1.2</span>
-                            </div>
+                        <div class="slippage-metrics" id="slippageMetrics">
+                            <div class="wl-empty">Order book derinliği yükleniyor…</div>
                         </div>
-                        <div class="corr-ts-alert" data-i18n="slip-warning" style="margin-top:14px;">
-                            ⚠️ Şu anki piyasa koşullarında tüm pozisyonlarınızı kapatmaya kalksanız %1.2 slippage yaşayabilirsiniz.
+                        <div class="corr-ts-alert" id="slippageWarning" style="margin-top:14px;">
+                            ⚠️ Kripto için gerçek Binance order book derinliğinden hesaplanır.
                         </div>
                     </div>
                 </div>
@@ -4781,26 +4770,26 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                         <div class="psych-stat">
                             <div class="psych-stat-emoji">😱</div>
                             <div class="psych-stat-label">FOMO</div>
-                            <div class="psych-stat-value negative">7 işlem</div>
+                            <div class="psych-stat-value negative" id="psychFomo">0 işlem</div>
                         </div>
                         <div class="psych-stat">
                             <div class="psych-stat-emoji">😨</div>
                             <div class="psych-stat-label" data-i18n="psych-fear">Korku</div>
-                            <div class="psych-stat-value warning">4 işlem</div>
+                            <div class="psych-stat-value warning" id="psychFear">0 işlem</div>
                         </div>
                         <div class="psych-stat">
                             <div class="psych-stat-emoji">😎</div>
                             <div class="psych-stat-label" data-i18n="psych-patience">Sabırlı</div>
-                            <div class="psych-stat-value positive">12 işlem</div>
+                            <div class="psych-stat-value positive" id="psychPatience">0 işlem</div>
                         </div>
                         <div class="psych-stat">
                             <div class="psych-stat-emoji">🤑</div>
                             <div class="psych-stat-label" data-i18n="psych-greed">Açgözlük</div>
-                            <div class="psych-stat-value warning">3 işlem</div>
+                            <div class="psych-stat-value warning" id="psychGreed">0 işlem</div>
                         </div>
                     </div>
-                    <div class="psych-insight" data-i18n="psych-insight">
-                        📊 <strong>AI İçgörü:</strong> Bu ay en çok <strong>"FOMO"</strong> anında işlem kapatmışsın ve bu sana toplamda <strong style="color:var(--color-danger)">₺5,240</strong> kaybettirmiş. İstatistiklerin, bu duygudayken <strong>%70 daha fazla hata</strong> yaptığını söylüyor. “Sabırlı” duygusundaki işlemlerin ise <strong style="color:var(--color-success)">₺8,920</strong> kâr getirmiş.
+                    <div class="psych-insight" id="psychInsight">
+                        📊 <strong>AI İçgörü:</strong> İşlemlerinize duygu etiketi ekledikçe, hangi ruh halinde kâr/zarar ettiğinizi burada gerçek verinizle göreceksiniz.
                     </div>
                 </div>
 
@@ -7492,6 +7481,7 @@ function updateJournalStats() {
     }
 
     renderSetupPerformance(closedTrades);
+    if (typeof renderPsychReport === 'function') renderPsychReport();
 }
 
 /* ── Setup/etiket bazlı performans: her etiket için işlem sayısı, kazanma oranı, net K/Z ── */
@@ -9515,15 +9505,16 @@ function renderPositionsList() {
         const symClass = isCrypto ? 'asset-crypto' : 'asset-bist';
         const dir = p.weight >= 0 ? 'A' : 'S';
         const dirClass = p.weight >= 0 ? 'long' : 'short';
-        // Approximate PnL: random walk based on weight (demo only)
+        const base = (p.symbol.split('/')[0] || '').toUpperCase();
+        const posValue = Math.round(totalVal * p.weight);
+        // Başlangıç: demo (kripto için birazdan gerçek 24s ile güncellenir)
         const pnlPct = (demoDailyFactor(p.symbol) * 0.1 - 0.02) * p.weight * 100;
         const pnl = Math.round(totalVal * p.weight * pnlPct);
         const pnlClass = pnl >= 0 ? 'positive' : 'negative';
         const pnlStr = (pnl >= 0 ? '+' : '') + '₺' + Math.abs(pnl).toLocaleString('tr-TR');
-        // Approximate size
-        const size = (p.weight * totalVal / 100000).toFixed(2) + ' ' + p.symbol.split('/')[0];
+        const size = (p.weight * totalVal / 100000).toFixed(2) + ' ' + base;
         return `
-            <div class="position-item ${dirClass} ${symClass}">
+            <div class="position-item ${dirClass} ${symClass}" data-base="${base}" data-crypto="${isCrypto}" data-value="${posValue}">
                 <div class="pos-dir ${dir === 'S' ? 's' : ''}">${dir}</div>
                 <div class="position-info">
                     <span class="position-symbol">${p.symbol}</span>
@@ -9536,9 +9527,94 @@ function renderPositionsList() {
                 <div class="position-details">
                     <span class="position-size">${size}</span>
                     <span class="position-pnl ${pnlClass}">${pnlStr}</span>
+                    <span class="position-chg" style="font-size:0.68rem;color:var(--text-muted)">demo</span>
                 </div>
             </div>`;
     }).join('');
+    updatePositionsLive();
+}
+/* Kripto pozisyonlarını gerçek 24s Binance verisiyle güncelle */
+async function updatePositionsLive() {
+    const rows = [...document.querySelectorAll('#positionsList .position-item[data-crypto="true"]')];
+    if (!rows.length) return;
+    await Promise.all(rows.map(async row => {
+        const base = row.getAttribute('data-base');
+        const value = parseFloat(row.getAttribute('data-value')) || 0;
+        try {
+            const t = await fetchTicker(base);
+            if (t.price == null || isNaN(t.change)) return;
+            _lastPrices[base] = t.price;
+            const pnl24 = Math.round(value * (t.change / 100)); // gerçek 24s K/Z
+            const pnlEl = row.querySelector('.position-pnl');
+            const chgEl = row.querySelector('.position-chg');
+            if (pnlEl) { pnlEl.textContent = (pnl24 >= 0 ? '+' : '') + '₺' + Math.abs(pnl24).toLocaleString('tr-TR'); pnlEl.className = 'position-pnl ' + (pnl24 >= 0 ? 'positive' : 'negative'); }
+            if (chgEl) { chgEl.textContent = (t.change >= 0 ? '+' : '') + t.change.toFixed(2) + '% · 24s · $' + (t.price >= 1 ? t.price.toLocaleString('en-US', { maximumFractionDigits: 0 }) : t.price.toPrecision(3)); chgEl.style.color = t.change >= 0 ? 'var(--color-success)' : 'var(--color-danger)'; }
+        } catch (e) { /* sessizce demo kalır */ }
+    }));
+}
+
+/* ── Gerçek slippage: Binance order book derinliğinden ── */
+async function computeSlippage(pair, notional) {
+    const r = await fetch(`${BINANCE_BASE}/depth?symbol=${pair}&limit=100`);
+    if (!r.ok) throw new Error('depth ' + r.status);
+    const d = await r.json();
+    const bids = (d.bids || []).map(b => [parseFloat(b[0]), parseFloat(b[1])]);
+    if (!bids.length) return null;
+    const best = bids[0][0];
+    let remaining = notional, cost = 0, qtyFilled = 0;
+    for (const [price, qty] of bids) {
+        const avail = price * qty;
+        const take = Math.min(remaining, avail);
+        cost += take; qtyFilled += take / price; remaining -= take;
+        if (remaining <= 0) break;
+    }
+    if (qtyFilled === 0) return null;
+    const avg = cost / qtyFilled;
+    return { slip: Math.abs((best - avg) / best * 100), fullyFilled: remaining <= 0 };
+}
+async function renderSlippage() {
+    const container = document.getElementById('slippageMetrics');
+    if (!container) return;
+    const pf = resolvePortfolio();
+    const cryptos = pf.positions.filter(p => p.type === 'crypto' || (p.symbol || '').includes('/'));
+    if (!cryptos.length) { container.innerHTML = '<div class="wl-empty">Kripto pozisyon yok — likidite analizi kripto için hesaplanır.</div>'; return; }
+    const results = await Promise.all(cryptos.map(async p => {
+        const base = (p.symbol.split('/')[0] || '').toUpperCase();
+        const pair = toBinancePair(base);
+        const notional = pf.value * p.weight;
+        if (!pair) return { base, slip: null };
+        try { const s = await computeSlippage(pair, notional); return { base, ...s }; } catch { return { base, slip: null }; }
+    }));
+    let maxSlip = 0;
+    container.innerHTML = results.map(r => {
+        if (r.slip == null) return `<div class="slip-metric"><div class="slip-metric-label"><span class="slip-metric-icon">•</span><div><div class="slip-metric-name">${r.base}</div><div class="slip-metric-sub">derinlik verisi yok</div></div></div><span class="slip-metric-value">—</span></div>`;
+        maxSlip = Math.max(maxSlip, r.slip);
+        const cls = r.slip < 0.15 ? 'ok' : r.slip < 0.5 ? 'warning' : 'bad';
+        const sub = !r.fullyFilled ? 'Emir kitabı yetersiz (kısmi)' : r.slip < 0.15 ? 'Derin likidite' : r.slip < 0.5 ? 'Orta derinlik' : 'Sığ likidite';
+        return `<div class="slip-metric"><div class="slip-metric-label"><span class="slip-metric-icon">₿</span><div><div class="slip-metric-name">${r.base}/USDT</div><div class="slip-metric-sub">${sub}</div></div></div><span class="slip-metric-value ${cls}">%${r.slip.toFixed(2)}</span></div>`;
+    }).join('');
+    const warn = document.getElementById('slippageWarning');
+    if (warn && maxSlip > 0) warn.innerHTML = `⚠️ Kripto pozisyonlarınızı şu an kapatsanız en yüksek ~<strong>%${maxSlip.toFixed(2)}</strong> kayma yaşayabilirsiniz — gerçek Binance order book derinliğinden hesaplandı.`;
+}
+
+/* ── Psikoloji raporu: journal duygu etiketlerinden GERÇEK sayım ── */
+function renderPsychReport() {
+    let trades = [];
+    try { trades = JSON.parse(localStorage.getItem('equilyze-journal') || '[]'); } catch {}
+    const cats = { fomo: { n: 0, pnl: 0 }, fear: { n: 0, pnl: 0 }, patience: { n: 0, pnl: 0 }, greed: { n: 0, pnl: 0 } };
+    trades.forEach(t => { if (t.sentiment && cats[t.sentiment]) { cats[t.sentiment].n++; if (t.pnl != null) cats[t.sentiment].pnl += t.pnl; } });
+    const set = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n + ' işlem'; };
+    set('psychFomo', cats.fomo.n); set('psychFear', cats.fear.n); set('psychPatience', cats.patience.n); set('psychGreed', cats.greed.n);
+    const total = cats.fomo.n + cats.fear.n + cats.patience.n + cats.greed.n;
+    const insightEl = document.getElementById('psychInsight');
+    if (!insightEl) return;
+    if (total === 0) { insightEl.innerHTML = '📊 <strong>AI İçgörü:</strong> İşlemlerinize duygu etiketi ekledikçe, hangi ruh halinde kâr/zarar ettiğinizi burada <strong>gerçek verinizle</strong> göreceksiniz.'; return; }
+    const labels = { fomo: 'FOMO', fear: 'Korku', patience: 'Sabırlı', greed: 'Açgözlük' };
+    const arr = Object.entries(cats).filter(([k, v]) => v.n > 0).map(([k, v]) => ({ k, ...v }));
+    const worst = arr.reduce((a, b) => b.pnl < a.pnl ? b : a);
+    const best = arr.reduce((a, b) => b.pnl > a.pnl ? b : a);
+    const fmt = n => (n >= 0 ? '+' : '-') + '₺' + Math.abs(Math.round(n)).toLocaleString('tr-TR');
+    insightEl.innerHTML = `📊 <strong>AI İçgörü:</strong> ${total} etiketli işlem. En çok kaybettiren duygu <strong>"${labels[worst.k]}"</strong> (${worst.n} işlem, <strong style="color:var(--color-danger)">${fmt(worst.pnl)}</strong>). En kârlı duygu <strong>"${labels[best.k]}"</strong> (${best.n} işlem, <strong style="color:var(--color-success)">${fmt(best.pnl)}</strong>).` + (worst.pnl < 0 ? ` <strong>"${labels[worst.k]}"</strong> anında işlem açmaktan kaçın.` : '');
 }
 function showAllPositions() {
     const container = document.getElementById('positionsList');
@@ -9728,6 +9804,9 @@ function openDashboardPage() {
     renderActivityList();
     if (typeof initHeatmap === 'function') initHeatmap();
     if (typeof renderWatchlist === 'function') renderWatchlist();
+    if (typeof renderSlippage === 'function') renderSlippage().catch(() => {});
+    if (typeof renderPsychReport === 'function') renderPsychReport();
+    if (typeof maybeAutoDailyBrief === 'function') setTimeout(maybeAutoDailyBrief, 400);
     // Grafikleri yeniden çiz: dashboard artık görünür (gizliyken çizilirse canvas 0px kalır)
     setTimeout(() => {
         try { if (document.getElementById('portfolioChart') && typeof drawChart === 'function') drawChart(generatePortfolioChartData(typeof currentTf !== 'undefined' ? currentTf : '1H')); } catch (e) {}
@@ -10619,6 +10698,40 @@ function saveAIKeyFromInput() {
     messages.scrollTop = messages.scrollHeight;
 }
 function clearAIKey() { setAIKey(''); _aiHistory = []; showToast('AI anahtarı kaldırıldı.', 'info'); }
+
+/* ── AI Günlük Brief (portföy + piyasa + olaylar özeti) ── */
+async function generateDailyBrief() {
+    const card = document.getElementById('dailyBrief');
+    const body = document.getElementById('dailyBriefBody');
+    if (!card || !body) return;
+    card.style.display = 'block';
+    if (!getAIKey()) {
+        body.innerHTML = '🔑 Günlük AI brief için Claude API anahtarını bağla — portföyün, riskin ve günün olaylarını sana özel özetler. <button class="btn btn-sm btn-primary" style="margin-top:6px" onclick="toggleAIAgent();showAIKeySetup()">Bağla</button>';
+        return;
+    }
+    body.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
+    let events = '';
+    try { events = [...document.querySelectorAll('#economicCalendar .event-item')].map(e => (e.querySelector('h5')?.textContent || '') + ' (' + (e.querySelector('.event-day')?.textContent || '') + ' ' + (e.querySelector('.event-month')?.textContent || '') + ')').join(', '); } catch {}
+    const prompt = `Bugün ${new Date().toLocaleDateString('tr-TR')}. Portföyüm ve piyasa için KISA günlük brief hazırla (maksimum 6 madde): portföyün genel durumu ve en kritik riski; bugün dikkat etmem gereken 1-2 nokta; yaklaşan ekonomik olaylar${events ? ' (' + events + ')' : ''}. Somut ol, madde işareti kullan, kısa tut.`;
+    try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'x-api-key': getAIKey(), 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+            body: JSON.stringify({ model: AI_MODEL, max_tokens: 700, system: `Sen Equilyze AI Copilot'sın. Kısa, somut Türkçe günlük brief hazırla. Kesin al/sat emri verme; yatırım tavsiyesi değildir.\n\nVERİ:\n${buildAIContext()}`, messages: [{ role: 'user', content: prompt }] })
+        });
+        if (!resp.ok) throw new Error(resp.status === 401 ? 'Geçersiz API anahtarı' : 'API hatası (' + resp.status + ')');
+        const data = await resp.json();
+        const text = (data.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n');
+        body.innerHTML = _mdToHtml(text) + '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:10px">Claude AI · ' + new Date().toLocaleString('tr-TR') + ' · yatırım tavsiyesi değildir</div>';
+        localStorage.setItem('equilyze-brief-date', new Date().toISOString().slice(0, 10));
+    } catch (e) {
+        body.innerHTML = '⚠️ ' + e.message + ' <button class="btn btn-sm btn-outline" onclick="toggleAIAgent();showAIKeySetup()">🔑 Anahtar</button>';
+    }
+}
+function maybeAutoDailyBrief() {
+    if (!getAIKey()) return;
+    if (localStorage.getItem('equilyze-brief-date') !== new Date().toISOString().slice(0, 10)) generateDailyBrief();
+}
 
 function generateAIResponse(query) {
     const q = query.toLowerCase();
