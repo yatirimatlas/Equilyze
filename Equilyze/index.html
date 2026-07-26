@@ -1736,6 +1736,30 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 .dash-toolbar-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
 .dash-toolbar-sub { font-size: 0.72rem; font-weight: 500; color: var(--text-muted); margin-left: 4px; }
 .live-data-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.05em; color: var(--color-success); background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); padding: 2px 7px; border-radius: 999px; }
+
+/* ── Watchlist & Alarmlar ── */
+.wl-add-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.wl-add-row input { flex: 1; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-secondary); color: var(--text-primary); font-size: 0.85rem; }
+.wl-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 14px; }
+.wl-row { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; }
+.wl-sym { font-weight: 700; min-width: 52px; color: var(--text-primary); }
+.wl-price { font-family: var(--font-mono); color: var(--text-primary); margin-left: auto; }
+.wl-chg { font-family: var(--font-mono); min-width: 68px; text-align: right; font-size: 0.8rem; }
+.wl-chg.positive { color: var(--color-success); } .wl-chg.negative { color: var(--color-danger); }
+.wl-na { margin-left: auto; color: var(--text-muted); font-size: 0.78rem; }
+.wl-x { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; padding: 2px 4px; }
+.wl-x:hover { color: var(--color-danger); }
+.wl-empty { color: var(--text-secondary); font-size: 0.82rem; padding: 10px 0; text-align: center; }
+.wl-alerts-head { display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: var(--text-primary); padding-top: 8px; border-top: 1px solid var(--border-subtle); }
+.wl-alert-form { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
+.wl-alert-form input, .wl-alert-form select { padding: 7px 8px; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-secondary); color: var(--text-primary); font-size: 0.8rem; }
+.wl-alert-form input[type="text"] { width: 80px; } .wl-alert-form input[type="number"] { flex: 1; min-width: 90px; }
+.wl-alerts { margin-top: 8px; }
+.al-row { display: flex; align-items: center; gap: 10px; padding: 7px 6px; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; }
+.al-row.fired { opacity: 0.65; }
+.al-cond { font-weight: 600; color: var(--text-primary); }
+.al-now { margin-left: auto; color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.76rem; }
+.al-fired { margin-left: auto; color: var(--color-success); font-weight: 700; font-size: 0.76rem; }
 .dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); animation: dashPulse 2s infinite; }
 @keyframes dashPulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); } 70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
 .dash-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -4294,6 +4318,32 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     </div>
                     <div class="widget-content">
                         <div class="calendar-events" id="economicCalendar"></div>
+                    </div>
+                </div>
+
+                <!-- Watchlist & Alarmlar Widget -->
+                <div class="widget widget-medium" data-widget="watchlist" id="watchlistWidget">
+                    <div class="widget-header">
+                        <h4>👁️ Watchlist & Alarmlar</h4>
+                        <span class="live-data-badge" style="display:inline-flex">📡 CANLI</span>
+                    </div>
+                    <div class="widget-content">
+                        <div class="wl-add-row">
+                            <input type="text" id="wlInput" placeholder="Sembol (ör: SOL)" maxlength="10" onkeydown="if(event.key==='Enter')addToWatchlist()">
+                            <button class="btn btn-sm btn-outline" onclick="addToWatchlist()">+ Ekle</button>
+                        </div>
+                        <div class="wl-list" id="watchlistBody"><div class="wl-empty">Yükleniyor…</div></div>
+                        <div class="wl-alerts-head">
+                            <span>🔔 Fiyat Alarmları</span>
+                            <button class="btn btn-sm btn-ghost" onclick="openAlertForm()">+ Alarm Kur</button>
+                        </div>
+                        <div class="wl-alert-form" id="alertForm" style="display:none">
+                            <input type="text" id="alertSym" placeholder="Sembol" maxlength="10">
+                            <select id="alertOp"><option value=">">≥ (üstünde)</option><option value="<">≤ (altında)</option></select>
+                            <input type="number" id="alertPrice" placeholder="Hedef $" step="any">
+                            <button class="btn btn-sm btn-primary" onclick="createAlert()">Kur</button>
+                        </div>
+                        <div class="wl-alerts" id="alertsBody"></div>
                     </div>
                 </div>
 
@@ -7931,6 +7981,103 @@ function markLiveDataActive(realBases) {
     if (badge) { badge.style.display = 'inline-flex'; badge.title = 'Gerçek fiyat verisi: ' + realBases.join(', '); }
 }
 
+/* ═══════════════════════════════════════════════
+   WATCHLIST & FİYAT ALARMLARI (canlı Binance fiyatı)
+   ═══════════════════════════════════════════════ */
+function getWatchlist() { try { return JSON.parse(localStorage.getItem('equilyze-watchlist') || '["BTC","ETH","SOL"]'); } catch { return ['BTC', 'ETH']; } }
+function saveWatchlist(l) { localStorage.setItem('equilyze-watchlist', JSON.stringify(l)); }
+function getAlerts() { try { return JSON.parse(localStorage.getItem('equilyze-alerts') || '[]'); } catch { return []; } }
+function saveAlerts(a) { localStorage.setItem('equilyze-alerts', JSON.stringify(a)); }
+let _lastPrices = {};
+async function fetchTicker(base) {
+    const pair = toBinancePair(base) || (base.toUpperCase() + 'USDT');
+    const r = await fetch(`${BINANCE_BASE}/ticker/24hr?symbol=${pair}`);
+    if (!r.ok) throw new Error('ticker ' + r.status);
+    const d = await r.json();
+    return { base: base.toUpperCase(), price: parseFloat(d.lastPrice), change: parseFloat(d.priceChangePercent) };
+}
+function addToWatchlist() {
+    const inp = document.getElementById('wlInput');
+    const b = (inp.value || '').trim().toUpperCase();
+    if (!b) return;
+    const l = getWatchlist();
+    if (!l.includes(b)) { l.push(b); saveWatchlist(l); }
+    inp.value = '';
+    renderWatchlist();
+}
+function removeFromWatchlist(b) { saveWatchlist(getWatchlist().filter(x => x !== b)); renderWatchlist(); }
+async function renderWatchlist() {
+    const container = document.getElementById('watchlistBody');
+    if (!container) return;
+    const list = getWatchlist();
+    if (!list.length) { container.innerHTML = '<div class="wl-empty">Liste boş — sembol ekleyin.</div>'; renderAlerts(); return; }
+    const tickers = await Promise.all(list.map(b => fetchTicker(b).catch(() => ({ base: b, price: null, change: null }))));
+    tickers.forEach(t => { if (t.price != null) _lastPrices[t.base] = t.price; });
+    container.innerHTML = tickers.map(t => {
+        if (t.price == null) return `<div class="wl-row"><span class="wl-sym">${t.base}</span><span class="wl-na">veri yok</span><button class="wl-x" onclick="removeFromWatchlist('${t.base}')">✕</button></div>`;
+        const cls = t.change >= 0 ? 'positive' : 'negative';
+        const price = t.price >= 1 ? t.price.toLocaleString('en-US', { maximumFractionDigits: 2 }) : t.price.toPrecision(4);
+        return `<div class="wl-row"><span class="wl-sym">${t.base}</span><span class="wl-price">$${price}</span><span class="wl-chg ${cls}">${t.change >= 0 ? '+' : ''}${t.change.toFixed(2)}%</span><button class="wl-x" title="Kaldır" onclick="removeFromWatchlist('${t.base}')">✕</button></div>`;
+    }).join('');
+    checkAlerts();
+}
+function openAlertForm() {
+    const f = document.getElementById('alertForm');
+    if (f) f.style.display = f.style.display === 'none' ? 'flex' : 'none';
+    if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
+}
+function createAlert() {
+    const base = (document.getElementById('alertSym').value || '').trim().toUpperCase();
+    const op = document.getElementById('alertOp').value;
+    const price = parseFloat(document.getElementById('alertPrice').value);
+    if (!base || !price || price <= 0) { showToast('Sembol ve geçerli hedef fiyat girin.', 'error'); return; }
+    const alerts = getAlerts();
+    alerts.push({ id: Date.now(), base, op, price, triggered: false, created: new Date().toISOString() });
+    saveAlerts(alerts);
+    document.getElementById('alertSym').value = ''; document.getElementById('alertPrice').value = '';
+    document.getElementById('alertForm').style.display = 'none';
+    // sembolü otomatik watchlist'e ekle (fiyat takibi için)
+    const l = getWatchlist(); if (!l.includes(base)) { l.push(base); saveWatchlist(l); }
+    showToast(`Alarm kuruldu: ${base} ${op === '>' ? '≥' : '≤'} $${price}`, 'success');
+    renderWatchlist();
+}
+function deleteAlert(id) { saveAlerts(getAlerts().filter(a => a.id !== id)); renderAlerts(); }
+function checkAlerts() {
+    const alerts = getAlerts(); let changed = false;
+    alerts.forEach(a => {
+        if (a.triggered) return;
+        const p = _lastPrices[a.base];
+        if (p == null) return;
+        if ((a.op === '>' && p >= a.price) || (a.op === '<' && p <= a.price)) {
+            a.triggered = true; a.triggeredAt = new Date().toISOString(); changed = true;
+            notifyAlert(`${a.base} ${a.op === '>' ? '≥' : '≤'} $${a.price} — şu an $${p.toLocaleString('en-US', { maximumFractionDigits: 2 })}`);
+        }
+    });
+    if (changed) saveAlerts(alerts);
+    renderAlerts();
+}
+function notifyAlert(msg) {
+    showToast('🔔 ALARM: ' + msg, 'success', 9000);
+    try { if ('Notification' in window && Notification.permission === 'granted') new Notification('🔔 Equilyze Alarm', { body: msg, icon: document.querySelector('link[rel="icon"]')?.href }); } catch {}
+}
+function renderAlerts() {
+    const container = document.getElementById('alertsBody');
+    if (!container) return;
+    const alerts = getAlerts();
+    if (!alerts.length) { container.innerHTML = '<div class="wl-empty" style="padding:8px 0">Henüz alarm yok.</div>'; return; }
+    container.innerHTML = alerts.map(a => {
+        const now = _lastPrices[a.base];
+        const stat = a.triggered ? '<span class="al-fired">✓ Tetiklendi</span>' : (now != null ? `<span class="al-now">şu an $${now.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>` : '');
+        return `<div class="al-row ${a.triggered ? 'fired' : ''}"><span class="al-cond">${a.base} ${a.op === '>' ? '≥' : '≤'} $${a.price}</span>${stat}<button class="wl-x" onclick="deleteAlert(${a.id})">✕</button></div>`;
+    }).join('');
+}
+let _watchlistTimer = null;
+function startWatchlistPolling() {
+    if (_watchlistTimer) clearInterval(_watchlistTimer);
+    renderWatchlist();
+    _watchlistTimer = setInterval(() => { if (document.body.classList.contains('dashboard-open')) renderWatchlist(); }, 45000);
+}
+
 // S&P 500 benchmark aylık getirileri (2024-2026, FRED verisi)
 const SP500_MONTHLY_RETURNS = [
     0.052, 0.043, 0.029, -0.041, 0.038, 0.056, 0.033, 0.018, 0.024, -0.012, 0.047, 0.031,
@@ -8780,6 +8927,8 @@ function initFinancialEngines() {
     marketEngine.updateMarketWidget().catch(() => {});
     // Gerçek kripto veri katmanı: yüklenince metrikleri gerçek veriyle yeniden hesapla
     if (typeof loadRealMarketData === 'function') loadRealMarketData().catch(() => {});
+    // Watchlist & alarm canlı fiyat takibi
+    if (typeof startWatchlistPolling === 'function') startWatchlistPolling();
     
     // Refresh market data every 5 minutes
     setInterval(() => marketEngine.updateMarketWidget().catch(() => {}), 300000);
@@ -9360,6 +9509,7 @@ function openDashboardPage() {
     renderPositionsList();
     renderActivityList();
     if (typeof initHeatmap === 'function') initHeatmap();
+    if (typeof renderWatchlist === 'function') renderWatchlist();
     // Grafikleri yeniden çiz: dashboard artık görünür (gizliyken çizilirse canvas 0px kalır)
     setTimeout(() => {
         try { if (document.getElementById('portfolioChart') && typeof drawChart === 'function') drawChart(generatePortfolioChartData(typeof currentTf !== 'undefined' ? currentTf : '1H')); } catch (e) {}
