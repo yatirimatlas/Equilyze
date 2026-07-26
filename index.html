@@ -1735,6 +1735,7 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 }
 .dash-toolbar-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
 .dash-toolbar-sub { font-size: 0.72rem; font-weight: 500; color: var(--text-muted); margin-left: 4px; }
+.live-data-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.05em; color: var(--color-success); background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); padding: 2px 7px; border-radius: 999px; }
 .dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); animation: dashPulse 2s infinite; }
 @keyframes dashPulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); } 70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
 .dash-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -3818,7 +3819,8 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <div class="dash-toolbar-title">
                     <span class="dash-live-dot"></span>
                     <span>Kontrol Merkezi</span>
-                    <span class="dash-toolbar-sub" id="dashToolbarSub">Canlı izleme & analiz</span>
+                    <span class="live-data-badge" id="liveDataBadge" style="display:none">📡 CANLI</span>
+                    <span class="dash-toolbar-sub" id="dashToolbarSub">Veri yükleniyor…</span>
                 </div>
                 <div class="dash-toolbar-actions">
                     <button class="btn btn-sm btn-outline" onclick="refreshDashboard()" title="Metrikleri yenile">🔄 Yenile</button>
@@ -7867,6 +7869,68 @@ function demoDailyFactor(symbol) {
     return _mulberry32(_hashSeed((symbol || '') + '|' + day))();
 }
 
+/* ═══════════════════════════════════════════════
+   CANLI KRİPTO VERİ KATMANI (Binance public API — anahtarsız, CORS)
+   Gerçek fiyat geçmişinden gerçek getiri serileri → gerçek VaR/Sharpe/korelasyon
+   ═══════════════════════════════════════════════ */
+const MARKET_DAYS = 365;                 // motorun kullandığı günlük seri uzunluğu
+const BINANCE_BASE = 'https://api.binance.com/api/v3';
+window.__realReturns = window.__realReturns || {};   // { 'BTC': [logret...], ... }
+window.__realPrices = window.__realPrices || {};     // { 'BTC': {price, change24h} }
+const KNOWN_BINANCE = ['BTC','ETH','BNB','SOL','XRP','ADA','AVAX','DOGE','MATIC','DOT','LINK','LTC','TRX','ATOM','UNI','ARB','OP','APT','NEAR','FIL','SUI','INJ','SHIB','PEPE','TON','RENDER'];
+function toBinancePair(symbol) {
+    let base = (symbol || '').split('/')[0].toUpperCase().replace(/USDT?$/, '');
+    if (KNOWN_BINANCE.includes(base)) return base + 'USDT';
+    return null;
+}
+async function fetchRealReturns(pair, days) {
+    const resp = await fetch(`${BINANCE_BASE}/klines?symbol=${pair}&interval=1d&limit=${days + 1}`);
+    if (!resp.ok) throw new Error('klines ' + resp.status);
+    const data = await resp.json();
+    const closes = data.map(k => parseFloat(k[4]));
+    const rets = [];
+    for (let i = 1; i < closes.length; i++) rets.push(Math.log(closes[i] / closes[i - 1]));
+    return { rets, lastPrice: closes[closes.length - 1] };
+}
+let _liveDataLoading = false;
+async function loadRealMarketData() {
+    if (_liveDataLoading) return false;
+    _liveDataLoading = true;
+    try {
+        const pf = resolvePortfolio();
+        const cryptos = pf.positions.filter(p => p.type === 'crypto' || (p.symbol || '').includes('/'));
+        const jobs = cryptos.map(async p => {
+            const base = (p.symbol || '').split('/')[0].toUpperCase();
+            const pair = toBinancePair(p.symbol);
+            if (!pair) return false;
+            if (window.__realReturns[base] && window.__realReturns[base].length >= MARKET_DAYS) return true;
+            try {
+                const { rets, lastPrice } = await fetchRealReturns(pair, MARKET_DAYS);
+                if (rets.length >= MARKET_DAYS * 0.8) {
+                    window.__realReturns[base] = rets;
+                    window.__realPrices[base] = { price: lastPrice };
+                    return true;
+                }
+            } catch (e) { /* sessizce sentetik kalır */ }
+            return false;
+        });
+        const results = await Promise.all(jobs);
+        const realBases = cryptos.filter((p, i) => results[i]).map(p => (p.symbol || '').split('/')[0].toUpperCase());
+        if (realBases.length) {
+            // Motoru gerçek veriyle yeniden kur ve dashboard'u güncelle
+            recreateEnginesWithPortfolio(resolvePortfolio());
+            markLiveDataActive(realBases);
+        }
+        return realBases.length > 0;
+    } finally { _liveDataLoading = false; }
+}
+function markLiveDataActive(realBases) {
+    const sub = document.getElementById('dashToolbarSub');
+    if (sub) sub.innerHTML = '<span style="color:var(--color-success)">● Canlı veri</span> · Binance (' + realBases.join(', ') + ')';
+    const badge = document.getElementById('liveDataBadge');
+    if (badge) { badge.style.display = 'inline-flex'; badge.title = 'Gerçek fiyat verisi: ' + realBases.join(', '); }
+}
+
 // S&P 500 benchmark aylık getirileri (2024-2026, FRED verisi)
 const SP500_MONTHLY_RETURNS = [
     0.052, 0.043, 0.029, -0.041, 0.038, 0.056, 0.033, 0.018, 0.024, -0.012, 0.047, 0.031,
@@ -7881,7 +7945,7 @@ class RiskMetricsEngine {
         this._bmCache = null;
         // Deterministik seed: aynı portföy → aynı metrikler (yenilemede zıplama yok)
         this._rand = _mulberry32(_portfolioSeed(portfolioValue, positions));
-        this._buildPortfolioSeries(756); // ~3 yıl günlük
+        this._buildPortfolioSeries(typeof MARKET_DAYS !== 'undefined' ? MARKET_DAYS : 365);
     }
 
     /* ── Box-Muller normal dağılım (seeded PRNG kullanır) ── */
@@ -7930,7 +7994,21 @@ class RiskMetricsEngine {
         this.assetReturnSeries = [];
         this.assetPriceSeries = [];
 
+        this.realAssets = [];
         positions.forEach(p => {
+            // GERÇEK VERİ: kripto için Binance klines getirileri (varsa)
+            const base = (p.symbol || '').split('/')[0].toUpperCase();
+            const real = (typeof window !== 'undefined' && window.__realReturns) ? window.__realReturns[base] : null;
+            if (real && real.length >= N) {
+                const rets = real.slice(-N);
+                const prices = [100];
+                for (let i = 0; i < N; i++) prices.push(prices[prices.length - 1] * Math.exp(rets[i]));
+                this.assetPriceSeries.push(prices);
+                this.assetReturnSeries.push(rets);
+                this.realAssets.push(base);
+                return;
+            }
+            // SENTETİK FALLBACK: faktör modeli (gerçek veri yoksa)
             const fm = fmMap[p.type] || fmMap.default;
             const norm = Math.sqrt(fm.m * fm.m + fm.t * fm.t + fm.i * fm.i) || 1;
             const q = params[p.type] || params.default;
@@ -8700,6 +8778,8 @@ function initFinancialEngines() {
     
     // Fetch live market data
     marketEngine.updateMarketWidget().catch(() => {});
+    // Gerçek kripto veri katmanı: yüklenince metrikleri gerçek veriyle yeniden hesapla
+    if (typeof loadRealMarketData === 'function') loadRealMarketData().catch(() => {});
     
     // Refresh market data every 5 minutes
     setInterval(() => marketEngine.updateMarketWidget().catch(() => {}), 300000);
