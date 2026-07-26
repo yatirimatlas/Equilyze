@@ -1785,6 +1785,14 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 .pwa-install-btn:hover { transform: translateY(-2px); }
 @keyframes pwaPulse { 0%,100% { box-shadow: 0 6px 24px rgba(16,185,129,0.30); } 50% { box-shadow: 0 6px 30px rgba(16,185,129,0.55); } }
 @media (min-width: 1025px) { .pwa-install-btn { bottom: 24px; } }
+
+/* ── AI Günlük Brief kartı ── */
+.daily-brief { background: linear-gradient(135deg, rgba(139,92,246,0.10), rgba(6,182,212,0.06), var(--bg-card)); border: 1px solid rgba(139,92,246,0.25); border-radius: var(--radius-lg); padding: 16px 18px; }
+.db-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.db-title { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
+.db-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; }
+.db-body { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; }
+.db-body strong { color: var(--text-primary); }
 .dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); animation: dashPulse 2s infinite; }
 @keyframes dashPulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); } 70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
 .dash-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -3872,6 +3880,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <span class="dash-toolbar-sub" id="dashToolbarSub">Veri yükleniyor…</span>
                 </div>
                 <div class="dash-toolbar-actions">
+                    <button class="btn btn-sm btn-outline" onclick="generateDailyBrief()" title="AI günlük brief">🌅 Brief</button>
                     <button class="btn btn-sm btn-outline" onclick="refreshDashboard()" title="Metrikleri yenile">🔄 Yenile</button>
                     <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()" title="Portföyünü düzenle">✎ Portföy</button>
                     <button class="btn btn-sm btn-outline" onclick="goToJournal()" title="Trading Journal">📓 Journal</button>
@@ -4016,6 +4025,15 @@ body.overlay-open .mobile-bottom-nav { display: none; }
 
             <!-- Dashboard Widgets -->
             <div class="dashboard-grid" id="dashboardGrid">
+
+                <!-- AI Günlük Brief -->
+                <div class="daily-brief" id="dailyBrief" style="grid-column:1/-1;display:none">
+                    <div class="db-head">
+                        <span class="db-title">🌅 Günlük AI Brief</span>
+                        <button class="db-close" onclick="document.getElementById('dailyBrief').style.display='none'">✕</button>
+                    </div>
+                    <div class="db-body" id="dailyBriefBody"></div>
+                </div>
 
                 <!-- Skeleton overlay shown during init -->
                 <div id="dashboardSkeleton" style="grid-column:1/-1;display:grid;gap:12px;grid-template-columns:2fr 1fr">
@@ -9788,6 +9806,7 @@ function openDashboardPage() {
     if (typeof renderWatchlist === 'function') renderWatchlist();
     if (typeof renderSlippage === 'function') renderSlippage().catch(() => {});
     if (typeof renderPsychReport === 'function') renderPsychReport();
+    if (typeof maybeAutoDailyBrief === 'function') setTimeout(maybeAutoDailyBrief, 400);
     // Grafikleri yeniden çiz: dashboard artık görünür (gizliyken çizilirse canvas 0px kalır)
     setTimeout(() => {
         try { if (document.getElementById('portfolioChart') && typeof drawChart === 'function') drawChart(generatePortfolioChartData(typeof currentTf !== 'undefined' ? currentTf : '1H')); } catch (e) {}
@@ -10679,6 +10698,40 @@ function saveAIKeyFromInput() {
     messages.scrollTop = messages.scrollHeight;
 }
 function clearAIKey() { setAIKey(''); _aiHistory = []; showToast('AI anahtarı kaldırıldı.', 'info'); }
+
+/* ── AI Günlük Brief (portföy + piyasa + olaylar özeti) ── */
+async function generateDailyBrief() {
+    const card = document.getElementById('dailyBrief');
+    const body = document.getElementById('dailyBriefBody');
+    if (!card || !body) return;
+    card.style.display = 'block';
+    if (!getAIKey()) {
+        body.innerHTML = '🔑 Günlük AI brief için Claude API anahtarını bağla — portföyün, riskin ve günün olaylarını sana özel özetler. <button class="btn btn-sm btn-primary" style="margin-top:6px" onclick="toggleAIAgent();showAIKeySetup()">Bağla</button>';
+        return;
+    }
+    body.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
+    let events = '';
+    try { events = [...document.querySelectorAll('#economicCalendar .event-item')].map(e => (e.querySelector('h5')?.textContent || '') + ' (' + (e.querySelector('.event-day')?.textContent || '') + ' ' + (e.querySelector('.event-month')?.textContent || '') + ')').join(', '); } catch {}
+    const prompt = `Bugün ${new Date().toLocaleDateString('tr-TR')}. Portföyüm ve piyasa için KISA günlük brief hazırla (maksimum 6 madde): portföyün genel durumu ve en kritik riski; bugün dikkat etmem gereken 1-2 nokta; yaklaşan ekonomik olaylar${events ? ' (' + events + ')' : ''}. Somut ol, madde işareti kullan, kısa tut.`;
+    try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'x-api-key': getAIKey(), 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+            body: JSON.stringify({ model: AI_MODEL, max_tokens: 700, system: `Sen Equilyze AI Copilot'sın. Kısa, somut Türkçe günlük brief hazırla. Kesin al/sat emri verme; yatırım tavsiyesi değildir.\n\nVERİ:\n${buildAIContext()}`, messages: [{ role: 'user', content: prompt }] })
+        });
+        if (!resp.ok) throw new Error(resp.status === 401 ? 'Geçersiz API anahtarı' : 'API hatası (' + resp.status + ')');
+        const data = await resp.json();
+        const text = (data.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n');
+        body.innerHTML = _mdToHtml(text) + '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:10px">Claude AI · ' + new Date().toLocaleString('tr-TR') + ' · yatırım tavsiyesi değildir</div>';
+        localStorage.setItem('equilyze-brief-date', new Date().toISOString().slice(0, 10));
+    } catch (e) {
+        body.innerHTML = '⚠️ ' + e.message + ' <button class="btn btn-sm btn-outline" onclick="toggleAIAgent();showAIKeySetup()">🔑 Anahtar</button>';
+    }
+}
+function maybeAutoDailyBrief() {
+    if (!getAIKey()) return;
+    if (localStorage.getItem('equilyze-brief-date') !== new Date().toISOString().slice(0, 10)) generateDailyBrief();
+}
 
 function generateAIResponse(query) {
     const q = query.toLowerCase();
