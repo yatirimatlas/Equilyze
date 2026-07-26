@@ -10534,32 +10534,91 @@ function toggleAIAgent() {
     }
 }
 
-function sendAIMessage() {
+/* ═══════════════════════════════════════════════
+   GERÇEK AI COPILOT — Claude API (kendi anahtarını getir, client-side)
+   Anahtar yalnızca localStorage'da; doğrudan Anthropic API'sine gider.
+   ═══════════════════════════════════════════════ */
+const AI_MODEL = 'claude-sonnet-5';
+function getAIKey() { try { return localStorage.getItem('equilyze-ai-key') || ''; } catch { return ''; } }
+function setAIKey(k) { if (k) localStorage.setItem('equilyze-ai-key', k); else localStorage.removeItem('equilyze-ai-key'); }
+let _aiHistory = [];
+function buildAIContext() {
+    const pf = resolvePortfolio();
+    const eng = window.rmEngine;
+    const lines = [];
+    lines.push('Portföy değeri: ₺' + Math.round(pf.value).toLocaleString('tr-TR'));
+    lines.push('Pozisyonlar: ' + pf.positions.map(p => `${p.symbol} %${(p.weight * 100).toFixed(0)} (${p.type})`).join(', '));
+    if (eng) {
+        const m = eng.calculateAll(); m.survivalScore = eng.calculateSurvivalScore(m);
+        lines.push(`Risk: Beta ${m.beta.toFixed(2)}, Sharpe ${m.sharpe.toFixed(2)}, Sortino ${m.sortino.toFixed(2)}, VaR95 -₺${Math.round(m.var95Dollar).toLocaleString('tr-TR')}, CVaR95 -₺${Math.round(m.cvar95Dollar).toLocaleString('tr-TR')}, MaxDD -${m.maxDrawdown.toFixed(1)}%, Ort.Korelasyon ${m.avgCorrelation.toFixed(2)}, Hayatta Kalma Skoru ${m.survivalScore}/100`);
+        if (eng.getComponentVaR) { const cv = eng.getComponentVaR(); lines.push('Risk katkısı: ' + cv.comps.map(c => `${c.label} %${c.contribPct.toFixed(0)}`).join(', ')); }
+        if (eng.realAssets && eng.realAssets.length) lines.push('Gerçek Binance verisi: ' + eng.realAssets.join(', '));
+    }
+    if (typeof _lastPrices !== 'undefined' && Object.keys(_lastPrices).length) lines.push('Canlı fiyatlar: ' + Object.entries(_lastPrices).map(([k, v]) => `${k} $${v}`).join(', '));
+    try { const tr = JSON.parse(localStorage.getItem('equilyze-journal') || '[]'); const cl = tr.filter(t => t.pnl != null); if (cl.length) { const w = cl.filter(t => t.pnl > 0).length; const tot = cl.reduce((s, t) => s + t.pnl, 0); lines.push(`Journal: ${cl.length} işlem, kazanma %${Math.round(w / cl.length * 100)}, toplam K/Z ₺${Math.round(tot).toLocaleString('tr-TR')}`); } } catch {}
+    try { const rp = JSON.parse(localStorage.getItem('equilyze-risk-profile')); if (rp) lines.push('Risk profili: ' + rp.profile + ' (' + rp.score + '/100)'); } catch {}
+    return lines.join('\n');
+}
+async function callClaude(userMsg) {
+    const key = getAIKey();
+    const system = `Sen Equilyze'nin yapay zeka trading asistanısın. Kullanıcının aşağıdaki GERÇEK portföy ve piyasa verisini kullanarak Türkçe, net, somut ve uygulanabilir analiz yap. Kısa ve öz ol, madde işaretleri kullan. Kesin al/sat emri VERME; risk ve senaryo bazlı konuş. Gerektiğinde bunun yatırım tavsiyesi olmadığını hatırlat.\n\nGÜNCEL KULLANICI VERİSİ:\n${buildAIContext()}`;
+    _aiHistory.push({ role: 'user', content: userMsg });
+    if (_aiHistory.length > 12) _aiHistory = _aiHistory.slice(-12);
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: AI_MODEL, max_tokens: 1024, system, messages: _aiHistory })
+    });
+    if (!resp.ok) { throw new Error(resp.status === 401 ? 'Geçersiz API anahtarı' : 'API hatası (' + resp.status + ')'); }
+    const data = await resp.json();
+    const text = (data.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n');
+    _aiHistory.push({ role: 'assistant', content: text });
+    return text;
+}
+function _mdToHtml(t) {
+    return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/^#{1,3}\s(.+)$/gm, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+}
+async function sendAIMessage() {
     const input = document.getElementById('aiInput');
     const msg = input.value.trim();
     if (!msg) return;
-
     const messages = document.getElementById('aiMessages');
-
-    // Add user message
-    const userDiv = document.createElement('div');
-    userDiv.className = 'ai-msg user';
-    userDiv.textContent = msg;
-    messages.appendChild(userDiv);
+    if (!getAIKey()) { showAIKeySetup(); return; }
+    const userDiv = document.createElement('div'); userDiv.className = 'ai-msg user'; userDiv.textContent = msg; messages.appendChild(userDiv);
     input.value = '';
-
-    // Show typing
-    const typingDiv = document.createElement('div');
-    typingDiv.className = 'ai-msg bot';
-    typingDiv.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
-    messages.appendChild(typingDiv);
+    const typingDiv = document.createElement('div'); typingDiv.className = 'ai-msg bot'; typingDiv.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>'; messages.appendChild(typingDiv);
     messages.scrollTop = messages.scrollHeight;
-
-    setTimeout(() => {
-        typingDiv.innerHTML = generateAIResponse(msg);
-        messages.scrollTop = messages.scrollHeight;
-    }, 800 + Math.random() * 600);
+    try {
+        const reply = await callClaude(msg);
+        typingDiv.innerHTML = _mdToHtml(reply);
+    } catch (e) {
+        typingDiv.innerHTML = '⚠️ ' + e.message + '<br><br>' + (String(e.message).includes('anahtar') ? '<button class="btn btn-sm btn-outline" onclick="showAIKeySetup()">🔑 Anahtarı güncelle</button>' : 'Bağlantıyı kontrol edip tekrar deneyin.');
+    }
+    messages.scrollTop = messages.scrollHeight;
 }
+function showAIKeySetup() {
+    const messages = document.getElementById('aiMessages');
+    const div = document.createElement('div'); div.className = 'ai-msg bot';
+    div.innerHTML = `🔑 <strong>Gerçek AI analizini aç</strong><br><br>Claude API anahtarınla portföyünü <strong>gerçek yapay zeka</strong> ile analiz et — VaR, korelasyon, journal ve canlı fiyatlarını okuyup sana özel yanıt verir.<br><br><input id="aiKeyInput" type="password" placeholder="sk-ant-..." style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);margin-bottom:8px"><button class="btn btn-sm btn-primary" onclick="saveAIKeyFromInput()">Kaydet & Aktifleştir</button><br><br><span style="font-size:0.72rem;color:var(--text-muted);line-height:1.5">🔒 Anahtar <strong>yalnızca senin tarayıcında</strong> (localStorage) saklanır — Equilyze sunucusuna gitmez, doğrudan Anthropic API'sine gider. Anahtarı buradan al: <span style="color:var(--color-secondary)">console.anthropic.com</span></span>`;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+}
+function saveAIKeyFromInput() {
+    const inp = document.getElementById('aiKeyInput');
+    const k = (inp.value || '').trim();
+    if (!k.startsWith('sk-ant-')) { showToast('Geçerli bir Claude API anahtarı girin (sk-ant-... ile başlar).', 'error'); return; }
+    setAIKey(k);
+    showToast('✅ Gerçek AI analizi aktifleşti.', 'success');
+    const messages = document.getElementById('aiMessages');
+    const div = document.createElement('div'); div.className = 'ai-msg bot';
+    div.innerHTML = '✅ <strong>Bağlandı!</strong> Şimdi dene:<br>• <em>"Portföyümün en büyük riski ne?"</em><br>• <em>"Fed faiz artırırsa ne yapmalıyım?"</em><br>• <em>"Bu ay journal\'ımda hangi hatayı yapıyorum?"</em>';
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+}
+function clearAIKey() { setAIKey(''); _aiHistory = []; showToast('AI anahtarı kaldırıldı.', 'info'); }
 
 function generateAIResponse(query) {
     const q = query.toLowerCase();
@@ -10986,19 +11045,23 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="ai-header-left">
             <div class="ai-avatar">🧠</div>
             <div>
-                <div class="ai-header-title">Equilyze AI Agent</div>
-                <div class="ai-header-sub" data-i18n="ai-status">● Strateji Asistanı</div>
+                <div class="ai-header-title">Equilyze AI Copilot</div>
+                <div class="ai-header-sub">● Claude ile güçlendirildi</div>
             </div>
         </div>
-        <button class="ai-close" onclick="toggleAIAgent()">✕</button>
+        <div style="display:flex;gap:4px;align-items:center">
+            <button class="ai-close" onclick="showAIKeySetup()" title="API anahtarı ayarları" style="font-size:0.9rem">🔑</button>
+            <button class="ai-close" onclick="toggleAIAgent()">✕</button>
+        </div>
     </div>
     <div class="ai-messages" id="aiMessages">
-        <div class="ai-msg bot" data-i18n="ai-welcome">
-            Merhaba! 👋 Ben Equilyze AI Strateji Asistanınız. Portföyünüz hakkında sorular sorabilir, risk/getiri analizi isteyebilir veya senaryo analizi yapabilirim.<br><br>
-            📌 Deneyebileceğiniz sorular:<br>
-            • "Portföyümdeki risk/getiri oranını analiz et"<br>
-            • "Korelasyon analizi yap"<br>
-            • "Slippage riski nedir?"
+        <div class="ai-msg bot">
+            Merhaba! 👋 Ben <strong>Equilyze AI Copilot</strong> — gerçek Claude yapay zekasıyla, senin <strong>gerçek portföy, risk metrikleri, journal ve canlı fiyat</strong> verilerini okuyup sana özel analiz yaparım.<br><br>
+            📌 Deneyebileceğin sorular:<br>
+            • "Portföyümün en büyük riski ne, nasıl azaltırım?"<br>
+            • "Fed faiz artırırsa ne yapmalıyım?"<br>
+            • "Journal'ımda hangi hatayı tekrarlıyorum?"<br><br>
+            <span style="font-size:0.75rem;color:var(--text-muted)">İlk soruda Claude API anahtarını isteyeceğim (yalnızca tarayıcında saklanır).</span>
         </div>
     </div>
     <div class="ai-input-bar">
