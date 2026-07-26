@@ -1,0 +1,21 @@
+{
+  "name": "Equilyze — Trading Analiz Platformu",
+  "short_name": "Equilyze",
+  "description": "Portföy risk analizi, canlı kripto veri, Monte Carlo, strateji backtest ve trading journal.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0f12",
+  "theme_color": "#0a0f0d",
+  "orientation": "any",
+  "lang": "tr",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2310b981'/><stop offset='1' stop-color='%2306b6d4'/></linearGradient></defs><rect width='32' height='32' rx='7' fill='url(%23g)'/><g fill='none' stroke='white' stroke-width='2.3' stroke-linejoin='round' stroke-linecap='round'><path d='M16 6 6 11l10 5 10-5-10-5z'/><path d='M6 21l10 5 10-5'/><path d='M6 16l10 5 10-5'/></g></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

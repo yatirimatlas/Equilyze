@@ -11,6 +11,7 @@
     <meta name="description" content="Equilyze ile portföyünüzü analiz edin, risk profilinizi öğrenin, API bağlantılarıyla tüm hesaplarınızı tek yerden yönetin.">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2310b981'/><stop offset='1' stop-color='%2306b6d4'/></linearGradient></defs><rect width='32' height='32' rx='7' fill='url(%23g)'/><g fill='none' stroke='white' stroke-width='2.3' stroke-linejoin='round' stroke-linecap='round'><path d='M16 6 6 11l10 5 10-5-10-5z'/><path d='M6 21l10 5 10-5'/><path d='M6 16l10 5 10-5'/></g></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2310b981'/><stop offset='1' stop-color='%2306b6d4'/></linearGradient></defs><rect width='32' height='32' rx='7' fill='url(%23g)'/><g fill='none' stroke='white' stroke-width='2.3' stroke-linejoin='round' stroke-linecap='round'><path d='M16 6 6 11l10 5 10-5-10-5z'/><path d='M6 21l10 5 10-5'/><path d='M6 16l10 5 10-5'/></g></svg>">
+    <link rel="manifest" href="./manifest.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1771,6 +1772,19 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 .bt-kpi-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
 .bt-kpi-val { font-size: 1.1rem; font-weight: 800; font-family: var(--font-mono); }
 .bt-note { margin-top: 12px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+
+/* ── PWA yükle butonu ── */
+.pwa-install-btn {
+    position: fixed; left: 16px; bottom: 84px; z-index: 60;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(16,185,129,0.4);
+    background: linear-gradient(135deg, var(--color-primary), #059669); color: #fff;
+    font-size: 0.82rem; font-weight: 700; cursor: pointer;
+    box-shadow: 0 6px 24px rgba(16,185,129,0.35); animation: pwaPulse 2.5s ease-in-out infinite;
+}
+.pwa-install-btn:hover { transform: translateY(-2px); }
+@keyframes pwaPulse { 0%,100% { box-shadow: 0 6px 24px rgba(16,185,129,0.30); } 50% { box-shadow: 0 6px 30px rgba(16,185,129,0.55); } }
+@media (min-width: 1025px) { .pwa-install-btn { bottom: 24px; } }
 .dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); animation: dashPulse 2s infinite; }
 @keyframes dashPulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); } 70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
 .dash-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -10899,6 +10913,31 @@ function updateDynamicDates() {
     }
 }
 
+/* ═══════════════════════════════════════════════
+   PWA — Service Worker + Yükle
+   ═══════════════════════════════════════════════ */
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
+}
+let _deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    _deferredPrompt = e;
+    const btn = document.getElementById('pwaInstallBtn');
+    if (btn) btn.style.display = 'inline-flex';
+});
+async function installPWA() {
+    if (!_deferredPrompt) { showToast('Tarayıcı menüsünden "Ana ekrana ekle / Uygulamayı yükle" seçebilirsiniz.', 'info', 5000); return; }
+    _deferredPrompt.prompt();
+    try { const { outcome } = await _deferredPrompt.userChoice; if (outcome === 'accepted') showToast('✅ Equilyze yükleniyor…', 'success'); } catch {}
+    _deferredPrompt = null;
+    const btn = document.getElementById('pwaInstallBtn'); if (btn) btn.style.display = 'none';
+}
+window.addEventListener('appinstalled', () => {
+    showToast('✅ Equilyze ana ekrana eklendi!', 'success');
+    const btn = document.getElementById('pwaInstallBtn'); if (btn) btn.style.display = 'none';
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     authInit();
     updateDynamicDates();
@@ -10929,6 +10968,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- Ambient Risk Glow Overlay -->
 <div class="ambient-glow" id="ambientGlow"></div>
+
+<!-- PWA Install Button -->
+<button class="pwa-install-btn" id="pwaInstallBtn" onclick="installPWA()" style="display:none" title="Equilyze'i uygulama olarak yükle">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Uygulamayı Yükle
+</button>
 
 <!-- AI Agent FAB -->
 <button class="ai-agent-fab" onclick="toggleAIAgent()" title="Equilyze AI Agent" id="aiAgentFab">
