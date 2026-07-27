@@ -7363,6 +7363,7 @@ function saveTrade() {
     }
 
     localStorage.setItem('equilyze-journal', JSON.stringify(trades));
+    sbSyncUpDebounced();
     closeTradeModal();
     updateJournalStats();
     filterJournal();
@@ -9215,6 +9216,74 @@ function exportMyData() {
 }
 if (typeof window !== 'undefined') window.exportMyData = exportMyData;
 
+/* ═══════════════════════════════════════════════
+   SUPABASE BACKEND — opsiyonel bulut senkron + gerçek auth
+   Config gelene kadar sbEnabled()=false → tamamen inert (mevcut akış bozulmaz).
+   anon key public'tir; veriler RLS (Row Level Security) ile korunur.
+   ═══════════════════════════════════════════════ */
+const SUPABASE_URL = 'https://bniamvgclbecnvpfgupn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuaWFtdmdjbGJlY252cGZndXBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxMTcxOTAsImV4cCI6MjEwMDY5MzE5MH0.-OcfG98wz6Pv3NQqaYBKgCKq1sFGsR_z7P-5BXu4ytk';
+function sbEnabled() { return !!(SUPABASE_URL && SUPABASE_ANON_KEY); }
+function sbGetSession() { try { return JSON.parse(localStorage.getItem('equilyze-sb-session') || 'null'); } catch { return null; } }
+function sbSetSession(s) { if (s) localStorage.setItem('equilyze-sb-session', JSON.stringify(s)); else localStorage.removeItem('equilyze-sb-session'); }
+async function _sbAuth(path, body) {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/${path}`, {
+        method: 'POST', headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error_description || data.msg || data.error || ('HTTP ' + r.status));
+    return data;
+}
+async function sbSignUp(email, password, name) {
+    const data = await _sbAuth('signup', { email, password, data: { name } });
+    if (data.access_token && data.user) sbSetSession({ token: data.access_token, refresh: data.refresh_token, uid: data.user.id, email });
+    return data;
+}
+async function sbSignIn(email, password) {
+    const data = await _sbAuth('token?grant_type=password', { email, password });
+    sbSetSession({ token: data.access_token, refresh: data.refresh_token, uid: data.user.id, email });
+    return data;
+}
+function sbSignOut() { sbSetSession(null); }
+async function sbSyncUp() {
+    if (!sbEnabled()) return;
+    const s = sbGetSession(); if (!s) return;
+    const rd = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || d); } catch { return null; } };
+    const blob = {
+        portfolio: rd('equilyze-portfolio-' + s.email, 'null'),
+        journal: rd('equilyze-journal', '[]'),
+        riskProfile: rd('equilyze-risk-profile', 'null'),
+        watchlist: rd('equilyze-watchlist', 'null'),
+        alerts: rd('equilyze-alerts', '[]'),
+    };
+    await fetch(`${SUPABASE_URL}/rest/v1/equilyze_data`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + s.token, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+        body: JSON.stringify({ user_id: s.uid, data: blob, updated_at: new Date().toISOString() })
+    }).catch(() => {});
+}
+let _sbSyncTimer = null;
+function sbSyncUpDebounced() { if (!sbEnabled()) return; clearTimeout(_sbSyncTimer); _sbSyncTimer = setTimeout(() => sbSyncUp().catch(() => {}), 1500); }
+async function sbSyncDown() {
+    if (!sbEnabled()) return;
+    const s = sbGetSession(); if (!s) return;
+    try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/equilyze_data?user_id=eq.${s.uid}&select=data`, {
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + s.token }
+        });
+        if (!r.ok) return;
+        const rows = await r.json();
+        if (rows.length && rows[0].data) {
+            const d = rows[0].data;
+            if (d.portfolio) localStorage.setItem('equilyze-portfolio-' + s.email, JSON.stringify(d.portfolio));
+            if (d.journal) localStorage.setItem('equilyze-journal', JSON.stringify(d.journal));
+            if (d.riskProfile) localStorage.setItem('equilyze-risk-profile', JSON.stringify(d.riskProfile));
+            if (d.watchlist) localStorage.setItem('equilyze-watchlist', JSON.stringify(d.watchlist));
+            if (d.alerts) localStorage.setItem('equilyze-alerts', JSON.stringify(d.alerts));
+        }
+    } catch {}
+}
+
 function getUsers() {
     try { return JSON.parse(localStorage.getItem('equilyze-users')) || {}; } catch { return {}; }
 }
@@ -9280,6 +9349,7 @@ function authRegister(event) {
     users[email] = { name, email, password: hashPass(pass), registeredAt: new Date().toISOString(), riskProfile: null };
     saveUsers(users);
     notifyRegistration('üye kaydı', { name, email }); // yedek + (endpoint varsa) email
+    if (sbEnabled()) sbSignUp(email, pass, name).then(() => sbSyncUp()).catch(() => {}); // bulut kaydı
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
@@ -9301,6 +9371,7 @@ function authLogin(event) {
     if (!users[email]) { setAuthLoading(false); errEl.textContent = 'E-posta bulunamadı.'; return; }
     if (users[email].password !== hashPass(pass)) { setAuthLoading(false); errEl.textContent = 'Hatalı şifre.'; return; }
     setSession(email);
+    if (sbEnabled()) sbSignIn(email, pass).then(() => sbSyncDown()).then(() => recreateEnginesWithPortfolio(resolvePortfolio())).catch(() => {}); // bulut giriş + veri çek
     applyAuthState(email);
     closeAuthModal();
     setAuthLoading(false);
@@ -9325,6 +9396,7 @@ function authLogout() {
     document.querySelector('.nav-login').textContent = 'Giriş Yap';
     document.querySelector('.nav-login').style.display = '';
     document.querySelector('.auth-user-card')?.remove();
+    sbSignOut();
     // Çıkışta ana sayfaya dön (dashboard'a değil): tüm sayfa modlarını kapat
     closeUserPage(false);
     document.body.classList.remove('dashboard-open', 'overlay-open');
@@ -9468,6 +9540,7 @@ function savePortfolio() {
     if (totalW > 0) positions.forEach(p => p.weight = p.weight / totalW);
     const pf = { value, positions, updatedAt: new Date().toISOString() };
     saveUserPortfolio(session.email, pf);
+    sbSyncUpDebounced();
     closePortfolioModal();
     recreateEnginesWithPortfolio(pf);
     showToast('Portföy kaydedildi! Metrikler yeniden hesaplandı.', 'success');
