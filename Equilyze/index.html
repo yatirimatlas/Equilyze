@@ -9221,8 +9221,8 @@ if (typeof window !== 'undefined') window.exportMyData = exportMyData;
    Config gelene kadar sbEnabled()=false → tamamen inert (mevcut akış bozulmaz).
    anon key public'tir; veriler RLS (Row Level Security) ile korunur.
    ═══════════════════════════════════════════════ */
-const SUPABASE_URL = '';        // ör: https://xxxxx.supabase.co
-const SUPABASE_ANON_KEY = '';   // Settings > API > anon public key
+const SUPABASE_URL = 'https://bniamvgclbecnvpfgupn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuaWFtdmdjbGJlY252cGZndXBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxMTcxOTAsImV4cCI6MjEwMDY5MzE5MH0.-OcfG98wz6Pv3NQqaYBKgCKq1sFGsR_z7P-5BXu4ytk';
 function sbEnabled() { return !!(SUPABASE_URL && SUPABASE_ANON_KEY); }
 function sbGetSession() { try { return JSON.parse(localStorage.getItem('equilyze-sb-session') || 'null'); } catch { return null; } }
 function sbSetSession(s) { if (s) localStorage.setItem('equilyze-sb-session', JSON.stringify(s)); else localStorage.removeItem('equilyze-sb-session'); }
