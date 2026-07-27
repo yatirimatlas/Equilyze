@@ -4077,9 +4077,9 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             </svg>
                         </div>
                         <div>
-                            <div class="psc-label">ÖRNEK PORTFÖY — Toplam Değer</div>
-                            <div class="psc-value">₺847,250</div>
-                            <div class="psc-change positive">+₺12,840 bugün (ÖRNEK PORTFÖY)</div>
+                            <div class="psc-label">Örnek Portföy — Toplam Değer</div>
+                            <div class="psc-value">₺847.250</div>
+                            <div class="psc-change">Örnek veri · ✎ Düzenle ile kendi portföyünü ekle</div>
                         </div>
                         <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()" style="margin-left:auto;align-self:center;white-space:nowrap" title="Portföyünü düzenle">✎ Düzenle</button>
                         <button class="btn btn-sm btn-outline" onclick="exportFullReport()" style="align-self:center;white-space:nowrap" title="Tam raporu indir">📄 Rapor</button>
@@ -4092,9 +4092,9 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             </svg>
                         </div>
                         <div>
-                            <div class="psc-label">Gerçekleşmemiş K/Z</div>
-                            <div class="psc-value positive">+₺23,410</div>
-                            <div class="psc-change positive">+2.84%</div>
+                            <div class="psc-label">Kripto 24s K/Z</div>
+                            <div class="psc-value positive" id="unrealizedPnl">—</div>
+                            <div class="psc-change" id="unrealizedPct">Canlı Binance</div>
                         </div>
                     </div>
                     <div class="portfolio-stat-card">
@@ -4349,7 +4349,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             </div>
                             <canvas id="corrTimeseriesChart" style="width:100%;height:100px;"></canvas>
                             <div class="corr-ts-alert" data-i18n="corr-ts-alert">
-                                ⚠️ BTC ve S&P 500 arasındaki korelasyon son 30 günde 0.40'tan 0.85'e çıktı — yanıltıcı güvene dikkat!
+                                ⚠️ Kriz anlarında varlıklar arası korelasyon hızla yükselir — "çeşitlendirdim" sandığın portföy tek bir şokta birlikte düşebilir.
                             </div>
                         </div>
                     </div>
@@ -4871,7 +4871,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                         <div class="impact-metrics" id="impactMetrics" style="opacity:0;transition:opacity 0.4s">
                             <div class="impact-metric">
                                 <span class="label">Tahmini Etki</span>
-                                <span class="value" id="shockImpact">-₺45,230</span>
+                                <span class="value" id="shockImpact">—</span>
                             </div>
                             <div class="impact-metric">
                                 <span class="label">Portföy Değişimi</span>
@@ -4960,11 +4960,11 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                         <div class="swan-metrics">
                             <div class="swan-metric">
                                 <span class="swan-metric-label">Portföy Kaybı</span>
-                                <span class="swan-metric-val negative" id="swanLoss">-₺297,537</span>
+                                <span class="swan-metric-val negative" id="swanLoss">—</span>
                             </div>
                             <div class="swan-metric">
                                 <span class="swan-metric-label">Kalan Değer</span>
-                                <span class="swan-metric-val" id="swanRemaining">₺549,713</span>
+                                <span class="swan-metric-val" id="swanRemaining">—</span>
                             </div>
                         </div>
                         <div class="survival-section">
@@ -7393,7 +7393,7 @@ function syncPortfolioFromJournal() {
     if (changeEl) {
         const pnlStr = (totalPnl >= 0 ? '+' : '') + '₺' + Math.round(totalPnl).toLocaleString('tr-TR');
         const isUser = (() => { try { const s = getSession(); return s && getUserPortfolio(s.email) !== null; } catch { return false; } })();
-        changeEl.textContent = (totalPnl !== 0 ? pnlStr + ' (gerçekleşen K/Z)' : (isUser ? 'Henüz işlem yok' : '+₺12,840 bugün (ÖRNEK PORTFÖY)'));
+        changeEl.textContent = (totalPnl !== 0 ? pnlStr + ' (gerçekleşen K/Z)' : (isUser ? 'Henüz işlem yok' : 'Örnek veri · ✎ Düzenle ile kendi portföyünü ekle'));
         changeEl.className = 'psc-change' + (totalPnl >= 0 ? ' positive' : ' negative');
     }
     updateJournalStats();
@@ -9454,8 +9454,8 @@ function updatePortfolioLabel(pf) {
     const pscLabel = document.querySelector('.psc-label');
     const pscChange = document.querySelector('.psc-change');
     const isUserPortfolio = pf && pf.positions !== DEFAULT_POSITIONS;
-    if (pscLabel) pscLabel.textContent = isUserPortfolio ? 'Portföyüm — Toplam Değer' : 'ÖRNEK PORTFÖY — Toplam Değer';
-    if (pscChange) pscChange.textContent = isUserPortfolio ? 'Kişisel portföyünüz' : '+₺12,840 bugün (ÖRNEK PORTFÖY)';
+    if (pscLabel) pscLabel.textContent = isUserPortfolio ? 'Portföyüm — Toplam Değer' : 'Örnek Portföy — Toplam Değer';
+    if (pscChange) { pscChange.textContent = isUserPortfolio ? 'Kişisel portföyünüz' : 'Örnek veri · ✎ Düzenle ile kendi portföyünü ekle'; pscChange.className = 'psc-change'; }
     const pscValue = document.querySelector('.psc-value');
     if (pscValue) pscValue.textContent = '₺' + Number(pf.value).toLocaleString('tr-TR');
 }
@@ -9624,6 +9624,7 @@ function renderPositionsList() {
 async function updatePositionsLive() {
     const rows = [...document.querySelectorAll('#positionsList .position-item[data-crypto="true"]')];
     if (!rows.length) return;
+    let totalPnl24 = 0, totalValue = 0;
     await Promise.all(rows.map(async row => {
         const base = row.getAttribute('data-base');
         const value = parseFloat(row.getAttribute('data-value')) || 0;
@@ -9632,12 +9633,23 @@ async function updatePositionsLive() {
             if (t.price == null || isNaN(t.change)) return;
             _lastPrices[base] = t.price;
             const pnl24 = Math.round(value * (t.change / 100)); // gerçek 24s K/Z
+            totalPnl24 += pnl24; totalValue += value;
             const pnlEl = row.querySelector('.position-pnl');
             const chgEl = row.querySelector('.position-chg');
             if (pnlEl) { pnlEl.textContent = (pnl24 >= 0 ? '+' : '') + '₺' + Math.abs(pnl24).toLocaleString('tr-TR'); pnlEl.className = 'position-pnl ' + (pnl24 >= 0 ? 'positive' : 'negative'); }
             if (chgEl) { chgEl.textContent = (t.change >= 0 ? '+' : '') + t.change.toFixed(2) + '% · 24s · $' + (t.price >= 1 ? t.price.toLocaleString('en-US', { maximumFractionDigits: 0 }) : t.price.toPrecision(3)); chgEl.style.color = t.change >= 0 ? 'var(--color-success)' : 'var(--color-danger)'; }
         } catch (e) { /* sessizce demo kalır */ }
     }));
+    // "Kripto 24s K/Z" kartını gerçek toplamla güncelle
+    const pnlCard = document.getElementById('unrealizedPnl');
+    const pctCard = document.getElementById('unrealizedPct');
+    if (pnlCard && totalValue > 0) {
+        const pos = totalPnl24 >= 0;
+        pnlCard.textContent = (pos ? '+' : '-') + '₺' + Math.abs(totalPnl24).toLocaleString('tr-TR');
+        pnlCard.className = 'psc-value ' + (pos ? 'positive' : 'negative');
+        const pct = totalPnl24 / totalValue * 100;
+        if (pctCard) { pctCard.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '% · 24s'; pctCard.className = 'psc-change ' + (pos ? 'positive' : 'negative'); }
+    }
 }
 
 /* ── Gerçek slippage: Binance order book derinliğinden ── */
@@ -10556,7 +10568,7 @@ const translations = {
         'roadmap-desc': 'Strategic plan to transform Equilyze into an "Investment Decision Support Ecosystem".',
         // Correlation TimeSeries
         'corr-ts-title': 'Correlation Time-Series',
-        'corr-ts-alert': '⚠️ Correlation between BTC and S&P 500 rose from 0.40 to 0.85 in the last 30 days — beware of false confidence!',
+        'corr-ts-alert': '⚠️ During crises, correlation between assets rises fast — a portfolio you thought was "diversified" can fall together in a single shock.',
         // Slippage Analysis
         'slip-title': '💧 Liquidity & Slippage Analysis',
         'slip-btc-sub': 'Sufficient market depth',
@@ -11072,6 +11084,7 @@ function updateInsightBar(metrics) {
     } catch { userProfile = 'conservative'; }
     const beta = metrics ? metrics.beta : 0.85;
     const avgCorr = metrics ? metrics.avgCorrelation : 0.85;
+    const survival = metrics && typeof metrics.survivalScore === 'number' ? metrics.survivalScore : null;
     const insightIcon = document.getElementById('insightIcon');
     const insightText = document.getElementById('insightText');
     if (!insightIcon || !insightText) return;
@@ -11079,7 +11092,12 @@ function updateInsightBar(metrics) {
     const isUserPortfolio = (() => { try { const s = getSession(); return s && getUserPortfolio(s.email) !== null; } catch { return false; } })();
     const prefix = isUserPortfolio ? '' : 'ÖRNEK PORTFÖY: ';
 
-    if (userProfile === 'conservative' && beta > 0.8) {
+    // Öncelik: Hayatta Kalma Skoru (survival) ile tutarlı ol
+    if (survival !== null && survival < 40) {
+        insightIcon.className = 'insight-icon danger';
+        insightIcon.textContent = '🔴';
+        insightText.innerHTML = prefix + 'Hayatta Kalma Skoru <strong>' + survival + '/100 — kritik</strong>. Portföy şoklara kırılgan; çeşitlendirme, nakit oranı ve yoğunlaşma riskini gözden geçirin.';
+    } else if (userProfile === 'conservative' && beta > 0.8) {
         insightIcon.className = 'insight-icon warning';
         insightIcon.textContent = '⚠️';
         insightText.innerHTML = prefix + 'Risk profilin <strong>"' + userProfileLabel + '"</strong> ancak portföy piyasadan <em>%' + Math.round((beta - 0.5) * 100) + ' daha agresif</em> hareket ediyor. Volatilite ve nakit oranı arasında bir uyumsuzluk var.';
@@ -11087,10 +11105,14 @@ function updateInsightBar(metrics) {
         insightIcon.className = 'insight-icon warning';
         insightIcon.textContent = '🛡️';
         insightText.innerHTML = prefix + 'Varlıklar yüksek korelasyonla hareket ediyor (Ort. Korelasyon: <strong>' + avgCorr.toFixed(2) + '</strong>). Çeşitlendirme düzeyi düşük olabilir.';
+    } else if (survival !== null && survival < 70) {
+        insightIcon.className = 'insight-icon warning';
+        insightIcon.textContent = '⚠️';
+        insightText.innerHTML = prefix + 'Hayatta Kalma Skoru <strong>' + survival + '/100 — orta</strong>. Metrikler kabul edilebilir ama iyileştirme alanı var.';
     } else {
         insightIcon.className = 'insight-icon';
         insightIcon.textContent = '📈';
-        insightText.innerHTML = prefix + 'Metrikler normal aralıkta. Detaylı analiz için dashboard bileşenlerini inceleyin.';
+        insightText.innerHTML = prefix + 'Metrikler sağlıklı aralıkta' + (survival !== null ? ' (Skor <strong>' + survival + '/100</strong>)' : '') + '. Detaylı analiz için widget\'ları inceleyin.';
     }
 
     // Show profile badge in metrics area
