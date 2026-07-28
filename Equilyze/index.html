@@ -6989,7 +6989,7 @@ function runCustomShock() {
 
     setTimeout(() => {
         shockLoading.style.display = 'none';
-        document.getElementById('shockImpact').textContent = `${impactAmount >= 0 ? '+' : ''}₺${Math.abs(impactAmount).toLocaleString('tr-TR', {maximumFractionDigits: 0})}`;
+        document.getElementById('shockImpact').textContent = `${impactAmount >= 0 ? '+' : '-'}₺${Math.abs(impactAmount).toLocaleString('tr-TR', {maximumFractionDigits: 0})}`;
         document.getElementById('shockImpact').className = `value ${impactAmount >= 0 ? 'positive' : 'negative'}`;
         document.getElementById('shockPercent').textContent = `${impactPct > 0 ? '+' : ''}${impactPct}%`;
         document.getElementById('shockPercent').className = `value ${impactPct >= 0 ? 'positive' : 'negative'}`;
@@ -7567,8 +7567,8 @@ function saveTrade() {
     if (exit !== null && exit <= 0) { showToast('Çıkış fiyatı pozitif olmalıdır', 'error'); return; }
     if (stop !== null && stop <= 0) { showToast('Stop fiyatı pozitif olmalıdır', 'error'); return; }
     if (tp !== null && tp <= 0) { showToast('Take profit fiyatı pozitif olmalıdır', 'error'); return; }
-    if (type === 'buy' && exit !== null && exit <= entry) { showToast('Alış işleminde çıkış fiyatı giriş fiyatından büyük olmalıdır', 'error'); return; }
-    if (type === 'sell' && exit !== null && exit >= entry) { showToast('Satış işleminde çıkış fiyatı giriş fiyatından küçük olmalıdır', 'error'); return; }
+    // NOT: Çıkış fiyatı giriş fiyatının altında/üstünde OLABİLİR — bu zararla kapatılan
+    // işlem demektir ve journal'ın en kritik kaydıdır. Yön kısıtı uygulanmaz.
     if (stop !== null) {
         if (type === 'buy' && stop >= entry) { showToast('Alış işleminde stop giriş fiyatının altında olmalıdır', 'error'); return; }
         if (type === 'sell' && stop <= entry) { showToast('Satış işleminde stop giriş fiyatının üstünde olmalıdır', 'error'); return; }
@@ -8148,8 +8148,9 @@ class MonteCarloEngine {
             cvar: this._cvar(sorted, confidenceLevels),
             distribution: this._distribution(sorted, 40),
             probabilities: this._probabilities(sorted),
-            sharpeRatio: mcStd > 0 ? mcMeanRet / mcStd * Math.sqrt(252) : 0,
-            portfolioVolatility: mcStd * Math.sqrt(252) * 100,
+            // mcStd zaten `days` günlük TOPLAM getirinin std'si → yıllığa √(252/days) ile ölçekle
+            sharpeRatio: mcStd > 0 ? (mcMeanRet / mcStd) * Math.sqrt(252 / days) : 0,
+            portfolioVolatility: mcStd * Math.sqrt(252 / days) * 100,
             varPct: var95_.pct,
             cvarPct: cvar95_.pct,
         };
@@ -8158,12 +8159,15 @@ class MonteCarloEngine {
     _buildAssetParams(mode) {
         const multiplier = { normal: 1, stressed: 2.2, extreme: 4.5 }[mode] || 1;
         const driftMod   = { normal: 1, stressed: -0.8, extreme: -2.5 }[mode] || 1;
+        // mu ve sigma ZATEN GÜNLÜK değerlerdir (kripto ~%4.5 günlük vol ≈ %71 yıllık).
+        // Daha önce fazladan /252 ve /√252 uygulanıyordu → drift 252x, vol 16x küçülüyor,
+        // Black Swan senaryosunda bile beklenen değer düşmüyordu. Bölmeler kaldırıldı.
         return {
-            crypto: { mu: (0.0008 * driftMod) / 252, sigma: (0.045 * multiplier) / Math.sqrt(252) },
-            stock:  { mu: (0.0004 * driftMod) / 252, sigma: (0.018 * multiplier) / Math.sqrt(252) },
-            bond:   { mu: (0.0002 * driftMod) / 252, sigma: (0.006 * multiplier) / Math.sqrt(252) },
-            forex:  { mu: (0.0001 * driftMod) / 252, sigma: (0.008 * multiplier) / Math.sqrt(252) },
-            default:{ mu: (0.0003 * driftMod) / 252, sigma: (0.020 * multiplier) / Math.sqrt(252) },
+            crypto: { mu: 0.0008 * driftMod, sigma: 0.045 * multiplier },
+            stock:  { mu: 0.0004 * driftMod, sigma: 0.018 * multiplier },
+            bond:   { mu: 0.0002 * driftMod, sigma: 0.006 * multiplier },
+            forex:  { mu: 0.0001 * driftMod, sigma: 0.008 * multiplier },
+            default:{ mu: 0.0003 * driftMod, sigma: 0.020 * multiplier },
         };
     }
 
@@ -8262,8 +8266,8 @@ class MonteCarloEngine {
                 paths: samplePaths, sorted, simulations, days, stats: mcStats,
                 var: self_._var(sorted, confidenceLevels), cvar: self_._cvar(sorted, confidenceLevels),
                 distribution: self_._distribution(sorted, 40), probabilities: self_._probabilities(sorted),
-                sharpeRatio: mcStd > 0 ? mcMeanRet / mcStd * Math.sqrt(252) : 0,
-                portfolioVolatility: mcStd * Math.sqrt(252) * 100,
+                sharpeRatio: mcStd > 0 ? (mcMeanRet / mcStd) * Math.sqrt(252 / days) : 0,
+                portfolioVolatility: mcStd * Math.sqrt(252 / days) * 100,
                 varPct: var95_.pct, cvarPct: cvar95_.pct,
             };
         };
