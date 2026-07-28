@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
@@ -6209,159 +6209,122 @@ console.log('Equilyze JS loaded —', new Date().toISOString());
 /* ─────────────────────────────────────────────
    RISK PROFILE TEST — 15 QUESTIONS (5 categories)
    ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   YATIRIMCI PROFİLİ TESTİ v2 — 20 soru, 3 boyut, ağırlıklı skorlama
+   Metodoloji (MiFID II / CFA uygunluk anketleri ile uyumlu):
+     • RİSK TOLERANSI  (psikolojik + davranışsal) — ne kadar risk İSTİYORSUN
+     • RİSK KAPASİTESİ (finansal durum)           — ne kadar risk TAŞIYABİLİRSİN
+     • OLGUNLUK        (deneyim + bilgi + disiplin) — AYRI skor, risk skorunu şişirmez
+   Nihai profil kapasiteyle sınırlandırılır: psikolojik olarak agresif olsan da
+   finansal kapasiten yoksa profil yukarı çıkmaz.
+   ═══════════════════════════════════════════════════════════════ */
 const riskQuestions = [
-    // Category 1: Psikoloji (Q1-Q3)
+    /* ── RİSK TOLERANSI (7 soru) ── */
     {
-        id: 1,
-        category: 'Psikoloji',
-        question: 'Piyasalar aniden %20 düştüğünde ilk tepkiniz ne olur?',
+        id: 1, dim: 'tolerance', category: 'Psikoloji', weight: 1.5,
+        question: 'Portföyünüz bir ay içinde %20 değer kaybetti. İlk tepkiniz ne olur?',
         options: [
-            { text: 'Panikler, tüm pozisyonlarımı kapatırım', score: 1 },
-            { text: 'Tedirgin olur, durumu izlerim', score: 2 },
-            { text: 'Sakin kalır, stratejime bağlı kalırım', score: 3 },
-            { text: 'Heyecanlanır, alım fırsatı ararım', score: 4 }
+            { text: 'Uyuyamam; kalanı kurtarmak için hepsini satarım', score: 1 },
+            { text: 'Ciddi tedirgin olurum, bir kısmını nakde çeviririm', score: 2 },
+            { text: 'Rahatsız olurum ama planıma sadık kalırım', score: 3 },
+            { text: 'Fiyatlar ucuzladı diye ek alım planlarım', score: 4 }
         ]
     },
     {
-        id: 2,
-        category: 'Psikoloji',
-        question: 'Büyük bir kayıp yaşadıktan sonra nasıl hissedersiniz?',
+        id: 2, dim: 'tolerance', category: 'Psikoloji', weight: 1.0,
+        question: 'Portföy değerinizin gün içinde %10 dalgalanması sizi nasıl etkiler?',
         options: [
-            { text: 'Günlerce üzgün ve stresli olurum', score: 1 },
-            { text: 'Bir süre kendimi kötü hissederim', score: 2 },
-            { text: 'Hayal kırıklığı yaşar, analiz ederim', score: 3 },
-            { text: 'Öğrenme fırsatı olarak değerlendiririm', score: 4 }
+            { text: 'Gün boyu huzursuz olurum, işime odaklanamam', score: 1 },
+            { text: 'Rahatsız eder, sık sık kontrol ederim', score: 2 },
+            { text: 'Normal karşılarım, dalgalanma işin parçası', score: 3 },
+            { text: 'Hiç etkilenmem; fırsat olarak görürüm', score: 4 }
         ]
     },
     {
-        id: 3,
-        category: 'Psikoloji',
-        question: 'Stop-loss seviyeniz tetiklendiğinde genellikle ne yaparsınız?',
+        id: 3, dim: 'tolerance', category: 'Risk Toleransı', weight: 2.0,
+        question: 'Yatırımınızda kalıcı olarak kaybetmeyi göze alabileceğiniz maksimum oran nedir?',
         options: [
-            { text: 'Stop\'u aşağı çekerim, toparlar diye beklerim', score: 1 },
-            { text: 'Bazen stop\'u ertelirim', score: 2 },
-            { text: 'Genellikle stop\'a uyarım', score: 3 },
-            { text: 'Her zaman stop\'a uyarım, kuraldır', score: 4 }
+            { text: 'Neredeyse hiç (%0-5) — anaparam korunmalı', score: 1 },
+            { text: 'Sınırlı (%5-15)', score: 2 },
+            { text: 'Orta (%15-30)', score: 3 },
+            { text: 'Yüksek (%30+) — yüksek getiri için göze alırım', score: 4 }
         ]
     },
-    // Category 2: Davranış (Q4-Q6)
     {
-        id: 4,
-        category: 'Davranış',
+        id: 4, dim: 'tolerance', category: 'Davranış', weight: 1.5,
+        question: 'Portföyünüz bir yılda %25 geriledi. Gerçekte NE YAPARSINIZ?',
+        options: [
+            { text: 'Tamamen çıkar, bir daha bu piyasaya girmem', score: 1 },
+            { text: 'Riski azaltır, daha güvenli varlıklara geçerim', score: 2 },
+            { text: 'Pozisyonu korur, planımı sürdürürüm', score: 3 },
+            { text: 'Düzenli alımla ortalama maliyeti düşürürüm', score: 4 }
+        ]
+    },
+    {
+        id: 5, dim: 'tolerance', category: 'Risk Toleransı', weight: 1.5,
+        question: 'İki seçenekten hangisini tercih edersiniz?',
+        options: [
+            { text: 'Garanti %5 getiri', score: 1 },
+            { text: '%80 ihtimalle %10, %20 ihtimalle %0', score: 2 },
+            { text: '%60 ihtimalle %25, %40 ihtimalle -%10', score: 3 },
+            { text: '%50 ihtimalle %60, %50 ihtimalle -%30', score: 4 }
+        ]
+    },
+    {
+        id: 6, dim: 'tolerance', category: 'Davranış', weight: 1.0,
         question: 'Bir pozisyonunuz %50 değer kazandı. Ne yaparsınız?',
         options: [
-            { text: 'Hemen tümünü satarım, kâr garantide', score: 1 },
-            { text: 'Bir kısmını satarım, riski azaltırım', score: 2 },
-            { text: 'Yeni seviyeye stop koyar, beklerim', score: 3 },
-            { text: 'Trend devam ettiği sürece tutarım', score: 4 }
+            { text: 'Hemen tümünü satarım, kâr garantiye alınır', score: 1 },
+            { text: 'Yarısını satar, maliyetimi çıkarırım', score: 2 },
+            { text: 'Takip eden stop koyar, trendi izlerim', score: 3 },
+            { text: 'Trend güçlüyse pozisyonu artırırım', score: 4 }
         ]
     },
     {
-        id: 5,
-        category: 'Davranış',
-        question: 'Bir arkadaşınız "Bu hisse kesin 3 katına çıkar" dedi. Tepkiniz?',
+        id: 7, dim: 'tolerance', category: 'Hedef', weight: 1.0,
+        question: 'Bu yatırımdaki temel amacınız nedir?',
         options: [
-            { text: 'Söylediği hisseyi hemen alırım', score: 1 },
-            { text: 'Biraz araştırır, sonra karar veririm', score: 2 },
-            { text: 'Kendi analizimi yapar, uyuyorsa değerlendiririm', score: 3 },
-            { text: 'Başkasının tavsiyesiyle işlem yapmam', score: 4 }
+            { text: 'Anaparayı korumak ve enflasyona yenilmemek', score: 1 },
+            { text: 'Düzenli, öngörülebilir gelir elde etmek', score: 2 },
+            { text: 'Uzun vadede serveti büyütmek', score: 3 },
+            { text: 'Kısa vadede yüksek getiri yakalamak', score: 4 }
         ]
     },
+
+    /* ── RİSK KAPASİTESİ (6 soru) — finansal taşıma gücü ── */
     {
-        id: 6,
-        category: 'Davranış',
-        question: 'Ekonomik kriz dönemlerinde yatırım stratejiniz nedir?',
+        id: 8, dim: 'capacity', category: 'Finansal Kapasite', weight: 2.0,
+        question: 'Yatırımlarınıza dokunmadan kaç aylık zorunlu giderinizi karşılayacak nakdiniz var?',
         options: [
-            { text: 'Tüm varlıkları nakite çeviririm', score: 1 },
-            { text: 'Riski azaltırım, beklerim', score: 2 },
-            { text: 'Portföyümü çeşitlendiririm', score: 3 },
-            { text: 'Agresif alım yapar, fırsatları değerlendiririm', score: 4 }
+            { text: 'Yok denecek kadar az (1 aydan az)', score: 1 },
+            { text: '1-3 ay', score: 2 },
+            { text: '3-6 ay', score: 3 },
+            { text: '6 aydan fazla', score: 4 }
         ]
     },
-    // Category 3: Strateji (Q7-Q9)
     {
-        id: 7,
-        category: 'Strateji',
-        question: 'Portföyünüzün kaçında yüksek riskli varlıklar (kripto, kaldıraçlı ürünler) yer almalı?',
+        id: 9, dim: 'capacity', category: 'Finansal Kapasite', weight: 1.5,
+        question: 'Düzenli gelirinizin istikrarı nasıl?',
         options: [
-            { text: 'Hiç yer almamalı (%0)', score: 1 },
-            { text: 'Küçük bir pay (%5-15)', score: 2 },
-            { text: 'Önemli bir pay (%20-40)', score: 3 },
-            { text: 'Büyük bir pay (%50+)', score: 4 }
+            { text: 'Düzensiz / gelirim yok', score: 1 },
+            { text: 'Değişken (serbest çalışan, primli, mevsimlik)', score: 2 },
+            { text: 'İstikrarlı maaş', score: 3 },
+            { text: 'İstikrarlı ve giderimin belirgin üstünde', score: 4 }
         ]
     },
     {
-        id: 8,
-        category: 'Strateji',
-        question: 'Kaldıraçlı işlemler hakkındaki görüşünüz nedir?',
+        id: 10, dim: 'capacity', category: 'Finansal Kapasite', weight: 1.5,
+        question: 'Bu yatırım, toplam birikiminizin yaklaşık yüzde kaçını oluşturuyor?',
         options: [
-            { text: 'Kesinlikle kullanmam, çok tehlikeli', score: 1 },
-            { text: 'Düşük kaldıraç ile nadir kullanabilirim', score: 2 },
-            { text: 'Orta kaldıraçla stratejik kullanırım', score: 3 },
-            { text: 'Yüksek kaldıraç benim için problem değil', score: 4 }
+            { text: 'Neredeyse tamamı (%80+)', score: 1 },
+            { text: 'Büyük kısmı (%50-80)', score: 2 },
+            { text: 'Bir bölümü (%20-50)', score: 3 },
+            { text: 'Küçük bir kısmı (%20 altı)', score: 4 }
         ]
     },
     {
-        id: 9,
-        category: 'Strateji',
-        question: 'Maksimum ne kadar portföy kaybına tahammül edebilirsiniz?',
-        options: [
-            { text: 'Hiç kayıp istemem (%0-5)', score: 1 },
-            { text: 'Küçük kayıp tolere edebilirim (%5-15)', score: 2 },
-            { text: 'Orta kayıp kabul ederim (%15-30)', score: 3 },
-            { text: 'Yüksek kayıpla başa çıkabilirim (%30+)', score: 4 }
-        ]
-    },
-    // Category 4: Deneyim (Q10-Q12)
-    {
-        id: 10,
-        category: 'Deneyim',
-        question: 'Kaç yıldır aktif olarak yatırım/trading yapıyorsunuz?',
-        options: [
-            { text: 'Henüz başlamadım / Yeni başladım', score: 1 },
-            { text: '1-2 yıl', score: 2 },
-            { text: '3-5 yıl', score: 3 },
-            { text: '5 yıldan fazla', score: 4 }
-        ]
-    },
-    {
-        id: 11,
-        category: 'Deneyim',
-        question: 'Yatırım kararlarınızı nasıl alırsınız?',
-        options: [
-            { text: 'Haber ve sosyal medyaya bakarak', score: 1 },
-            { text: 'Temel analiz yaparak', score: 2 },
-            { text: 'Teknik analiz ve grafik okuyarak', score: 3 },
-            { text: 'Sistematik strateji + risk yönetimiyle', score: 4 }
-        ]
-    },
-    {
-        id: 12,
-        category: 'Deneyim',
-        question: 'Trading journal (işlem günlüğü) tutma alışkanlığınız var mı?',
-        options: [
-            { text: 'Hayır, böyle bir alışkanlığım yok', score: 1 },
-            { text: 'Ara sıra önemli işlemleri not alırım', score: 2 },
-            { text: 'Düzenli tutmaya çalışırım', score: 3 },
-            { text: 'Her işlemi ayrıntılı olarak kaydederim', score: 4 }
-        ]
-    },
-    // Category 5: Hedef (Q13-Q15)
-    {
-        id: 13,
-        category: 'Hedef',
-        question: 'Yatırımınızın temel amacı nedir?',
-        options: [
-            { text: 'Sermayeyi enflasyondan korumak', score: 1 },
-            { text: 'Düzenli pasif gelir elde etmek', score: 2 },
-            { text: 'Uzun vadeli servet büyütmek', score: 3 },
-            { text: 'Kısa vadede maksimum getiri sağlamak', score: 4 }
-        ]
-    },
-    {
-        id: 14,
-        category: 'Hedef',
-        question: 'Yatırım ufkunuz (paraya ihtiyaç duymadan tutma süreniz) ne kadar?',
+        id: 11, dim: 'capacity', category: 'Finansal Kapasite', weight: 1.5,
+        question: 'Bu paraya ihtiyaç duymadan ne kadar süre yatırımda tutabilirsiniz?',
         options: [
             { text: '1 yıldan az', score: 1 },
             { text: '1-3 yıl', score: 2 },
@@ -6370,25 +6333,135 @@ const riskQuestions = [
         ]
     },
     {
-        id: 15,
-        category: 'Hedef',
-        question: 'Portföyünüzü ne sıklıkla aktif olarak takip edersiniz?',
+        id: 12, dim: 'capacity', category: 'Finansal Kapasite', weight: 2.0,
+        question: 'Bu yatırımın tamamını kaybetseniz yaşam standardınız nasıl etkilenir?',
         options: [
-            { text: 'Ayda bir veya daha seyrek', score: 1 },
-            { text: 'Haftada birkaç kez', score: 2 },
-            { text: 'Her gün kontrol ederim', score: 3 },
-            { text: 'Gün içinde sürekli takip ederim', score: 4 }
+            { text: 'Yıkıcı olur; temel ihtiyaçlarımı karşılayamam', score: 1 },
+            { text: 'Ciddi şekilde etkilenir, planlarımı ertelerim', score: 2 },
+            { text: 'Canımı sıkar ama hayatım devam eder', score: 3 },
+            { text: 'Kayda değer bir etkisi olmaz', score: 4 }
+        ]
+    },
+    {
+        id: 13, dim: 'capacity', category: 'Finansal Kapasite', weight: 1.0,
+        question: 'Borç ve finansal yükümlülük durumunuz nedir?',
+        options: [
+            { text: 'Yüksek borcum var (kredi/kredi kartı) ve bakmakla yükümlü olduğum kişiler var', score: 1 },
+            { text: 'Orta düzeyde borcum var', score: 2 },
+            { text: 'Sadece yönetilebilir konut/taşıt kredisi', score: 3 },
+            { text: 'Borcum yok', score: 4 }
+        ]
+    },
+
+    /* ── OLGUNLUK (7 soru) — deneyim, bilgi, disiplin (risk skorunu ŞİŞİRMEZ) ── */
+    {
+        id: 14, dim: 'maturity', category: 'Deneyim', weight: 1.5,
+        question: 'Kaç yıldır aktif olarak yatırım/trading yapıyorsunuz?',
+        options: [
+            { text: 'Henüz başlamadım / 1 yıldan az', score: 1 },
+            { text: '1-3 yıl', score: 2 },
+            { text: '3-7 yıl', score: 3 },
+            { text: '7 yıldan fazla, birden fazla piyasa döngüsü gördüm', score: 4 }
+        ]
+    },
+    {
+        id: 15, dim: 'maturity', category: 'Bilgi Düzeyi', weight: 1.5,
+        question: '"Maksimum drawdown", "Sharpe oranı" ve "VaR" kavramlarına ne kadar hâkimsiniz?',
+        options: [
+            { text: 'Hiçbirini duymadım', score: 1 },
+            { text: 'Duydum ama tam olarak açıklayamam', score: 2 },
+            { text: 'Anlamlarını biliyorum, yorumlayabilirim', score: 3 },
+            { text: 'Kendi portföyümde düzenli hesaplayıp kullanıyorum', score: 4 }
+        ]
+    },
+    {
+        id: 16, dim: 'maturity', category: 'Disiplin', weight: 1.5,
+        question: 'Belirlediğiniz stop-loss seviyesi tetiklendiğinde ne yaparsınız?',
+        options: [
+            { text: 'Stop\'u aşağı çekerim, toparlar diye beklerim', score: 1 },
+            { text: 'Duruma göre bazen ertelerim', score: 2 },
+            { text: 'Genellikle uygularım', score: 3 },
+            { text: 'İstisnasız uygularım; kural kuraldır', score: 4 }
+        ]
+    },
+    {
+        id: 17, dim: 'maturity', category: 'Disiplin', weight: 1.0,
+        question: 'İşlem günlüğü (trading journal) tutma alışkanlığınız nedir?',
+        options: [
+            { text: 'Tutmuyorum', score: 1 },
+            { text: 'Ara sıra önemli işlemleri not alırım', score: 2 },
+            { text: 'Düzenli tutarım', score: 3 },
+            { text: 'Her işlemi gerekçesi ve duygusuyla kaydeder, periyodik analiz ederim', score: 4 }
+        ]
+    },
+    {
+        id: 18, dim: 'maturity', category: 'Davranışsal Bilinç', weight: 1.0,
+        question: 'Güvendiğiniz biri "Bu varlık kesin 3 katına çıkacak" dedi. Ne yaparsınız?',
+        options: [
+            { text: 'Fırsatı kaçırmamak için hemen alırım', score: 1 },
+            { text: 'Küçük bir miktarla denerim', score: 2 },
+            { text: 'Araştırır, kendi kriterlerime uyarsa değerlendiririm', score: 3 },
+            { text: 'Kendi sistemim sinyal vermiyorsa işlem yapmam', score: 4 }
+        ]
+    },
+    {
+        id: 19, dim: 'maturity', category: 'Davranışsal Bilinç', weight: 1.5,
+        question: 'Üst üste birkaç zararlı işlemden sonra genellikle ne olur?',
+        options: [
+            { text: 'Kaybı hızla geri almak için pozisyon büyütürüm', score: 1 },
+            { text: 'Sinirlenip plan dışı işlemler açarım', score: 2 },
+            { text: 'Ara verir, sakinleşince devam ederim', score: 3 },
+            { text: 'Risk limitimi düşürür, hataları analiz ederim', score: 4 }
+        ]
+    },
+    {
+        id: 20, dim: 'maturity', category: 'Yöntem', weight: 1.0,
+        question: 'Yatırım kararlarınızı ağırlıklı olarak nasıl alırsınız?',
+        options: [
+            { text: 'Sosyal medya, haber ve çevremdeki tavsiyelerle', score: 1 },
+            { text: 'Genel piyasa yorumları ve temel haberlerle', score: 2 },
+            { text: 'Kendi teknik/temel analizimle', score: 3 },
+            { text: 'Kuralları yazılı, test edilmiş bir sistem ve risk yönetimiyle', score: 4 }
         ]
     }
 ];
 
-const CATEGORY_RANGES = {
-    'Psikoloji': [0, 2],
-    'Davranış': [3, 5],
-    'Strateji': [6, 8],
-    'Deneyim': [9, 11],
-    'Hedef': [12, 14]
-};
+/* Kategori ilerleme çipleri — soru dizisinden otomatik türetilir */
+const CATEGORY_RANGES = (function () {
+    const r = {};
+    riskQuestions.forEach((q, i) => {
+        if (!r[q.category]) r[q.category] = [i, i];
+        else r[q.category][1] = i;
+    });
+    return r;
+})();
+
+/* ── Ağırlıklı, çok boyutlu skorlama ──
+   Her boyut kendi içinde 0-100'e normalize edilir (tam aralık kullanılır).
+   Nihai risk skoru: %60 tolerans + %40 kapasite, ardından KAPASİTE TAVANI. ── */
+function computeRiskScores(ans) {
+    const a = ans || answers;
+    const dims = {
+        tolerance: { sum: 0, min: 0, max: 0 },
+        capacity: { sum: 0, min: 0, max: 0 },
+        maturity: { sum: 0, min: 0, max: 0 }
+    };
+    riskQuestions.forEach((q, i) => {
+        const d = dims[q.dim] || dims.tolerance;
+        const w = q.weight || 1;
+        const idx = a[i];
+        const s = (idx !== undefined && q.options[idx]) ? q.options[idx].score : 1;
+        d.sum += w * s; d.min += w * 1; d.max += w * 4;
+    });
+    const norm = d => d.max > d.min ? Math.round(((d.sum - d.min) / (d.max - d.min)) * 100) : 0;
+    const tolerance = norm(dims.tolerance);
+    const capacity = norm(dims.capacity);
+    const maturity = norm(dims.maturity);
+    const base = Math.round(0.6 * tolerance + 0.4 * capacity);
+    const capLimit = capacity + 10;                     // kapasite tavanı
+    const score = Math.max(0, Math.min(100, Math.min(base, capLimit)));
+    return { tolerance, capacity, maturity, score, cappedByCapacity: base > capLimit, base };
+}
 
 // State
 let currentQuestionIndex = 0;
@@ -6634,8 +6707,10 @@ function previousQuestion() {
     }
 }
 
+/* Eşikler v2: 0-100 tam aralık kalibrasyonuna göre ayarlandı.
+   4 seçenekli ölçekte 3. seçenekler (~67) "dengeli-büyüme"dir, agresif değil. */
 function getRiskProfile(score) {
-    if (score <= 33) return {
+    if (score <= 35) return {
         profile: 'Muhafazakar Yatırımcı', icon: '🛡️', subtitle: 'Risk Toleransı: Düşük',
         description: 'Sermayenizi korumayı ön planda tutan, güvenlik odaklı bir yatırımcısınız.',
         traits: ['Sermaye Koruyucu', 'Risk Kaçınmacı', 'Uzun Vadeli', 'Temkinli'],
@@ -6654,7 +6729,7 @@ function getRiskProfile(score) {
             { label: 'Nakit', percent: 5, color: '#6b7280' }
         ]
     };
-    if (score <= 66) return {
+    if (score <= 72) return {
         profile: 'Dengeli Yatırımcı', icon: '⚖️', subtitle: 'Risk Toleransı: Orta',
         description: 'Risk ve getiri arasında sağlıklı bir denge kuruyorsunuz.',
         traits: ['Denge Odaklı', 'Çeşitlendirici', 'Analitik', 'Orta Vadeli'],
@@ -6694,9 +6769,9 @@ function getRiskProfile(score) {
 }
 
 function showResults() {
-    let total = 0;
-    answers.forEach((ai, qi) => { total += riskQuestions[qi].options[ai].score; });
-    const score = Math.round((total / (riskQuestions.length * 4)) * 100);
+    // Ağırlıklı, çok boyutlu skorlama (tolerans + kapasite; olgunluk ayrı)
+    _lastRiskScores = computeRiskScores(answers);
+    const score = _lastRiskScores.score;
 
     // Eğer kullanıcı giriş yapmamışsa önce email iste
     if (!getSession()) {
@@ -6706,6 +6781,7 @@ function showResults() {
 
     _showResultsInternal(score);
 }
+let _lastRiskScores = null;
 
 function _showResultsInternal(score) {
     const rp = getRiskProfile(score);
@@ -6732,7 +6808,7 @@ function _showResultsInternal(score) {
         const offset = circumference - (score / 100) * circumference;
         fill.style.strokeDashoffset = offset;
         // Color by profile
-        fill.style.stroke = score <= 33 ? '#10b981' : score <= 66 ? '#06b6d4' : '#f59e0b';
+        fill.style.stroke = score <= 35 ? '#10b981' : score <= 72 ? '#06b6d4' : '#f59e0b';
     }, 200);
 
     // Recommendations
@@ -6756,7 +6832,12 @@ function _showResultsInternal(score) {
     }, 400);
 
     // Save to localStorage
-    localStorage.setItem('equilyze-risk-profile', JSON.stringify({ score, profile, date: new Date().toISOString() }));
+    const _sc = _lastRiskScores || {};
+    localStorage.setItem('equilyze-risk-profile', JSON.stringify({
+        score, profile, date: new Date().toISOString(),
+        tolerance: _sc.tolerance, capacity: _sc.capacity, maturity: _sc.maturity,
+        cappedByCapacity: _sc.cappedByCapacity, base: _sc.base
+    }));
     // Dashboard rozeti/insight'ı ve bulut senkronu hemen tazele (profilde görünsün)
     try { if (metricsEngine) updateInsightBar(metricsEngine.updateDashboard()); } catch {}
     try { if (typeof sbSyncUpDebounced === 'function') sbSyncUpDebounced(); } catch {}
@@ -9604,7 +9685,28 @@ function renderInvestorSummary() {
     }
     const d = (typeof getRiskProfile === 'function') ? getRiskProfile(rp.score) : null;
     if (!d) { box.innerHTML = '<div style="color:var(--text-secondary)">' + rp.profile + ' — ' + rp.score + '/100</div>'; return; }
-    const color = rp.score <= 33 ? 'var(--color-success)' : rp.score <= 66 ? 'var(--color-secondary)' : 'var(--color-warning)';
+    const color = rp.score <= 35 ? 'var(--color-success)' : rp.score <= 72 ? 'var(--color-secondary)' : 'var(--color-warning)';
+    // Çok boyutlu skor kartları (tolerans / kapasite / olgunluk)
+    let dimsHtml = '';
+    if (typeof rp.tolerance === 'number') {
+        const bar = (label, val, hint) => {
+            const c = val <= 33 ? 'var(--color-success)' : val <= 66 ? 'var(--color-secondary)' : 'var(--color-warning)';
+            return `<div style="margin-bottom:10px">
+                <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:3px">
+                    <span style="color:var(--text-secondary)">${label}</span>
+                    <span style="font-family:var(--font-mono);color:${c};font-weight:700">${val}/100</span></div>
+                <div style="height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><div style="height:100%;width:${val}%;background:${c};border-radius:4px"></div></div>
+                <div style="font-size:0.68rem;color:var(--text-muted);margin-top:3px">${hint}</div></div>`;
+        };
+        const mat = rp.maturity;
+        const matHint = mat >= 75 ? 'İleri seviye: sistematik ve disiplinli' : mat >= 50 ? 'Gelişmiş: temel disiplin oturmuş' : mat >= 25 ? 'Gelişmekte: eğitim ve journal disiplini fayda sağlar' : 'Başlangıç: küçük pozisyonlarla öğrenme dönemi';
+        dimsHtml = `<div class="inv-cols" style="margin-bottom:16px">
+            <div>${bar('Risk Toleransı (psikolojik)', rp.tolerance, 'Ne kadar risk almak istiyorsun')}
+                 ${bar('Risk Kapasitesi (finansal)', rp.capacity, 'Ne kadar riski taşıyabilirsin')}</div>
+            <div>${bar('Olgunluk (deneyim + bilgi + disiplin)', mat, matHint)}
+                 ${rp.cappedByCapacity ? `<div style="padding:10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:8px;font-size:0.76rem;color:var(--text-secondary);line-height:1.5">⚠️ <strong style="color:var(--text-primary)">Kapasite sınırı uygulandı:</strong> Psikolojik risk iştahın (${rp.tolerance}) finansal taşıma gücünden (${rp.capacity}) yüksek. Profilin kapasitene göre sınırlandırıldı — acil durum fonu ve gelir istikrarı güçlenmeden daha agresif portföy önerilmez.</div>` : ''}</div>
+        </div>`;
+    }
     // Portföy uyum kontrolü: mevcut beta profile uygun mu?
     let fitNote = '';
     try {
@@ -9627,6 +9729,7 @@ function renderInvestorSummary() {
         </div>
         <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.65;margin-bottom:14px">${d.description}</p>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">${d.traits.map(t => `<span class="trait-pill" style="font-size:0.72rem;padding:4px 10px;border-radius:999px;background:rgba(16,185,129,0.1);color:var(--color-primary);font-weight:600">${t}</span>`).join('')}</div>
+        ${dimsHtml}
         <div class="inv-cols">
             <div>
                 <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-primary)">📋 Sana Uygun Strateji</h4>
@@ -9700,6 +9803,12 @@ table{width:100%;border-collapse:collapse;margin-top:8px}td,th{border:1px solid 
 <p><strong style="font-size:1.15rem">${d.profile}</strong><br>${d.subtitle} · Risk Skoru: <strong>${rp.score}/100</strong> · Test tarihi: ${new Date(rp.date).toLocaleDateString('tr-TR')}</p>
 <p>${d.description}</p>
 <div>${d.traits.map(t => `<span class="pill">${t}</span>`).join('')}</div>
+${typeof rp.tolerance === 'number' ? `<h2>Profil Boyutları</h2><table>
+<tr><th>Boyut</th><th>Skor</th><th>Anlamı</th></tr>
+<tr><td>Risk Toleransı (psikolojik)</td><td><strong>${rp.tolerance}/100</strong></td><td>Ne kadar risk almak istiyorsunuz</td></tr>
+<tr><td>Risk Kapasitesi (finansal)</td><td><strong>${rp.capacity}/100</strong></td><td>Ne kadar riski taşıyabilirsiniz</td></tr>
+<tr><td>Olgunluk (deneyim+bilgi+disiplin)</td><td><strong>${rp.maturity}/100</strong></td><td>Risk skorunu etkilemez; gelişim göstergesi</td></tr>
+</table>${rp.cappedByCapacity ? '<div class="note">⚠️ <strong>Kapasite sınırı uygulandı:</strong> Psikolojik risk iştahınız finansal taşıma gücünüzün üzerinde. Profiliniz kapasitenize göre sınırlandırıldı.</div>' : ''}` : ''}
 <h2>Sana Uygun Strateji</h2><ul>${d.recommendations.map(r => `<li>${r}</li>`).join('')}</ul>
 <h2>Önerilen Varlık Dağılımı</h2>
 ${d.allocation.map(a => `<div><strong>${a.label}</strong> — %${a.percent}<div class="bar"><div style="width:${a.percent}%;background:${a.color}"></div></div></div>`).join('')}`;
