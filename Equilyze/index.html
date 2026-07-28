@@ -1730,6 +1730,11 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .dash-back-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-primary); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 1.05rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
 .dash-back-btn:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+/* Portföy performans grafiği widget'ı doldursun (altta boşluk kalmasın) */
+/* Grafik widget'ı: sabit yükseklik, flex zinciri kapatildi (boşluk + runaway yok) */
+.widget[data-widget="chart"] { display: block !important; align-self: start; }
+.widget[data-widget="chart"] .widget-content { display: block !important; flex: none !important; height: 266px !important; max-height: 266px !important; overflow: hidden; }
+.widget[data-widget="chart"] canvas { flex: none !important; height: 230px !important; display: block !important; vertical-align: top; }
 .dashboard-inner > #apiPanel::before {
     content: "🔌 API & Güvenlik";
     display: block; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);
@@ -4155,8 +4160,8 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             <button class="tf-btn" onclick="setTimeframe(this,'1M')">1A</button>
                         </div>
                     </div>
-                    <div class="widget-content">
-                        <canvas id="portfolioChart" style="width:100%;min-height:180px;max-height:260px;"></canvas>
+                    <div class="widget-content chart-fill">
+                        <canvas id="portfolioChart" style="width:100%;"></canvas>
                     </div>
                 </div>
 
@@ -6920,9 +6925,9 @@ function drawChart(data) {
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
-    const availH = Math.max(canvas.parentElement.clientHeight - 4, 240);
+    // canvas flex:1 ile doldurur; clientHeight'i oku (style.height set ETME → runaway'i önler)
+    const availH = Math.min(Math.max(canvas.clientHeight || 240, 180), 300);
     canvas.height = availH * dpr;
-    canvas.style.height = availH + 'px';
     ctx.scale(dpr, dpr);
 
     const W = rect.width, H = availH;
