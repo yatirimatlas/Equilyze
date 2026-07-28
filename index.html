@@ -1730,6 +1730,11 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .dash-back-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-primary); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 1.05rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
 .dash-back-btn:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+/* Portföy performans grafiği widget'ı doldursun (altta boşluk kalmasın) */
+/* Grafik widget'ı: sabit yükseklik, flex zinciri kapatildi (boşluk + runaway yok) */
+.widget[data-widget="chart"] { display: block !important; align-self: start; }
+.widget[data-widget="chart"] .widget-content { display: block !important; flex: none !important; height: 266px !important; max-height: 266px !important; overflow: hidden; }
+.widget[data-widget="chart"] canvas { flex: none !important; height: 230px !important; display: block !important; vertical-align: top; }
 .dashboard-inner > #apiPanel::before {
     content: "🔌 API & Güvenlik";
     display: block; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);
@@ -1806,6 +1811,13 @@ body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); animation: dashPulse 2s infinite; }
 @keyframes dashPulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); } 70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
 .dash-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Dashboard hızlı navigasyon chip bar */
+.dash-nav { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 10px; margin-bottom: 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.dash-nav::-webkit-scrollbar { display: none; }
+.dash-chip { flex: 0 0 auto; white-space: nowrap; font-size: 0.78rem; font-weight: 600; padding: 7px 13px; border-radius: 999px; cursor: pointer; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-secondary); transition: all 0.2s; }
+.dash-chip:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(16,185,129,0.06); }
+.widget-flash { animation: widgetFlash 1.3s ease; }
+@keyframes widgetFlash { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } 25% { box-shadow: 0 0 0 3px rgba(16,185,129,0.5); border-color: var(--color-primary); } }
 @media (max-width: 600px) {
     .dashboard-toolbar { position: static; flex-direction: column; align-items: stretch; gap: 10px; }
     .dash-toolbar-actions { width: 100%; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: none; }
@@ -3903,6 +3915,20 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
             </div>
 
+            <!-- Dashboard hızlı navigasyon (tek tıkla widget'a atla) -->
+            <nav class="dash-nav" id="dashNav" aria-label="Dashboard bileşenleri">
+                <button class="dash-chip" onclick="scrollToWidget('positions')">📊 Pozisyonlar</button>
+                <button class="dash-chip" onclick="scrollToWidget('chart')">📈 Performans</button>
+                <button class="dash-chip" onclick="scrollToWidget('risk')">🎯 Risk Metrikleri</button>
+                <button class="dash-chip" onclick="scrollToWidget('componentvar')">🧩 Risk Katkısı</button>
+                <button class="dash-chip" onclick="scrollToWidget('correlation')">🔗 Korelasyon</button>
+                <button class="dash-chip" onclick="scrollToWidget('watchlistWidget')">👁️ Watchlist</button>
+                <button class="dash-chip" onclick="scrollToWidget('dashCalendar')">📅 Takvim</button>
+                <button class="dash-chip" onclick="scrollToWidget('monteCarloWidget')">🎲 Monte Carlo</button>
+                <button class="dash-chip" onclick="scrollToWidget('realBacktestWidget')">🔬 Backtest</button>
+                <button class="dash-chip" onclick="scrollToWidget('slippage')">💧 Likidite</button>
+            </nav>
+
             <!-- API Panel -->
             <div class="api-panel" id="apiPanel">
                 <!-- Read-Only Certified Seal -->
@@ -4155,8 +4181,8 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             <button class="tf-btn" onclick="setTimeframe(this,'1M')">1A</button>
                         </div>
                     </div>
-                    <div class="widget-content">
-                        <canvas id="portfolioChart" style="width:100%;min-height:180px;max-height:260px;"></canvas>
+                    <div class="widget-content chart-fill">
+                        <canvas id="portfolioChart" style="width:100%;"></canvas>
                     </div>
                 </div>
 
@@ -5651,6 +5677,50 @@ body.overlay-open .mobile-bottom-nav { display: none; }
         </div>
     </section>
 
+    <!-- Hakkımızda Page -->
+    <section class="section overlay-page" id="aboutPage">
+        <div class="container" style="max-width:760px">
+            <div class="section-header">
+                <button class="btn btn-sm btn-ghost" onclick="closeOverlayPage()" style="margin-bottom:14px">← Ana Sayfa</button>
+                <span class="section-badge">HAKKIMIZDA</span>
+                <h2 class="section-title">Equilyze <span class="gradient-text">Hakkında</span></h2>
+            </div>
+            <div class="about-body" style="font-size:0.95rem;color:var(--text-secondary);line-height:1.8">
+                <p><strong style="color:var(--text-primary)">Equilyze</strong>, Türkiye'deki yatırımcı ve trader'lar için geliştirilen kapsamlı bir portföy analiz ve risk yönetimi platformudur. Amacımız, kurumsal seviye analiz araçlarını herkes için erişilebilir kılmak.</p>
+                <p style="margin-top:16px">Platform; canlı kripto veri (Binance), gerçek VaR/CVaR/Sharpe hesaplamaları, Monte Carlo simülasyonu, portföye duyarlı makro şok testleri, strateji backtest, trading journal ve gerçek yapay zeka (Claude) destekli analiz sunar.</p>
+                <p style="margin-top:16px">Metriklerin çoğu <strong style="color:var(--text-primary)">gerçek piyasa verisiyle</strong> hesaplanır; sentetik/örnek veriler açıkça etiketlenir. Verileriniz cihazlar arası güvenli şekilde senkronlanır (Supabase, satır-bazlı güvenlik).</p>
+                <p style="margin-top:16px;font-size:0.85rem;color:var(--text-muted)">⚠️ Equilyze yatırım tavsiyesi vermez. Tüm araçlar eğitim ve analiz amaçlıdır.</p>
+                <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">
+                    <button class="btn btn-primary" onclick="closeOverlayPage();document.getElementById('waitlist')?.scrollIntoView({behavior:'smooth'})">Erken Erişim Listesi</button>
+                    <button class="btn btn-outline" onclick="openOverlayPage('kvkkPage')">KVKK & Gizlilik</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KVKK & Gizlilik Page -->
+    <section class="section overlay-page" id="kvkkPage">
+        <div class="container" style="max-width:760px">
+            <div class="section-header">
+                <button class="btn btn-sm btn-ghost" onclick="closeOverlayPage()" style="margin-bottom:14px">← Ana Sayfa</button>
+                <span class="section-badge">YASAL</span>
+                <h2 class="section-title">KVKK & <span class="gradient-text">Gizlilik</span></h2>
+                <p class="section-desc">Kişisel verilerin korunması ve gizlilik politikamız.</p>
+            </div>
+            <div class="about-body" style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:8px 0">Toplanan Veriler</h3>
+                <p>Kayıt olduğunuzda ad ve e-posta adresiniz alınır. Portföy, işlem günlüğü, watchlist ve risk profili verileriniz hesabınızla ilişkilendirilerek saklanır.</p>
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px">Verilerin Saklanması</h3>
+                <p>Verileriniz Supabase altyapısında, <strong style="color:var(--text-primary)">satır-bazlı güvenlik (RLS)</strong> ile korunur — her kullanıcı yalnızca kendi verisine erişebilir. Şifreler tarafımızca düz metin olarak tutulmaz.</p>
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px">Üçüncü Taraflar</h3>
+                <p>Canlı fiyat için Binance/CoinGecko public API'leri kullanılır. AI analizi için (kendi anahtarınızı bağlarsanız) doğrudan Anthropic API'sine bağlanılır — API anahtarınız yalnızca tarayıcınızda saklanır.</p>
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px">Haklarınız</h3>
+                <p>Verilerinizi profil sayfasından JSON olarak dışa aktarabilir, hesabınızı ve verilerinizi silmeyi talep edebilirsiniz.</p>
+                <p style="margin-top:16px;font-size:0.8rem;color:var(--text-muted)">Bu metin bilgilendirme amaçlıdır ve nihai hukuki inceleme sürecindedir. Sorularınız için iletişime geçebilirsiniz.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -5689,8 +5759,8 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <h4>Kaynaklar</h4>
                     <a href="javascript:void(0)" onclick="openOverlayPage('blogPage')">Blog</a>
                     <a href="javascript:void(0)" onclick="openOverlayPage('educationPage')">Eğitim / Rehber</a>
-                    <a href="#">Hakkımızda</a>
-                    <a href="#">KVKK &amp; Gizlilik</a>
+                    <a href="javascript:void(0)" onclick="openOverlayPage('aboutPage')">Hakkımızda</a>
+                    <a href="javascript:void(0)" onclick="openOverlayPage('kvkkPage')">KVKK &amp; Gizlilik</a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -6920,9 +6990,9 @@ function drawChart(data) {
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
-    const availH = Math.max(canvas.parentElement.clientHeight - 4, 240);
+    // canvas flex:1 ile doldurur; clientHeight'i oku (style.height set ETME → runaway'i önler)
+    const availH = Math.min(Math.max(canvas.clientHeight || 240, 180), 300);
     canvas.height = availH * dpr;
-    canvas.style.height = availH + 'px';
     ctx.scale(dpr, dpr);
 
     const W = rect.width, H = availH;
@@ -9932,6 +10002,14 @@ function refreshDashboard() {
     try { if (typeof drawCorrTimeseries === 'function') drawCorrTimeseries(); } catch (e) {}
     showToast('Dashboard yenilendi', 'success');
 }
+function scrollToWidget(key) {
+    const el = document.getElementById(key) || document.querySelector('[data-widget="' + key + '"]');
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 120; // sticky toolbar payı
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    el.classList.add('widget-flash');
+    setTimeout(() => el.classList.remove('widget-flash'), 1300);
+}
 function goToJournal() {
     closeDashboardPage();
     document.body.classList.remove('overlay-open', 'user-page-open');
@@ -10892,11 +10970,37 @@ function whatIfAdd(symbol, riskScore) {
 // ─────────────────────────────────────────────
 // RWA SELECTOR
 // ─────────────────────────────────────────────
+const RWA_META = {
+    realestate: { name: 'Tokenize Emlak', sym: 'REIT', type: 'stock' },
+    gold:       { name: 'Tokenize Altın', sym: 'PAXG', type: 'forex' },
+    commodity:  { name: 'Tokenize Emtia', sym: 'COMM', type: 'stock' },
+    bond:       { name: 'Tokenize Tahvil', sym: 'RWABOND', type: 'bond' },
+};
 function selectRWA(el, type) {
-    el.classList.toggle('selected');
-    if (el.classList.contains('selected')) {
-        showToast(`${type === 'realestate' ? 'Tokenize Emlak' : type === 'gold' ? 'Tokenize Altın' : type === 'commodity' ? 'Tokenize Emtia' : 'Tokenize Tahvil'} portföye eklendi`, 'success');
-    }
+    const meta = RWA_META[type];
+    if (!meta) return;
+    const amountStr = prompt(`${meta.name} — portföye eklemek istediğin tutar (₺):`, '50000');
+    if (amountStr === null) return; // iptal
+    const amount = parseFloat(String(amountStr).replace(/[.\s]/g, '').replace(',', '.'));
+    if (!amount || amount <= 0) { showToast('Geçerli bir tutar girin.', 'error'); return; }
+
+    const pf = resolvePortfolio();
+    const totalVal = pf.value;
+    // Mevcut pozisyonları ₺ tutara çevir, RWA'yı ekle, ağırlıkları yeniden normalize et
+    const amounts = pf.positions.map(p => ({ symbol: p.symbol, type: p.type, amount: p.weight * totalVal }));
+    const existing = amounts.find(p => p.symbol === meta.sym);
+    if (existing) existing.amount += amount;
+    else amounts.push({ symbol: meta.sym, type: meta.type, amount });
+    const newTotal = totalVal + amount;
+    const newPositions = amounts.map(p => ({ symbol: p.symbol, type: p.type, weight: p.amount / newTotal }));
+    const newPf = { value: Math.round(newTotal), positions: newPositions, updatedAt: new Date().toISOString() };
+
+    const session = getSession();
+    if (session) { saveUserPortfolio(session.email, newPf); if (typeof sbSyncUpDebounced === 'function') sbSyncUpDebounced(); }
+    recreateEnginesWithPortfolio(newPf);
+    el.classList.remove('selected');
+    showToast(`${meta.name} (₺${amount.toLocaleString('tr-TR')}) eklendi. ${session ? 'Kaydedildi, ' : ''}metrikler güncellendi.`, 'success', 4000);
+    if (!session) showToast('Kalıcı kaydetmek için giriş yapın.', 'info', 4000);
 }
 
 // ─────────────────────────────────────────────
