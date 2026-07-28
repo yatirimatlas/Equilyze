@@ -96,7 +96,7 @@
 
 /* ── RESET & BASE ── */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: hidden; max-width: 100%; }
 *, *::before, *::after { transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
 body {
     font-family: var(--font-sans);
@@ -104,6 +104,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
+    max-width: 100%;
     transition: background 0.3s, color 0.3s;
     padding-bottom: 0;
 }
@@ -1702,7 +1703,12 @@ body.user-page-open .auth-user-card { display: none; } /* hide nav avatar when o
 @keyframes toastOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(100%); } }
 @keyframes spin { to { transform:rotate(360deg); } }
 body.user-page-open .hero, body.user-page-open .section:not(.user-page) { display: none; }
-body.dashboard-open .hero, body.dashboard-open .section:not(#dashboard) { display: none; }
+/* Dashboard modunda #dashboard + #macro-engine (araçlar) görünür */
+body.dashboard-open .hero, body.dashboard-open .section:not(#dashboard):not(#macro-engine) { display: none; }
+body.dashboard-open #macro-engine { display: block; padding-top: 0; }
+/* Ana sayfada makro bölümü tanıtım (teaser) modunda — simülasyon çalıştırılmaz */
+body:not(.dashboard-open) #macro-engine .macro-container { display: none; }
+body.dashboard-open #macro-engine .macro-teaser { display: none; }
 body.dashboard-open #dashboard { padding-top: 80px; display: block; min-height: 100vh; }
 body.dashboard-open .footer { display: none; }
 body.user-page-open .footer { display: none; }
@@ -1827,6 +1833,24 @@ body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .user-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 8px; scrollbar-width: none; }
 .user-nav::-webkit-scrollbar { display: none; }
 @media (max-width: 600px) { .user-actions-bar { overflow-x: auto; flex-wrap: nowrap; } .user-actions-bar .btn { flex: 0 0 auto; } }
+/* Macro Shock ana sayfa teaser */
+.macro-teaser { max-width: 760px; margin: 0 auto; text-align: center; }
+.macro-teaser-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 22px; text-align: left; }
+.mt-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); }
+.mt-item > span { font-size: 1.5rem; flex-shrink: 0; }
+.mt-item strong { display: block; font-size: 0.88rem; color: var(--text-primary); margin-bottom: 2px; }
+.mt-item small { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+.macro-teaser-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 12px; }
+/* Bağlı borsalar */
+.exch-list { display: flex; flex-direction: column; gap: 8px; }
+.exch-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+.exch-icon { font-size: 1.2rem; flex-shrink: 0; }
+.exch-info { flex: 1; min-width: 0; }
+.exch-info strong { display: block; font-size: 0.85rem; color: var(--text-primary); }
+.exch-info small { font-size: 0.7rem; color: var(--text-muted); }
+.exch-badge { font-size: 0.62rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.04em; }
+.exch-badge.demo { background: rgba(245,158,11,0.14); color: var(--color-warning); border: 1px solid rgba(245,158,11,0.3); }
+.exch-badge.live { background: rgba(16,185,129,0.14); color: var(--color-success); border: 1px solid rgba(16,185,129,0.3); }
 /* Analiz sonuçları (dashboard + profil) */
 .analysis-results { display: flex; flex-direction: column; gap: 10px; }
 .ar-item { background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px 14px; }
@@ -2055,9 +2079,14 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     
     /* Journal */
     .journal-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .journal-controls { flex-direction: column; align-items: stretch; }
-    .journal-filters { flex-direction: column; }
-    .journal-actions { justify-content: flex-end; }
+    .journal-controls { flex-direction: column; align-items: stretch; max-width: 100%; }
+    .journal-filters { flex-direction: column; max-width: 100%; min-width: 0; }
+    .journal-filters > * { max-width: 100%; min-width: 0 !important; width: 100%; }
+    .filter-search { min-width: 0 !important; max-width: 100%; }
+    .filter-search input { min-width: 0; width: 100%; }
+    .filter-select { min-width: 0 !important; max-width: 100%; width: 100%; }
+    .journal-actions { justify-content: flex-end; flex-wrap: wrap; max-width: 100%; }
+    .journal-actions .btn { flex: 1 1 auto; min-width: 0; }
     .journal-table-wrap { border-radius: var(--radius-md); }
     .journal-table { font-size: 0.8rem; }
     .journal-table thead th, .journal-table td { padding: 10px 10px; }
@@ -3186,7 +3215,9 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     .expense-table { font-size: 0.8rem; }
     .expense-table thead th, .expense-table tbody td { padding: 10px 12px; }
     .ai-agent-panel { width: calc(100vw - 32px); right: 16px; bottom: 80px; }
-    .ai-agent-fab { bottom: 16px; right: 16px; width: 48px; height: 48px; }
+    /* FAB mobil bottom nav'ın ÜSTÜNDE dursun — nav ikonlarını kapatmasın */
+    .ai-agent-fab { bottom: calc(var(--mobile-nav-h, 60px) + 26px); right: 14px; width: 48px; height: 48px; }
+    .pwa-install-btn { bottom: calc(var(--mobile-nav-h, 60px) + 26px); }
     .rwa-grid { grid-template-columns: 1fr; }
     .insight-bar { flex-direction: column; text-align: center; }
     .insight-cta { width: 100%; }
@@ -3713,7 +3744,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             </a>
             <div class="nav-links" id="navLinks">
                 <a href="#risk-test" class="nav-link" data-i18n="nav-risk">Risk Testi</a>
-                <a href="javascript:void(0)" onclick="openDashboardPage()" class="nav-link" data-i18n="nav-dashboard">Dashboard</a>
+                <a href="javascript:void(0)" onclick="openToolInDashboard('')" class="nav-link" data-i18n="nav-dashboard">Dashboard</a>
                 <a href="#macro-engine" class="nav-link" data-i18n="nav-macro">Macro Shock</a>
                 <a href="#journal" class="nav-link" data-i18n="nav-journal">Trading Journal</a>
                 <a href="#waitlist" class="nav-link" data-i18n="nav-pricing">Erken Erişim</a>
@@ -3787,7 +3818,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                         </svg>
                         Ücretsiz Risk Testi
                     </a>
-                    <a href="javascript:void(0)" onclick="openDashboardPage()" class="btn btn-secondary btn-lg">
+                    <a href="javascript:void(0)" onclick="openToolInDashboard('')" class="btn btn-secondary btn-lg">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                             <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
@@ -3928,8 +3959,8 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <li>🔗 Korelasyon matrisi, likidite &amp; kayma analizi</li>
                     <li>🧠 Hayatta kalma skoru + AI içgörüler</li>
                 </ul>
-                <button class="btn btn-primary btn-lg" onclick="openDashboardPage()">Dashboard'u Aç →</button>
-                <p class="dashboard-teaser-hint">Tüm analiz araçları tek ekranda — ana sayfayı yormadan.</p>
+                <button class="btn btn-primary btn-lg" onclick="openToolInDashboard('')" data-i18n="dash-teaser-cta">Dashboard'u Aç →</button>
+                <p class="dashboard-teaser-hint" data-i18n="dash-teaser-hint">Tüm analiz araçları tek ekranda.</p>
             </div>
 
             <!-- Full dashboard (yalnızca Dashboard sayfası modunda görünür) -->
@@ -3940,33 +3971,34 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <div class="dash-toolbar-title">
                     <button class="dash-back-btn" onclick="closeDashboardPage()" title="Ana sayfaya dön" aria-label="Ana sayfaya dön">←</button>
                     <span class="dash-live-dot"></span>
-                    <span>Kontrol Merkezi</span>
+                    <span data-i18n="dash-control-center">Kontrol Merkezi</span>
                     <span class="live-data-badge" id="liveDataBadge" style="display:none">📡 CANLI</span>
                     <span class="dash-toolbar-sub" id="dashToolbarSub">Veri yükleniyor…</span>
                 </div>
                 <div class="dash-toolbar-actions">
-                    <button class="btn btn-sm btn-outline" onclick="generateDailyBrief()" title="AI günlük brief">🌅 Brief</button>
-                    <button class="btn btn-sm btn-outline" onclick="refreshDashboard()" title="Metrikleri yenile">🔄 Yenile</button>
-                    <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()" title="Portföyünü düzenle">✎ Portföy</button>
-                    <button class="btn btn-sm btn-outline" onclick="goToJournal()" title="Trading Journal">📓 Journal</button>
-                    <button class="btn btn-sm btn-outline" onclick="document.getElementById('dashCalendar')?.scrollIntoView({behavior:'smooth',block:'center'})" title="Ekonomik takvim">📅 Takvim</button>
-                    <button class="btn btn-sm btn-primary" onclick="exportFullReport()" title="Tam raporu indir">📄 Rapor Al</button>
+                    <button class="btn btn-sm btn-outline" onclick="generateDailyBrief()" title="AI günlük brief" data-i18n="btn-brief">🌅 Brief</button>
+                    <button class="btn btn-sm btn-outline" onclick="refreshDashboard()" title="Metrikleri yenile" data-i18n="btn-refresh">🔄 Yenile</button>
+                    <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()" title="Portföyünü düzenle" data-i18n="btn-portfolio">✎ Portföy</button>
+                    <button class="btn btn-sm btn-outline" onclick="goToJournal()" title="Trading Journal" data-i18n="btn-journal">📓 Journal</button>
+                    <button class="btn btn-sm btn-outline" onclick="document.getElementById('dashCalendar')?.scrollIntoView({behavior:'smooth',block:'center'})" title="Ekonomik takvim" data-i18n="btn-calendar">📅 Takvim</button>
+                    <button class="btn btn-sm btn-primary" onclick="exportFullReport()" title="Tam raporu indir" data-i18n="btn-report">📄 Rapor Al</button>
                 </div>
             </div>
 
             <!-- Dashboard hızlı navigasyon (tek tıkla widget'a atla) -->
             <nav class="dash-nav" id="dashNav" aria-label="Dashboard bileşenleri">
-                <button class="dash-chip" onclick="scrollToWidget('positions')">📊 Pozisyonlar</button>
-                <button class="dash-chip" onclick="scrollToWidget('chart')">📈 Performans</button>
-                <button class="dash-chip" onclick="scrollToWidget('risk')">🎯 Risk Metrikleri</button>
-                <button class="dash-chip" onclick="scrollToWidget('componentvar')">🧩 Risk Katkısı</button>
-                <button class="dash-chip" onclick="scrollToWidget('correlation')">🔗 Korelasyon</button>
-                <button class="dash-chip" onclick="scrollToWidget('analysisResultsWidget')">🧪 Analizlerim</button>
-                <button class="dash-chip" onclick="scrollToWidget('watchlistWidget')">👁️ Watchlist</button>
-                <button class="dash-chip" onclick="scrollToWidget('dashCalendar')">📅 Takvim</button>
-                <button class="dash-chip" onclick="scrollToWidget('monteCarloWidget')">🎲 Monte Carlo</button>
-                <button class="dash-chip" onclick="scrollToWidget('realBacktestWidget')">🔬 Backtest</button>
-                <button class="dash-chip" onclick="scrollToWidget('slippage')">💧 Likidite</button>
+                <button class="dash-chip" onclick="scrollToWidget('positions')" data-i18n="chip-positions">📊 Pozisyonlar</button>
+                <button class="dash-chip" onclick="scrollToWidget('chart')" data-i18n="chip-performance">📈 Performans</button>
+                <button class="dash-chip" onclick="scrollToWidget('risk')" data-i18n="chip-riskmetrics">🎯 Risk Metrikleri</button>
+                <button class="dash-chip" onclick="scrollToWidget('componentvar')" data-i18n="chip-riskcontrib">🧩 Risk Katkısı</button>
+                <button class="dash-chip" onclick="scrollToWidget('correlation')" data-i18n="chip-correlation">🔗 Korelasyon</button>
+                <button class="dash-chip" onclick="scrollToWidget('exchangesWidget')" data-i18n="exchanges-title">🔗 Bağlı Borsalar</button>
+                <button class="dash-chip" onclick="scrollToWidget('analysisResultsWidget')" data-i18n="chip-analyses">🧪 Analizlerim</button>
+                <button class="dash-chip" onclick="scrollToWidget('watchlistWidget')" data-i18n="chip-watchlist">👁️ Watchlist</button>
+                <button class="dash-chip" onclick="scrollToWidget('dashCalendar')" data-i18n="btn-calendar">📅 Takvim</button>
+                <button class="dash-chip" onclick="scrollToWidget('monteCarloWidget')" data-i18n="chip-montecarlo">🎲 Monte Carlo</button>
+                <button class="dash-chip" onclick="scrollToWidget('realBacktestWidget')" data-i18n="chip-backtest">🔬 Backtest</button>
+                <button class="dash-chip" onclick="scrollToWidget('slippage')" data-i18n="chip-liquidity">💧 Likidite</button>
             </nav>
 
             <!-- API Panel -->
@@ -4444,6 +4476,17 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     </div>
                 </div>
 
+                <!-- Bağlı Borsalar Widget -->
+                <div class="widget widget-medium" data-widget="exchanges" id="exchangesWidget">
+                    <div class="widget-header">
+                        <h4>🔗 Bağlı Borsalar <span style="font-size:0.7rem;color:var(--text-muted)">(<span id="exchCount">0</span>)</span></h4>
+                        <button class="btn btn-sm btn-outline" onclick="document.getElementById('apiPanel')?.scrollIntoView({behavior:'smooth',block:'center'})">+ Bağla</button>
+                    </div>
+                    <div class="widget-content">
+                        <div class="exch-list" id="connectedExchangesBody"></div>
+                    </div>
+                </div>
+
                 <!-- Analiz Sonuçları Widget -->
                 <div class="widget widget-medium" data-widget="analysisresults" id="analysisResultsWidget">
                     <div class="widget-header">
@@ -4900,7 +4943,19 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <h2 class="section-title">Macro Shock <span class="gradient-text">Engine</span></h2>
                 <p class="section-desc">Makroekonomik olayların portföyünüze etkisini simüle edin, fırtına öncesi hazırlıklı olun.</p>
             </div>
-            
+
+            <!-- Ana sayfa tanıtımı — simülasyon dashboard içinde çalışır -->
+            <div class="macro-teaser">
+                <div class="macro-teaser-grid">
+                    <div class="mt-item"><span>🏦</span><div><strong>FED / TCMB Faiz Şoku</strong><small>Faiz kararlarının portföyüne etkisi</small></div></div>
+                    <div class="mt-item"><span>📈</span><div><strong>Enflasyon &amp; Petrol</strong><small>Emtia ve TÜFE sürprizleri</small></div></div>
+                    <div class="mt-item"><span>💱</span><div><strong>Dolar/TL Hareketi</strong><small>Kur şoklarının gerçek etkisi</small></div></div>
+                    <div class="mt-item"><span>🦢</span><div><strong>Black Swan Stres Testi</strong><small>Pandemi, 2008, jeopolitik kriz</small></div></div>
+                </div>
+                <button class="btn btn-primary btn-lg" onclick="openToolInDashboard('macro-engine')" data-i18n="macro-teaser-cta">⚡ Simülasyonu Çalıştır</button>
+                <p class="macro-teaser-hint" data-i18n="macro-teaser-hint">Simülasyonlar kendi portföyünle çalışır — giriş yaptıktan sonra Dashboard'da açılır.</p>
+            </div>
+
             <div class="macro-container">
                 <!-- Shock Simulator -->
                 <div class="macro-card shock-simulator">
@@ -5832,7 +5887,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             </svg>
             <span>Ana Sayfa</span>
         </a>
-        <a href="javascript:void(0)" class="mbn-item" onclick="setActiveMbn(this);openDashboardPage()">
+        <a href="javascript:void(0)" class="mbn-item" onclick="setActiveMbn(this);openToolInDashboard('')">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                 <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
@@ -5846,11 +5901,11 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             </svg>
             <span>Günlük</span>
         </a>
-        <a href="#macro-engine" class="mbn-item" onclick="setActiveMbn(this)">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        <a href="javascript:void(0)" class="mbn-item" id="mbnTheme" onclick="toggleThemeMobile()" aria-label="Tema Değiştir">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="mbnThemeIcon">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
-            <span>Shock</span>
+            <span id="mbnThemeLabel">Tema</span>
         </a>
         <a href="#" class="mbn-item" id="mbnLogin" onclick="event.preventDefault();if(getSession()){openUserPage()}else{openAuthModal()}">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -6089,6 +6144,15 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     </div>
                 </div>
                 <div id="investorSummary"></div>
+            </div>
+
+            <!-- Bağlı Borsalar (profil) -->
+            <div class="user-card" id="upcExchanges">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                    <h3 style="margin:0">🔗 Bağlı Borsalar</h3>
+                    <button class="btn btn-sm btn-outline" onclick="closeUserPage(false);openToolInDashboard('')">+ Bağlantı Ekle</button>
+                </div>
+                <div class="exch-list" id="connectedExchangesBodyProfile" style="margin-top:10px"></div>
             </div>
 
             <!-- Analiz Sonuçları (profil) -->
@@ -6501,12 +6565,30 @@ function initThemeToggle() {
     const saved = localStorage.getItem('equilyze-theme');
     if (saved) html.setAttribute('data-theme', saved);
 
-    toggle.addEventListener('click', () => {
-        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.body.style.transition = 'background 0.3s ease';
-        html.setAttribute('data-theme', next);
-        localStorage.setItem('equilyze-theme', next);
-    });
+    if (toggle) toggle.addEventListener('click', () => setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+    syncThemeUI();
+}
+/* Tema değiştir (masaüstü + mobil bottom nav ortak) */
+function setTheme(next) {
+    const html = document.documentElement;
+    document.body.style.transition = 'background 0.3s ease';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('equilyze-theme', next);
+    syncThemeUI();
+}
+function toggleThemeMobile() {
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    setTheme(cur);
+    showToast(cur === 'dark' ? '🌙 Gece modu' : '☀️ Gündüz modu', 'info', 1500);
+}
+function syncThemeUI() {
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const icon = document.getElementById('mbnThemeIcon');
+    const label = document.getElementById('mbnThemeLabel');
+    if (icon) icon.innerHTML = isDark
+        ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+        : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/>';
+    if (label) label.textContent = isDark ? 'Gece' : 'Gündüz';
 }
 
 function handleWaitlistSubmit(event) {
@@ -6926,6 +7008,8 @@ function connectAPI(exchange) {
         btn.disabled = true;
         // Yalnızca demo bayrağı saklanır — hiçbir kimlik bilgisi yok
         localStorage.setItem('equilyze-api-' + exchange, JSON.stringify({ demo: true, label: exchange, connectedAt: Date.now() }));
+        if (typeof renderConnectedExchanges === 'function') renderConnectedExchanges();
+        if (typeof sbSyncUpDebounced === 'function') sbSyncUpDebounced();
         showToast(`${name} demo bağlantısı kuruldu (örnek veri).`, 'success');
     }, 1400);
 }
@@ -9973,6 +10057,7 @@ function authRegister(event) {
     setAuthLoading(false);
     if (metricsEngine) recreateEnginesWithPortfolio(resolvePortfolio());
     showToast('✅ Hesabınız oluşturuldu! Hoş geldiniz, ' + name, 'success');
+    resumePendingTarget();
     // Yeni kullanıcı onboarding: portföy düzenleme modalını aç
     setTimeout(openPortfolioModal, 800);
 }
@@ -9994,6 +10079,7 @@ function authLogin(event) {
     setAuthLoading(false);
     if (metricsEngine) recreateEnginesWithPortfolio(resolvePortfolio());
     showToast('✅ Giriş yapıldı! Hoş geldiniz, ' + users[email].name, 'success');
+    resumePendingTarget();
 }
 function demoLogin() {
     const email = 'demo@equilyze.com';
@@ -10442,6 +10528,7 @@ function openUserPage() {
     // Detaylı yatırımcı profili özeti + analiz sonuçları
     if (typeof renderInvestorSummary === 'function') renderInvestorSummary();
     if (typeof renderAnalysisResults === 'function') renderAnalysisResults();
+    if (typeof renderConnectedExchanges === 'function') renderConnectedExchanges();
     // Journal stats
     try {
         const trades = JSON.parse(localStorage.getItem('equilyze-journal')) || [];
@@ -10519,6 +10606,7 @@ function openDashboardPage() {
     if (typeof initHeatmap === 'function') initHeatmap();
     if (typeof renderWatchlist === 'function') renderWatchlist();
     if (typeof renderAnalysisResults === 'function') renderAnalysisResults();
+    if (typeof renderConnectedExchanges === 'function') renderConnectedExchanges();
     if (typeof renderSlippage === 'function') renderSlippage().catch(() => {});
     if (typeof renderPsychReport === 'function') renderPsychReport();
     if (typeof maybeAutoDailyBrief === 'function') setTimeout(maybeAutoDailyBrief, 400);
@@ -10533,6 +10621,77 @@ function closeDashboardPage() {
     document.body.classList.remove('dashboard-open');
     const backBtn = document.getElementById('dashboardBackBtn');
     if (backBtn) backBtn.style.display = 'none';
+}
+
+/* ── Bağlı borsalar: dashboard + profilde göster ── */
+const EXCHANGE_META = { okx: { name: 'OKX', icon: '⭕' }, binance: { name: 'Binance', icon: '🟡' }, mt5: { name: 'MetaTrader 5', icon: '📊' }, metatrader: { name: 'MetaTrader 5', icon: '📊' }, tradingview: { name: 'TradingView', icon: '📈' } };
+function getConnectedExchanges() {
+    const list = [];
+    Object.keys(EXCHANGE_META).forEach(k => {
+        try {
+            const raw = localStorage.getItem('equilyze-api-' + k);
+            if (!raw) return;
+            const d = JSON.parse(raw);
+            list.push({ key: k, name: EXCHANGE_META[k].name, icon: EXCHANGE_META[k].icon, demo: !!d.demo, at: d.connectedAt });
+        } catch {}
+    });
+    return list;
+}
+function disconnectExchange(key) {
+    localStorage.removeItem('equilyze-api-' + key);
+    renderConnectedExchanges();
+    // API kartını da sıfırla
+    const card = document.querySelector(`[data-exchange="${key}"]`);
+    if (card) {
+        const st = document.getElementById('status-' + key);
+        if (st) { st.textContent = 'Bağlı Değil'; st.className = 'api-status disconnected'; }
+        const b = card.querySelector('button');
+        if (b) { b.disabled = false; b.className = 'btn btn-sm btn-outline'; b.textContent = 'Bağlan'; }
+    }
+    showToast('Bağlantı kaldırıldı.', 'info');
+}
+function renderConnectedExchanges() {
+    const list = getConnectedExchanges();
+    const html = list.length === 0
+        ? '<div style="color:var(--text-secondary);font-size:0.82rem;padding:6px 0">Henüz bağlı borsa yok. Dashboard altındaki <strong>API &amp; Güvenlik</strong> bölümünden bağlayabilirsin.</div>'
+        : list.map(e => `<div class="exch-item">
+              <span class="exch-icon">${e.icon}</span>
+              <div class="exch-info"><strong>${e.name}</strong><small>${e.demo ? 'Demo bağlantı (örnek veri)' : 'Bağlı'}${e.at ? ' · ' + new Date(e.at).toLocaleDateString('tr-TR') : ''}</small></div>
+              <span class="exch-badge ${e.demo ? 'demo' : 'live'}">${e.demo ? 'DEMO' : 'CANLI'}</span>
+              <button class="wl-x" title="Bağlantıyı kaldır" onclick="disconnectExchange('${e.key}')">✕</button>
+           </div>`).join('');
+    ['connectedExchangesBody', 'connectedExchangesBodyProfile'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+    });
+    const cnt = document.getElementById('exchCount');
+    if (cnt) cnt.textContent = list.length;
+}
+
+/* ── Üyelik kapısı: ağır araçlar yalnızca giriş sonrası, dashboard içinde çalışır ──
+   Ana sayfada simülasyon çalıştırılmaz; kullanıcı giriş yapmamışsa auth modalı açılır,
+   giriş yapmışsa dashboard'daki ilgili bölüme gider. ── */
+function requireAuth(targetKey) {
+    if (!getSession()) {
+        try { localStorage.setItem('equilyze-pending-target', targetKey || ''); } catch {}
+        openAuthModal();
+        showToast('Bu araç için giriş yapın veya ücretsiz üye olun.', 'info', 4000);
+        return false;
+    }
+    return true;
+}
+function openToolInDashboard(targetKey) {
+    if (!requireAuth(targetKey)) return;
+    openDashboardPage();
+    setTimeout(() => { if (targetKey) scrollToWidget(targetKey); }, 350);
+}
+/* Giriş/kayıt sonrası bekleyen hedefe yönlendir */
+function resumePendingTarget() {
+    let t = null;
+    try { t = localStorage.getItem('equilyze-pending-target'); localStorage.removeItem('equilyze-pending-target'); } catch {}
+    if (t !== null && t !== undefined) {
+        setTimeout(() => { openDashboardPage(); if (t) setTimeout(() => scrollToWidget(t), 350); }, 300);
+    }
 }
 
 /* ── Dashboard hızlı aksiyonlar ── */
@@ -11256,6 +11415,37 @@ const translations = {
         'user-logout-btn': 'Log Out',
         'nav-macro': 'Macro Shock',
         'nav-journal': 'Trading Journal',
+        /* ── Eksik anahtarlar tamamlandı ── */
+        'rwa-title': 'Add Manual Asset (RWA)',
+        'rwa-estate': 'Tokenized Real Estate',
+        'rwa-gold': 'Tokenized Gold',
+        'rwa-commodity': 'Tokenized Commodity',
+        'rwa-bond': 'Tokenized Bond',
+        'tip-cvar': 'CVaR shows the AVERAGE of the worst scenarios beyond the VaR threshold. It is a more reliable risk measure than VaR because it evaluates tail risk.',
+        'bm-title': 'Benchmark Comparison',
+        '1h': '1H', '1d': '1D', '1w': '1W', '1m': '1M',
+        'risk-alerts': 'Risk Alerts',
+        /* ── Yeni arayüz öğeleri ── */
+        'dash-control-center': 'Control Center',
+        'dash-live-sub': 'Live monitoring & analysis',
+        'btn-brief': '🌅 Brief', 'btn-refresh': '🔄 Refresh', 'btn-portfolio': '✎ Portfolio',
+        'btn-journal': '📓 Journal', 'btn-calendar': '📅 Calendar', 'btn-report': '📄 Get Report',
+        'chip-positions': '📊 Positions', 'chip-performance': '📈 Performance', 'chip-riskmetrics': '🎯 Risk Metrics',
+        'chip-riskcontrib': '🧩 Risk Contribution', 'chip-correlation': '🔗 Correlation', 'chip-analyses': '🧪 My Analyses',
+        'chip-watchlist': '👁️ Watchlist', 'chip-montecarlo': '🎲 Monte Carlo', 'chip-backtest': '🔬 Backtest', 'chip-liquidity': '💧 Liquidity',
+        'exchanges-title': '🔗 Connected Exchanges',
+        'exch-connect': '+ Connect',
+        'analysis-title': '🧪 My Analyses',
+        'watchlist-title': '👁️ Watchlist & Alerts',
+        'wl-alerts': '🔔 Price Alerts', 'wl-add-alert': '+ Add Alert',
+        'bt-title': '🔬 Strategy Backtest', 'bt-run': '▶ Run Backtest',
+        'dash-teaser-cta': "Open Dashboard →",
+        'dash-teaser-hint': 'All analysis tools on one screen.',
+        'macro-teaser-cta': '⚡ Run Simulation',
+        'macro-teaser-hint': 'Simulations run on your own portfolio — they open in the Dashboard after you sign in.',
+        'investor-profile': '🎯 My Investor Profile',
+        'downloads-title': '⬇ Download Center',
+        'quick-actions': '⚡ Quick Actions',
         'nav-pricing': 'Early Access',
         'hero-subtitle': 'Take data-driven investment decisions with 15-question Risk Test, Monte Carlo Simulation, Macro Shock Engine, Trading Journal, and live API integrations.',
         'slippage-title': '💧 Slippage Analysis',
