@@ -10897,11 +10897,37 @@ function whatIfAdd(symbol, riskScore) {
 // ─────────────────────────────────────────────
 // RWA SELECTOR
 // ─────────────────────────────────────────────
+const RWA_META = {
+    realestate: { name: 'Tokenize Emlak', sym: 'REIT', type: 'stock' },
+    gold:       { name: 'Tokenize Altın', sym: 'PAXG', type: 'forex' },
+    commodity:  { name: 'Tokenize Emtia', sym: 'COMM', type: 'stock' },
+    bond:       { name: 'Tokenize Tahvil', sym: 'RWABOND', type: 'bond' },
+};
 function selectRWA(el, type) {
-    el.classList.toggle('selected');
-    if (el.classList.contains('selected')) {
-        showToast(`${type === 'realestate' ? 'Tokenize Emlak' : type === 'gold' ? 'Tokenize Altın' : type === 'commodity' ? 'Tokenize Emtia' : 'Tokenize Tahvil'} portföye eklendi`, 'success');
-    }
+    const meta = RWA_META[type];
+    if (!meta) return;
+    const amountStr = prompt(`${meta.name} — portföye eklemek istediğin tutar (₺):`, '50000');
+    if (amountStr === null) return; // iptal
+    const amount = parseFloat(String(amountStr).replace(/[.\s]/g, '').replace(',', '.'));
+    if (!amount || amount <= 0) { showToast('Geçerli bir tutar girin.', 'error'); return; }
+
+    const pf = resolvePortfolio();
+    const totalVal = pf.value;
+    // Mevcut pozisyonları ₺ tutara çevir, RWA'yı ekle, ağırlıkları yeniden normalize et
+    const amounts = pf.positions.map(p => ({ symbol: p.symbol, type: p.type, amount: p.weight * totalVal }));
+    const existing = amounts.find(p => p.symbol === meta.sym);
+    if (existing) existing.amount += amount;
+    else amounts.push({ symbol: meta.sym, type: meta.type, amount });
+    const newTotal = totalVal + amount;
+    const newPositions = amounts.map(p => ({ symbol: p.symbol, type: p.type, weight: p.amount / newTotal }));
+    const newPf = { value: Math.round(newTotal), positions: newPositions, updatedAt: new Date().toISOString() };
+
+    const session = getSession();
+    if (session) { saveUserPortfolio(session.email, newPf); if (typeof sbSyncUpDebounced === 'function') sbSyncUpDebounced(); }
+    recreateEnginesWithPortfolio(newPf);
+    el.classList.remove('selected');
+    showToast(`${meta.name} (₺${amount.toLocaleString('tr-TR')}) eklendi. ${session ? 'Kaydedildi, ' : ''}metrikler güncellendi.`, 'success', 4000);
+    if (!session) showToast('Kalıcı kaydetmek için giriş yapın.', 'info', 4000);
 }
 
 // ─────────────────────────────────────────────
