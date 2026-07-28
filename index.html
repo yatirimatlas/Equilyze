@@ -1827,6 +1827,22 @@ body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .user-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 8px; scrollbar-width: none; }
 .user-nav::-webkit-scrollbar { display: none; }
 @media (max-width: 600px) { .user-actions-bar { overflow-x: auto; flex-wrap: nowrap; } .user-actions-bar .btn { flex: 0 0 auto; } }
+/* Profil: yatırımcı profili + indirme merkezi */
+.investor-card { background: linear-gradient(135deg, rgba(139,92,246,0.07), rgba(6,182,212,0.04), var(--bg-card)); border-color: rgba(139,92,246,0.22); }
+.inv-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.dl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; }
+.dl-item { display: flex; align-items: center; gap: 12px; text-align: left; padding: 12px 14px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; color: var(--text-primary); font-family: inherit; }
+.dl-item:hover { border-color: var(--color-primary); background: var(--bg-hover); transform: translateY(-2px); }
+.dl-item > span { font-size: 1.4rem; flex-shrink: 0; }
+.dl-item strong { display: block; font-size: 0.85rem; margin-bottom: 2px; }
+.dl-item small { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+/* Görüntü görüntüleyici (lightbox) */
+.image-viewer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.image-viewer-overlay.open { display: flex; }
+.iv-inner { max-width: min(1000px, 96vw); max-height: 92vh; display: flex; flex-direction: column; gap: 10px; }
+.iv-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.iv-title { font-size: 0.9rem; font-weight: 700; color: #fff; }
+.iv-inner img { max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: var(--radius-md); background: #000; }
 @media (max-width: 600px) {
     .dashboard-toolbar { position: static; flex-direction: column; align-items: stretch; gap: 10px; }
     .dash-toolbar-actions { width: 100%; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: none; }
@@ -5915,7 +5931,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <!-- Screenshot Upload (Layer 3) -->
                 <div class="form-group">
                     <label data-i18n="screenshot-label">📸 Grafik Ekran Görüntüsü</label>
-                    <div class="screenshot-upload" id="screenshotUpload" onclick="document.getElementById('screenshotInput').click()">
+                    <div class="screenshot-upload" id="screenshotUpload" onclick="openScreenshotPicker(event)">
                         <div class="screenshot-upload-icon">📎</div>
                         <div class="screenshot-upload-text" data-i18n="screenshot-text">Sürükle-bırak veya tıklayarak ekran görüntüsü ekleyin</div>
                         <div class="screenshot-upload-sub" data-i18n="screenshot-sub">PNG, JPG — Maks 5MB</div>
@@ -6024,12 +6040,40 @@ body.overlay-open .mobile-bottom-nav { display: none; }
 
             <!-- Hızlı navigasyon (kart'a atla) -->
             <nav class="user-nav">
+                <button class="dash-chip" onclick="scrollToUserCard('upcInvestor')">🎯 Yatırımcı Profilim</button>
+                <button class="dash-chip" onclick="scrollToUserCard('upcDownloads')">⬇ İndirmeler</button>
                 <button class="dash-chip" onclick="scrollToUserCard('upcPortfolio')">📊 Özet</button>
                 <button class="dash-chip" onclick="scrollToUserCard('upcActivity')">📈 Aktivite</button>
                 <button class="dash-chip" onclick="scrollToUserCard('upcRisk')">🎯 Risk Metrikleri</button>
                 <button class="dash-chip" onclick="scrollToUserCard('upcTrading')">📓 Trading</button>
                 <button class="dash-chip" onclick="scrollToUserCard('upcPositions')">💼 Pozisyonlar</button>
             </nav>
+
+            <!-- Yatırımcı Profili (risk testi sonucu — detaylı özet) -->
+            <div class="user-card investor-card" id="upcInvestor">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+                    <h3 style="margin:0">🎯 Yatırımcı Profilim</h3>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button class="btn btn-sm btn-outline" onclick="downloadRiskProfileReport()">⬇ Profil Raporu</button>
+                        <button class="btn btn-sm btn-outline" onclick="closeUserPage(false);document.getElementById('risk-test')?.scrollIntoView({behavior:'smooth'})">🔄 Testi Yap / Tekrarla</button>
+                    </div>
+                </div>
+                <div id="investorSummary"></div>
+            </div>
+
+            <!-- İndirme Merkezi -->
+            <div class="user-card" id="upcDownloads">
+                <h3>⬇ İndirme Merkezi</h3>
+                <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px">Tüm verilerini ve raporlarını indir.</p>
+                <div class="dl-grid">
+                    <button class="dl-item" onclick="downloadRiskProfileReport()"><span>🎯</span><div><strong>Yatırımcı Profili Raporu</strong><small>Risk testi sonucu + öneriler (HTML/PDF)</small></div></button>
+                    <button class="dl-item" onclick="exportFullReport()"><span>📄</span><div><strong>Tam Portföy Raporu</strong><small>Metrikler + pozisyonlar (HTML/PDF)</small></div></button>
+                    <button class="dl-item" onclick="exportMyData()"><span>🗂️</span><div><strong>Tüm Verilerim (JSON)</strong><small>Profil, portföy, journal, risk profili</small></div></button>
+                    <button class="dl-item" onclick="exportCSV()"><span>📓</span><div><strong>Trading Journal (CSV)</strong><small>Tüm işlemler, Excel uyumlu</small></div></button>
+                    <button class="dl-item" onclick="downloadPortfolioCSV()"><span>💼</span><div><strong>Portföy (CSV)</strong><small>Pozisyonlar, ağırlıklar, tutarlar</small></div></button>
+                    <button class="dl-item" onclick="downloadMetricsCSV()"><span>📊</span><div><strong>Risk Metrikleri (CSV)</strong><small>VaR, Sharpe, korelasyon, skor</small></div></button>
+                </div>
+            </div>
 
             <div class="user-grid">
                 <div class="user-card" id="upcPortfolio">
@@ -6673,6 +6717,9 @@ function _showResultsInternal(score) {
 
     // Save to localStorage
     localStorage.setItem('equilyze-risk-profile', JSON.stringify({ score, profile, date: new Date().toISOString() }));
+    // Dashboard rozeti/insight'ı ve bulut senkronu hemen tazele (profilde görünsün)
+    try { if (metricsEngine) updateInsightBar(metricsEngine.updateDashboard()); } catch {}
+    try { if (typeof sbSyncUpDebounced === 'function') sbSyncUpDebounced(); } catch {}
     showToast('Risk profiliniz kaydedildi!', 'success');
     // Onboarding: kullanıcının portföyü yoksa düzenleme modalını öner
     const session = getSession();
@@ -6786,6 +6833,30 @@ function selectSentiment(el) {
     el.querySelector('input').checked = true;
 }
 
+/* Görüntü varsa dosya seçiciyi AÇMA — büyüt/kaldır butonları kullanılsın */
+function openScreenshotPicker(event) {
+    if (event) {
+        const t = event.target;
+        if (t.closest('.ss-actions') || t.tagName === 'IMG') return; // buton/görsel tıklaması
+    }
+    if (document.getElementById('tradeScreenshotData')?.value) return; // zaten görüntü var
+    document.getElementById('screenshotInput').click();
+}
+function renderScreenshotPreview(dataUrl) {
+    const upload = document.getElementById('screenshotUpload');
+    if (!upload) return;
+    if (!dataUrl) {
+        upload.innerHTML = '<div class="screenshot-upload-icon">📎</div><div class="screenshot-upload-text">Sürükle-bırak veya tıklayarak ekran görüntüsü ekleyin</div><div class="screenshot-upload-sub">PNG, JPG — Maks 5MB</div>';
+        return;
+    }
+    upload.innerHTML =
+        '<img src="' + dataUrl + '" onclick="event.stopPropagation();openImageViewer(this.src)" title="Büyütmek için tıkla" style="max-width:100%;max-height:140px;border-radius:8px;object-fit:contain;cursor:zoom-in">' +
+        '<div class="ss-actions" style="display:flex;gap:8px;justify-content:center;margin-top:8px">' +
+        '<button type="button" class="btn btn-sm btn-outline" onclick="event.stopPropagation();openImageViewer(document.getElementById(\'tradeScreenshotData\').value)">🔍 Büyüt</button>' +
+        '<button type="button" class="btn btn-sm btn-outline" onclick="event.stopPropagation();document.getElementById(\'screenshotInput\').click()">🔄 Değiştir</button>' +
+        '<button type="button" class="btn btn-sm btn-ghost" onclick="event.stopPropagation();removeScreenshot()">✕ Kaldır</button>' +
+        '</div>';
+}
 function handleScreenshot(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
@@ -6795,19 +6866,48 @@ function handleScreenshot(input) {
         }
         const reader = new FileReader();
         reader.onload = function(e) {
-            const upload = document.getElementById('screenshotUpload');
             const dataUrl = e.target.result;
             document.getElementById('tradeScreenshotData').value = dataUrl;
-            upload.innerHTML = '<img src="' + dataUrl + '" style="max-width:100%;max-height:120px;border-radius:8px;object-fit:cover"><button class="btn btn-sm btn-ghost" onclick="removeScreenshot()" style="margin-top:4px">✕ Kaldır</button>';
+            renderScreenshotPreview(dataUrl);
             showToast('Ekran görüntüsü eklendi', 'success');
         };
         reader.readAsDataURL(file);
     }
+    input.value = ''; // aynı dosya tekrar seçilebilsin
 }
 function removeScreenshot() {
     document.getElementById('tradeScreenshotData').value = '';
-    const upload = document.getElementById('screenshotUpload');
-    upload.innerHTML = '<div class="screenshot-upload-icon">📎</div><div class="screenshot-upload-text">Sürükle-bırak veya tıklayarak ekran görüntüsü ekleyin</div><div class="screenshot-upload-sub">PNG, JPG — Maks 5MB</div>';
+    renderScreenshotPreview(null);
+}
+/* Tam ekran görüntü görüntüleyici (lightbox) — indirilebilir */
+function openImageViewer(src, title) {
+    if (!src) return;
+    let ov = document.getElementById('imageViewerOverlay');
+    if (!ov) {
+        ov = document.createElement('div');
+        ov.id = 'imageViewerOverlay';
+        ov.className = 'image-viewer-overlay';
+        ov.onclick = function (e) { if (e.target === ov) closeImageViewer(); };
+        document.body.appendChild(ov);
+    }
+    ov.innerHTML =
+        '<div class="iv-inner">' +
+        '<div class="iv-bar"><span class="iv-title">' + (title ? String(title).replace(/</g, '&lt;') : '📸 İşlem Görüntüsü') + '</span>' +
+        '<span style="display:flex;gap:8px"><a class="btn btn-sm btn-outline" href="' + src + '" download="equilyze-islem-gorseli.png">⬇ İndir</a>' +
+        '<button class="btn btn-sm btn-ghost" onclick="closeImageViewer()">✕</button></span></div>' +
+        '<img src="' + src + '" alt="İşlem görüntüsü">' +
+        '</div>';
+    ov.classList.add('open');
+}
+function closeImageViewer() {
+    const ov = document.getElementById('imageViewerOverlay');
+    if (ov) ov.classList.remove('open');
+}
+/* Journal tablosundan işlem görüntüsünü aç */
+function viewTradeScreenshot(id) {
+    const t = trades.find(tr => tr.id === id);
+    if (!t || !t.screenshot) { showToast('Bu işlemde görüntü yok.', 'info'); return; }
+    openImageViewer(t.screenshot, '📸 ' + t.sym + ' — ' + new Date(t.date).toLocaleDateString('tr-TR'));
 }
 
 // ─────────────────────────────────────────────
@@ -7531,10 +7631,7 @@ function editTrade(id) {
     // Restore screenshot
     const ssField = document.getElementById('tradeScreenshotData');
     if (ssField) ssField.value = t.screenshot || '';
-    if (t.screenshot) {
-        const upload = document.getElementById('screenshotUpload');
-        upload.innerHTML = '<img src="' + t.screenshot + '" style="max-width:100%;max-height:120px;border-radius:8px;object-fit:cover"><button class="btn btn-sm btn-ghost" onclick="removeScreenshot()" style="margin-top:4px">✕ Kaldır</button>';
-    }
+    renderScreenshotPreview(t.screenshot || null);
     openTradeModal();
 }
 
@@ -7743,6 +7840,7 @@ function renderJournalTable() {
             <td class="td-note" title="${t.note || ''}">${t.note || '—'}</td>
             <td>
                 <div class="td-actions">
+                    ${t.screenshot ? `<button class="td-btn" onclick="viewTradeScreenshot(${t.id})" title="Ekran görüntüsünü gör">📷</button>` : ''}
                     <button class="td-btn" onclick="editTrade(${t.id})" title="Düzenle">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -7772,6 +7870,11 @@ function openTradeModal() {
         document.getElementById('tradeTp').value = '';
         document.getElementById('tradeNote').value = '';
         document.querySelectorAll('.tag-check input').forEach(i => i.checked = false);
+        // Yeni işlem: duygu + görüntü sıfırla (önceki işlemden kalmasın)
+        document.querySelectorAll('.sentiment-option').forEach(o => { o.classList.remove('selected'); const r = o.querySelector('input'); if (r) r.checked = false; });
+        const ssF = document.getElementById('tradeScreenshotData');
+        if (ssF) ssF.value = '';
+        renderScreenshotPreview(null);
         // Populate symbol datalist from portfolio
         const pf = resolvePortfolio();
         const dl = document.getElementById('portfolioSymbols');
@@ -9326,6 +9429,140 @@ function exportMyData() {
 }
 if (typeof window !== 'undefined') window.exportMyData = exportMyData;
 
+/* ── Yatırımcı Profili özeti (risk testi sonucundan detaylı analiz) ── */
+function getStoredRiskProfile() {
+    try { return JSON.parse(localStorage.getItem('equilyze-risk-profile') || 'null'); } catch { return null; }
+}
+function renderInvestorSummary() {
+    const box = document.getElementById('investorSummary');
+    if (!box) return;
+    const rp = getStoredRiskProfile();
+    if (!rp) {
+        box.innerHTML = '<div style="padding:14px 0;color:var(--text-secondary);font-size:0.88rem">Henüz risk testi yapmadınız. <strong style="color:var(--text-primary)">15 soruluk test</strong> ile nasıl bir yatırımcı olduğunuzu, hangi varlık dağılımının size uygun olduğunu ve tipik davranış kalıplarınızı öğrenin.<br><br><button class="btn btn-sm btn-primary" onclick="closeUserPage(false);document.getElementById(\'risk-test\')?.scrollIntoView({behavior:\'smooth\'})">🎯 Risk Testini Başlat</button></div>';
+        return;
+    }
+    const d = (typeof getRiskProfile === 'function') ? getRiskProfile(rp.score) : null;
+    if (!d) { box.innerHTML = '<div style="color:var(--text-secondary)">' + rp.profile + ' — ' + rp.score + '/100</div>'; return; }
+    const color = rp.score <= 33 ? 'var(--color-success)' : rp.score <= 66 ? 'var(--color-secondary)' : 'var(--color-warning)';
+    // Portföy uyum kontrolü: mevcut beta profile uygun mu?
+    let fitNote = '';
+    try {
+        if (window.rmEngine) {
+            const m = window.rmEngine.calculateAll();
+            const beta = m.beta;
+            const isConservative = rp.score <= 33, isAggressive = rp.score > 66;
+            if (isConservative && beta > 0.8) fitNote = `⚠️ <strong>Uyumsuzluk:</strong> Profiliniz muhafazakâr ama portföy betanız <strong>${beta.toFixed(2)}</strong> — piyasadan daha hareketli. Nakit/tahvil oranını artırmayı değerlendirin.`;
+            else if (isAggressive && beta < 0.6) fitNote = `ℹ️ <strong>Not:</strong> Profiliniz agresif ama portföy betanız <strong>${beta.toFixed(2)}</strong> — oldukça defansif. Getiri potansiyelini artıracak alan olabilir.`;
+            else fitNote = `✅ <strong>Uyumlu:</strong> Portföy betanız <strong>${beta.toFixed(2)}</strong>, risk profilinizle tutarlı görünüyor.`;
+        }
+    } catch {}
+    box.innerHTML =
+        `<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px">
+            <div style="font-size:2.6rem;line-height:1">${d.icon}</div>
+            <div style="flex:1;min-width:180px">
+                <div style="font-size:1.15rem;font-weight:800;color:${color}">${d.profile}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted)">${d.subtitle} · Skor <strong style="color:var(--text-primary)">${rp.score}/100</strong> · ${new Date(rp.date).toLocaleDateString('tr-TR')}</div>
+            </div>
+        </div>
+        <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.65;margin-bottom:14px">${d.description}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">${d.traits.map(t => `<span class="trait-pill" style="font-size:0.72rem;padding:4px 10px;border-radius:999px;background:rgba(16,185,129,0.1);color:var(--color-primary);font-weight:600">${t}</span>`).join('')}</div>
+        <div class="inv-cols">
+            <div>
+                <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-primary)">📋 Sana Uygun Strateji</h4>
+                <ul style="margin:0;padding-left:18px;font-size:0.83rem;color:var(--text-secondary);line-height:1.7">${d.recommendations.map(r => `<li>${r}</li>`).join('')}</ul>
+            </div>
+            <div>
+                <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-primary)">🥧 Önerilen Varlık Dağılımı</h4>
+                ${d.allocation.map(a => `<div style="margin-bottom:7px">
+                    <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:3px"><span style="color:var(--text-secondary)">${a.label}</span><span style="font-family:var(--font-mono);color:${a.color}">%${a.percent}</span></div>
+                    <div style="height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><div style="height:100%;width:${a.percent}%;background:${a.color};border-radius:4px"></div></div>
+                </div>`).join('')}
+            </div>
+        </div>
+        ${fitNote ? `<div style="margin-top:14px;padding:12px;background:var(--bg-tertiary);border-radius:10px;font-size:0.82rem;color:var(--text-secondary);line-height:1.6">${fitNote}</div>` : ''}
+        <div style="margin-top:10px;font-size:0.72rem;color:var(--text-muted)">Bu analiz risk testi yanıtlarınıza dayanır ve yatırım tavsiyesi değildir.</div>`;
+}
+
+/* ── İndirmeler ── */
+function _downloadBlob(content, filename, mime) {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function _csv(rows) { return '﻿' + rows.map(r => r.map(c => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\n'); }
+function downloadPortfolioCSV() {
+    const pf = resolvePortfolio();
+    const rows = [['Sembol', 'Tip', 'Agirlik %', 'Tutar (TL)']];
+    pf.positions.forEach(p => rows.push([p.symbol, p.type, (p.weight * 100).toFixed(2), Math.round(pf.value * p.weight)]));
+    rows.push(['TOPLAM', '', '100.00', Math.round(pf.value)]);
+    _downloadBlob(_csv(rows), 'equilyze-portfoy-' + new Date().toISOString().slice(0, 10) + '.csv', 'text/csv;charset=utf-8;');
+    showToast('Portföy CSV indirildi.', 'success');
+}
+function downloadMetricsCSV() {
+    if (!window.rmEngine) { showToast('Metrikler henüz hazır değil.', 'info'); return; }
+    const m = window.rmEngine.calculateAll();
+    m.survivalScore = window.rmEngine.calculateSurvivalScore(m);
+    const rows = [['Metrik', 'Deger']];
+    const add = (k, v) => rows.push([k, v]);
+    add('Portfoy Degeri (TL)', Math.round(window.rmEngine.portfolioValue));
+    add('Hayatta Kalma Skoru', m.survivalScore + '/100');
+    add('Beta', m.beta.toFixed(2)); add('Sharpe', m.sharpe.toFixed(2)); add('Sortino', m.sortino.toFixed(2));
+    add('Treynor', m.treynor.toFixed(2)); add('Jensen Alpha (%)', m.alpha.toFixed(2));
+    add('VaR 95 (TL)', Math.round(m.var95Dollar)); add('CVaR 95 (TL)', Math.round(m.cvar95Dollar));
+    add('Max Drawdown (%)', m.maxDrawdown.toFixed(1)); add('Yillik Volatilite (%)', (m.rollingVol * 100).toFixed(1));
+    add('Ortalama Korelasyon', m.avgCorrelation.toFixed(2));
+    if (window.rmEngine.getComponentVaR) {
+        rows.push([]); rows.push(['Risk Katkisi (Component VaR)', '']);
+        window.rmEngine.getComponentVaR().comps.forEach(c => rows.push([c.label, '%' + c.contribPct.toFixed(1)]));
+    }
+    _downloadBlob(_csv(rows), 'equilyze-risk-metrikleri-' + new Date().toISOString().slice(0, 10) + '.csv', 'text/csv;charset=utf-8;');
+    showToast('Risk metrikleri CSV indirildi.', 'success');
+}
+function downloadRiskProfileReport() {
+    const rp = getStoredRiskProfile();
+    if (!rp) { showToast('Önce risk testini tamamlayın.', 'info'); return; }
+    const d = getRiskProfile(rp.score);
+    const now = new Date().toLocaleString('tr-TR');
+    let html = `<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><title>Equilyze — Yatırımcı Profili Raporu</title>
+<style>body{font-family:system-ui,Segoe UI,Arial;max-width:800px;margin:32px auto;padding:0 20px;color:#111;line-height:1.65}
+h1{margin-bottom:4px}h2{margin-top:28px;border-bottom:2px solid #10b981;padding-bottom:6px;font-size:1.1rem}
+.sub{color:#666;font-size:.9rem}.pill{display:inline-block;background:#ecfdf5;color:#059669;padding:4px 10px;border-radius:99px;font-size:.8rem;margin:3px 4px 3px 0;font-weight:600}
+.bar{height:10px;background:#eee;border-radius:6px;overflow:hidden;margin:4px 0 10px}.bar>div{height:100%}
+table{width:100%;border-collapse:collapse;margin-top:8px}td,th{border:1px solid #ddd;padding:8px;text-align:left;font-size:.9rem}
+.note{background:#f8fafc;border-left:4px solid #10b981;padding:12px;margin-top:16px;font-size:.88rem}
+@media print{body{margin:12px}.no-print{display:none}}</style></head><body>
+<h1>${d.icon} Yatırımcı Profili Raporu</h1>
+<div class="sub">Equilyze · ${now}</div>
+<h2>Profil</h2>
+<p><strong style="font-size:1.15rem">${d.profile}</strong><br>${d.subtitle} · Risk Skoru: <strong>${rp.score}/100</strong> · Test tarihi: ${new Date(rp.date).toLocaleDateString('tr-TR')}</p>
+<p>${d.description}</p>
+<div>${d.traits.map(t => `<span class="pill">${t}</span>`).join('')}</div>
+<h2>Sana Uygun Strateji</h2><ul>${d.recommendations.map(r => `<li>${r}</li>`).join('')}</ul>
+<h2>Önerilen Varlık Dağılımı</h2>
+${d.allocation.map(a => `<div><strong>${a.label}</strong> — %${a.percent}<div class="bar"><div style="width:${a.percent}%;background:${a.color}"></div></div></div>`).join('')}`;
+    try {
+        if (window.rmEngine) {
+            const m = window.rmEngine.calculateAll();
+            m.survivalScore = window.rmEngine.calculateSurvivalScore(m);
+            html += `<h2>Mevcut Portföy Uyumu</h2><table>
+<tr><th>Metrik</th><th>Değer</th></tr>
+<tr><td>Portföy Değeri</td><td>₺${Math.round(window.rmEngine.portfolioValue).toLocaleString('tr-TR')}</td></tr>
+<tr><td>Beta</td><td>${m.beta.toFixed(2)}</td></tr>
+<tr><td>Sharpe</td><td>${m.sharpe.toFixed(2)}</td></tr>
+<tr><td>VaR (%95)</td><td>-₺${Math.round(m.var95Dollar).toLocaleString('tr-TR')}</td></tr>
+<tr><td>Hayatta Kalma Skoru</td><td>${m.survivalScore}/100</td></tr></table>`;
+        }
+    } catch {}
+    html += `<div class="note">⚠️ Bu rapor risk testi yanıtlarınıza ve mevcut portföy verinize dayanır. <strong>Yatırım tavsiyesi değildir</strong>; eğitim ve analiz amaçlıdır.</div>
+<p class="no-print" style="text-align:center;margin-top:28px"><button onclick="window.print()" style="padding:10px 24px;background:#10b981;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:1rem">📄 PDF olarak kaydet / Yazdır</button></p>
+</body></html>`;
+    const w = window.open('', '_blank');
+    if (w) { w.document.write(html); w.document.close(); showToast('Profil raporu açıldı — PDF olarak kaydedebilirsiniz.', 'success'); }
+    else { _downloadBlob(html, 'equilyze-yatirimci-profili.html', 'text/html;charset=utf-8'); showToast('Profil raporu indirildi.', 'success'); }
+}
+
 /* ═══════════════════════════════════════════════
    SUPABASE BACKEND — opsiyonel bulut senkron + gerçek auth
    Config gelene kadar sbEnabled()=false → tamamen inert (mevcut akış bozulmaz).
@@ -9930,8 +10167,10 @@ function openUserPage() {
     // Risk profile
     try {
         const rp = JSON.parse(localStorage.getItem('equilyze-risk-profile'));
-        document.getElementById('upRiskProfile').textContent = rp ? rp.profile : 'Test edilmedi';
+        document.getElementById('upRiskProfile').textContent = rp ? (rp.profile + ' (' + rp.score + '/100)') : 'Test edilmedi';
     } catch { document.getElementById('upRiskProfile').textContent = 'Test edilmedi'; }
+    // Detaylı yatırımcı profili özeti
+    if (typeof renderInvestorSummary === 'function') renderInvestorSummary();
     // Journal stats
     try {
         const trades = JSON.parse(localStorage.getItem('equilyze-journal')) || [];
