@@ -1818,6 +1818,15 @@ body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .dash-chip:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(16,185,129,0.06); }
 .widget-flash { animation: widgetFlash 1.3s ease; }
 @keyframes widgetFlash { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } 25% { box-shadow: 0 0 0 3px rgba(16,185,129,0.5); border-color: var(--color-primary); } }
+/* Profil: özet tile'lar + aksiyon bar + nav */
+.user-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 20px 0 16px; }
+.us-tile { background: linear-gradient(135deg, rgba(16,185,129,0.06), var(--bg-card)); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 16px; }
+.us-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+.us-value { font-size: 1.25rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+.user-actions-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.user-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 8px; scrollbar-width: none; }
+.user-nav::-webkit-scrollbar { display: none; }
+@media (max-width: 600px) { .user-actions-bar { overflow-x: auto; flex-wrap: nowrap; } .user-actions-bar .btn { flex: 0 0 auto; } }
 @media (max-width: 600px) {
     .dashboard-toolbar { position: static; flex-direction: column; align-items: stretch; gap: 10px; }
     .dash-toolbar-actions { width: 100%; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: none; }
@@ -5995,8 +6004,35 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <button class="btn-logout" onclick="authLogout()" data-i18n="user-logout-btn">Çıkış Yap</button>
                 </div>
             </div>
+
+            <!-- Özet stat satırı (bir bakışta) -->
+            <div class="user-summary">
+                <div class="us-tile"><div class="us-label">Portföy Değeri</div><div class="us-value" id="upSumValue">—</div></div>
+                <div class="us-tile"><div class="us-label">Hayatta Kalma</div><div class="us-value" id="upSumSurvival">—</div></div>
+                <div class="us-tile"><div class="us-label">Toplam K/Z</div><div class="us-value" id="upSumPnl">—</div></div>
+                <div class="us-tile"><div class="us-label">Kazanma Oranı</div><div class="us-value" id="upSumWin">—</div></div>
+            </div>
+
+            <!-- Hızlı işlemler (üstte, belirgin) -->
+            <div class="user-actions-bar">
+                <button class="btn btn-sm btn-primary" onclick="closeUserPage(false);openDashboardPage()">📊 Dashboard</button>
+                <button class="btn btn-sm btn-outline" onclick="closeUserPage(false);goToJournal()">📓 Journal</button>
+                <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()">✎ Portföyü Düzenle</button>
+                <button class="btn btn-sm btn-outline" onclick="exportFullReport()">📄 Rapor Al</button>
+                <button class="btn btn-sm btn-outline" onclick="exportMyData()">⬇ Verilerimi İndir</button>
+            </div>
+
+            <!-- Hızlı navigasyon (kart'a atla) -->
+            <nav class="user-nav">
+                <button class="dash-chip" onclick="scrollToUserCard('upcPortfolio')">📊 Özet</button>
+                <button class="dash-chip" onclick="scrollToUserCard('upcActivity')">📈 Aktivite</button>
+                <button class="dash-chip" onclick="scrollToUserCard('upcRisk')">🎯 Risk Metrikleri</button>
+                <button class="dash-chip" onclick="scrollToUserCard('upcTrading')">📓 Trading</button>
+                <button class="dash-chip" onclick="scrollToUserCard('upcPositions')">💼 Pozisyonlar</button>
+            </nav>
+
             <div class="user-grid">
-                <div class="user-card">
+                <div class="user-card" id="upcPortfolio">
                     <h3>📊 Portföy Özeti</h3>
                     <div class="user-stat"><span class="user-stat-label">Portföy Değeri</span><span class="user-stat-value" id="upPortfolioValue">₺847.250</span></div>
                     <div class="user-stat"><span class="user-stat-label">Risk Profili</span><span class="user-stat-value" id="upRiskProfile">Test edilmedi</span></div>
@@ -6005,7 +6041,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="user-stat"><span class="user-stat-label">Max Drawdown</span><span class="user-stat-value" id="upMaxDD">--</span></div>
                     <div class="user-stat"><span class="user-stat-label">Hayatta Kalma Skoru</span><span class="user-stat-value" id="upSurvival">--</span></div>
                 </div>
-                <div class="user-card">
+                <div class="user-card" id="upcActivity">
                     <h3>📈 Aktivite</h3>
                     <div class="user-stat"><span class="user-stat-label">İşlem Sayısı</span><span class="user-stat-value" id="upTradeCount">0</span></div>
                     <div class="user-stat"><span class="user-stat-label">Kar/Zarar</span><span class="user-stat-value" id="upPNL">₺0</span></div>
@@ -6014,7 +6050,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="user-stat"><span class="user-stat-label">Şok Testi</span><span class="user-stat-value" id="upShockCount">0</span></div>
                     <div class="user-stat"><span class="user-stat-label">Kayıt Tarihi</span><span class="user-stat-value" id="upRegDate">--</span></div>
                 </div>
-                <div class="user-card">
+                <div class="user-card" id="upcRisk">
                     <h3>🎯 Detaylı Risk Metrikleri</h3>
                     <div class="user-stat"><span class="user-stat-label">Sortino Oranı</span><span class="user-stat-value" id="upSortino">--</span></div>
                     <div class="user-stat"><span class="user-stat-label">Treynor Oranı</span><span class="user-stat-value" id="upTreynor">--</span></div>
@@ -6024,7 +6060,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="user-stat"><span class="user-stat-label">Yıllık Volatilite</span><span class="user-stat-value" id="upVol">--</span></div>
                     <div class="user-stat"><span class="user-stat-label">Ort. Korelasyon</span><span class="user-stat-value" id="upCorr">--</span></div>
                 </div>
-                <div class="user-card">
+                <div class="user-card" id="upcTrading">
                     <h3>📓 Trading İstatistikleri</h3>
                     <div class="user-stat"><span class="user-stat-label">Profit Factor</span><span class="user-stat-value" id="upPF">--</span></div>
                     <div class="user-stat"><span class="user-stat-label">Beklenti (Expectancy)</span><span class="user-stat-value" id="upExpectancy">--</span></div>
@@ -6033,17 +6069,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="user-stat"><span class="user-stat-label">En Kötü İşlem</span><span class="user-stat-value negative" id="upWorst">--</span></div>
                 </div>
             </div>
-            <div class="user-card">
-                <h3>⚡ Hızlı İşlemler</h3>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px">
-                    <button class="btn btn-sm btn-primary" onclick="closeUserPage(false);openDashboardPage()">📊 Dashboard</button>
-                    <button class="btn btn-sm btn-outline" onclick="closeUserPage(false);goToJournal()">📓 Trading Journal</button>
-                    <button class="btn btn-sm btn-outline" onclick="exportFullReport()">📄 Rapor Al</button>
-                    <button class="btn btn-sm btn-outline" onclick="openPortfolioModal()">✎ Portföyü Düzenle</button>
-                    <button class="btn btn-sm btn-outline" onclick="exportMyData()">⬇ Verilerimi İndir</button>
-                </div>
-            </div>
-            <div class="user-card">
+            <div class="user-card" id="upcPositions">
                 <h3>📊 Pozisyon Dağılımı</h3>
                 <div id="upPositionsList" style="font-size:0.85rem">
                     <div class="user-stat"><span class="user-stat-label">Henüz pozisyon eklenmedi</span></div>
@@ -9896,6 +9922,10 @@ function openUserPage() {
         setU('upCVar', '-₺' + new Intl.NumberFormat('tr-TR').format(m.cvar95Dollar));
         setU('upVol', (m.rollingVol * 100).toFixed(1) + '%');
         setU('upCorr', m.avgCorrelation.toFixed(2));
+        // Özet tile'lar
+        setU('upSumValue', '₺' + metricsEngine.portfolioValue.toLocaleString('tr-TR'));
+        const ssEl = document.getElementById('upSumSurvival');
+        if (ssEl) { ssEl.textContent = m.survivalScore + '/100'; ssEl.style.color = m.survivalScore >= 70 ? 'var(--color-success)' : m.survivalScore >= 40 ? 'var(--color-warning)' : 'var(--color-danger)'; }
     }
     // Risk profile
     try {
@@ -9912,6 +9942,11 @@ function openUserPage() {
         document.getElementById('upPNL').textContent = (totalPnl >= 0 ? '+' : '') + '₺' + Math.round(totalPnl).toLocaleString('tr-TR');
         document.getElementById('upPNL').className = 'user-stat-value ' + (totalPnl >= 0 ? 'positive' : 'negative');
         document.getElementById('upWinRate').textContent = closed.length > 0 ? '%' + Math.round(wins.length / closed.length * 100) : '%0';
+        // Özet tile'lar
+        const spnl = document.getElementById('upSumPnl');
+        if (spnl) { spnl.textContent = closed.length ? ((totalPnl >= 0 ? '+' : '') + '₺' + Math.round(totalPnl).toLocaleString('tr-TR')) : '—'; spnl.style.color = totalPnl >= 0 ? 'var(--color-success)' : 'var(--color-danger)'; }
+        const swin = document.getElementById('upSumWin');
+        if (swin) swin.textContent = closed.length > 0 ? '%' + Math.round(wins.length / closed.length * 100) : '—';
         // Detaylı trading istatistikleri
         const setU = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
         const losses = closed.filter(t => t.pnl < 0);
@@ -10006,6 +10041,14 @@ function scrollToWidget(key) {
     const el = document.getElementById(key) || document.querySelector('[data-widget="' + key + '"]');
     if (!el) return;
     const y = el.getBoundingClientRect().top + window.scrollY - 120; // sticky toolbar payı
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    el.classList.add('widget-flash');
+    setTimeout(() => el.classList.remove('widget-flash'), 1300);
+}
+function scrollToUserCard(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 90;
     window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     el.classList.add('widget-flash');
     setTimeout(() => el.classList.remove('widget-flash'), 1300);
