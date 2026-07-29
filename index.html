@@ -3773,7 +3773,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <a href="javascript:void(0)" onclick="openToolInDashboard('')" class="nav-link" data-i18n="nav-dashboard">Dashboard</a>
                 <a href="#macro-engine" class="nav-link" data-i18n="nav-macro">Macro Shock</a>
                 <a href="#journal" class="nav-link" data-i18n="nav-journal">Trading Journal</a>
-                <a href="#waitlist" class="nav-link" data-i18n="nav-pricing">Erken Erişim</a>
+                <a href="#pricing" class="nav-link" data-i18n="nav-pricing">Üyelik</a>
             </div>
             <div class="nav-actions">
                 <div class="lang-toggle" id="langToggle">
@@ -3819,7 +3819,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     Portföyünüzü <span class="gradient-text">Analiz Edin</span>
                 </h1>
                 <p class="hero-subtitle" data-i18n="hero-subtitle">
-                    15 soruluk Risk Testi, Monte Carlo Simülasyonu, Macro Shock Engine, Trading Journal ve canlı API entegrasyonu ile 
+                    20 soruluk Yatırımcı Profili Testi, Monte Carlo Simülasyonu, Macro Shock Engine, Trading Journal ve canlı piyasa verisi ile
                     veriye dayalı yatırım kararları alın.
                 </p>
                 <div class="hero-stats">
@@ -3843,14 +3843,14 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
                             <line x1="12" y1="17" x2="12.01" y2="17"/>
                         </svg>
-                        Ücretsiz Risk Testi
+                        <span data-i18n="hero-cta1">Ücretsiz Risk Testi</span>
                     </a>
                     <a href="javascript:void(0)" onclick="openToolInDashboard('')" class="btn btn-secondary btn-lg">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                             <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
                         </svg>
-                        Dashboard'u Gör
+                        <span data-i18n="hero-cta2">Dashboard'u Gör</span>
                     </a>
                 </div>
             </div>
@@ -3869,15 +3869,15 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     <section class="section section-risk-test" id="risk-test">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge badge-green">ÜCRETSİZ</span>
-                <h2 class="section-title">Yatırımcı <span class="gradient-text">Risk Profili</span> Testi</h2>
-                <p class="section-desc">15 soruluk kapsamlı test ile yatırımcı kişiliğinizi keşfedin, risk toleransınızı objektif ölçün.</p>
+                <span class="section-badge badge-green" data-i18n="badge-free">ÜCRETSİZ</span>
+                <h2 class="section-title" data-i18n="risk-test-title">Yatırımcı <span class="gradient-text">Profili</span> Testi</h2>
+                <p class="section-desc" data-i18n="risk-test-desc">20 soruluk kapsamlı test ile risk toleransınızı, finansal kapasitenizi ve yatırımcı olgunluğunuzu objektif ölçün.</p>
             </div>
             
             <div class="risk-test-container" id="riskTestContainer">
                 <div class="test-progress" id="testProgress">
                     <div class="progress-info">
-                        <span>Soru <span id="currentQuestion">1</span> / 15</span>
+                        <span><span id="qWordLabel">Soru</span> <span id="currentQuestion">1</span> / <span id="totalQuestions">20</span></span>
                         <span id="progressPercent">7%</span>
                     </div>
                     <div class="progress-bar">
@@ -4968,7 +4968,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             <div class="section-header">
                 <span class="section-badge badge-pro">PRO / ELITE</span>
                 <h2 class="section-title">Macro Shock <span class="gradient-text">Engine</span></h2>
-                <p class="section-desc">Makroekonomik olayların portföyünüze etkisini simüle edin, fırtına öncesi hazırlıklı olun.</p>
+                <p class="section-desc" data-i18n="macro-desc">Makroekonomik olayların portföyünüze etkisini simüle edin, fırtına öncesi hazırlıklı olun.</p>
             </div>
 
             <!-- Ana sayfa tanıtımı — simülasyon dashboard içinde çalışır -->
@@ -5152,9 +5152,9 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     <section class="section section-journal" id="journal">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge badge-green">ÜCRETSİZ MODÜL</span>
+                <span class="section-badge badge-green" data-i18n="badge-free-module">ÜCRETSİZ MODÜL</span>
                 <h2 class="section-title">Trading <span class="gradient-text">Journal</span></h2>
-                <p class="section-desc">Her işleminizi kaydedin, pattern'lerinizi keşfedin, sürekli gelişin.</p>
+                <p class="section-desc" data-i18n="journal-desc">Her işleminizi kaydedin, pattern'lerinizi keşfedin, sürekli gelişin.</p>
             </div>
 
             <!-- Ana sayfa tanıtımı (Dashboard'da gizlenir) -->
@@ -5165,7 +5165,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="jt-item"><span>🎯</span><div><strong>Setup performansı</strong><small>Hangi kurulum kazandırıyor, hangi duygu kaybettiriyor</small></div></div>
                     <div class="jt-item"><span>📐</span><div><strong>Position sizing</strong><small>Risk/işlem, pozisyon boyutu, likidasyon mesafesi</small></div></div>
                 </div>
-                <button class="btn btn-primary btn-lg" onclick="openJournalWorkspace()">📓 Journal'ı Aç →</button>
+                <button class="btn btn-primary btn-lg" onclick="openJournalWorkspace()" data-i18n="journal-open-cta">📓 Journal'ı Aç →</button>
                 <p class="jt-hint">Tüm işlem takibi ve analiz araçları Dashboard içinde.</p>
             </div>
 
@@ -5341,9 +5341,9 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     <section class="section section-features" id="features">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge">ÖZELLİKLER</span>
-                <h2 class="section-title">Her Trader İçin <span class="gradient-text">Güçlü Araçlar</span></h2>
-                <p class="section-desc">Ücretsizden Elite'e — ihtiyacınıza göre ölçeklenen özellik seti.</p>
+                <span class="section-badge" data-i18n="features-badge">ÖZELLİKLER</span>
+                <h2 class="section-title" data-i18n="features-title">Her Trader İçin <span class="gradient-text">Güçlü Araçlar</span></h2>
+                <p class="section-desc" data-i18n="features-desc">Gerçek veriyle çalışan, birbirine bağlı bir analiz seti.</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
@@ -5352,15 +5352,15 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
                         </svg>
                     </div>
-                    <h3>Risk Profili Testi</h3>
-                    <p>15 soruluk bilimsel test ile yatırımcı kişiliğinizi ve risk toleransınızı öğrenin.</p>
+                    <h3 data-i18n="f1-title">Yatırımcı Profili Testi</h3>
+                    <p data-i18n="f1-desc">20 soruluk ağırlıklı test; risk toleransınızı, finansal kapasitenizi ve yatırımcı olgunluğunuzu ayrı ayrı ölçer.</p>
                     <ul class="feature-list">
-                        <li>Psikoloji tabanlı sorular</li>
-                        <li>3 profil tipi analizi</li>
-                        <li>Profil bazlı içgörüler</li>
-                        <li>Örnek varlık dağılımı</li>
+                        <li data-i18n="f1-1">3 boyut: tolerans, kapasite, olgunluk</li>
+                        <li data-i18n="f1-2">Kapasite tavanı korumasi</li>
+                        <li data-i18n="f1-3">Size uygun varlık dağılımı önerisi</li>
+                        <li data-i18n="f1-4">İndirilebilir profil raporu (PDF)</li>
                     </ul>
-                    <span class="feature-badge free">ÜCRETSİZ</span>
+                    <span class="feature-badge free" data-i18n="badge-free">ÜCRETSİZ</span>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon blue-icon">
@@ -5369,13 +5369,47 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
                         </svg>
                     </div>
-                    <h3>All-in-One Dashboard</h3>
-                    <p>Binance, MetaTrader ve TradingView hesaplarınızı tek panelde yönetin.</p>
+                    <h3 data-i18n="f2-title">Canlı Risk Dashboard</h3>
+                    <p data-i18n="f2-desc">Binance'ten çekilen gerçek fiyat geçmişiyle hesaplanan kurumsal seviye risk metrikleri.</p>
                     <ul class="feature-list">
-                        <li>API entegrasyonu</li>
-                        <li>Canlı pozisyon takibi</li>
-                        <li>P&L ısı haritası</li>
-                        <li>Risk metrikleri</li>
+                        <li data-i18n="f2-1">VaR, CVaR, Sharpe, Sortino, Beta</li>
+                        <li data-i18n="f2-2">Component VaR — riski hangi varlık taşıyor</li>
+                        <li data-i18n="f2-3">Hayatta Kalma Skoru</li>
+                        <li data-i18n="f2-4">Gerçek korelasyon matrisi</li>
+                    </ul>
+                    <span class="feature-badge free" data-i18n="badge-free">ÜCRETSİZ</span>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon green-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="f3-title">Trading Journal</h3>
+                    <p data-i18n="f3-desc">Her işlemi gerekçesi ve duygusuyla kaydedin; hangi kurulumun kazandırdığını verilerle görün.</p>
+                    <ul class="feature-list">
+                        <li data-i18n="f3-1">Kazanma oranı, profit factor, beklenti</li>
+                        <li data-i18n="f3-2">Setup ve duygu bazlı performans</li>
+                        <li data-i18n="f3-3">Position sizing + likidasyon mesafesi</li>
+                        <li data-i18n="f3-4">Görsel ekleme, CSV içe/dışa aktarım</li>
+                    </ul>
+                    <span class="feature-badge free" data-i18n="badge-free">ÜCRETSİZ</span>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon purple-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="feat-mc-title">Monte Carlo Simülasyonu</h3>
+                    <p data-i18n="feat-mc-desc">Geometric Brownian Motion ile 10.000 portföy yolu — ayrı iş parçacığında, arayüz donmadan.</p>
+                    <ul class="feature-list">
+                        <li data-i18n="feat-mc-1">10.000+ portföy yolu simülasyonu</li>
+                        <li data-i18n="feat-mc-2">VaR & CVaR hesaplama</li>
+                        <li data-i18n="feat-mc-3">Stres testi & Black Swan modu</li>
+                        <li data-i18n="feat-mc-4">Olasılık tablosu & yorumlama</li>
+                        <li data-i18n="feat-mc-5">CSV rapor indirme</li>
                     </ul>
                     <span class="feature-badge pro">PRO</span>
                 </div>
@@ -5385,80 +5419,61 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
                         </svg>
                     </div>
-                    <h3>Macro Shock Engine</h3>
-                    <p>FED kararı, enflasyon, kur hareketleri gibi makro şokların portföy etkisini simüle edin.</p>
+                    <h3 data-i18n="f5-title">Macro Shock & Black Swan</h3>
+                    <p data-i18n="f5-desc">FED, enflasyon, petrol, kur ve TCMB şoklarının portföyünüze etkisini kompozisyonunuza göre hesaplar.</p>
                     <ul class="feature-list">
-                        <li>4 şok senaryosu</li>
-                        <li>Anlık etki hesaplama</li>
-                        <li>Volatilite tahmini</li>
-                        <li>Fırtına uyarı sistemi</li>
+                        <li data-i18n="f5-1">5 makro şok senaryosu</li>
+                        <li data-i18n="f5-2">3 kriz senaryosu (pandemi, 2008, jeopolitik)</li>
+                        <li data-i18n="f5-3">Kendi senaryonuzu kurun</li>
+                        <li data-i18n="f5-4">İyileşme süresi tahmini</li>
                     </ul>
                     <span class="feature-badge pro">PRO</span>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon purple-icon">
+                    <div class="feature-icon blue-icon">
                         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                            <path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                            <path d="M3 3v18h18"/><polyline points="7 14 11 10 15 13 21 7"/>
                         </svg>
                     </div>
-                    <h3>Black Swan Testi</h3>
-                    <p>Pandemi, finansal kriz ve jeopolitik senaryolarda portföyünüzün dayanıklılığını ölçün.</p>
+                    <h3 data-i18n="f6-title">Strateji Backtest</h3>
+                    <p data-i18n="f6-desc">Gerçek Binance verisi üzerinde stratejinizi test edin; al-tut'a göre gerçekten değer katıyor mu görün.</p>
                     <ul class="feature-list">
-                        <li>3 ekstrem senaryo</li>
-                        <li>Hayatta kalma analizi</li>
-                        <li>İyileşme süresi tahmini</li>
-                        <li>Portföy dayanıklılığı</li>
+                        <li data-i18n="f6-1">SMA kesişimi ve RSI stratejileri</li>
+                        <li data-i18n="f6-2">Strateji vs al-tut karşılaştırması</li>
+                        <li data-i18n="f6-3">Alpha, Sharpe, max drawdown</li>
+                        <li data-i18n="f6-4">Sermaye eğrisi grafiği</li>
                     </ul>
-                    <span class="feature-badge elite">ELITE</span>
+                    <span class="feature-badge pro">PRO</span>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon green-icon">
                         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                         </svg>
                     </div>
-                    <h3>Trading Journal</h3>
-                    <p>İşlemlerinizi kaydedin, istatistiklerinizi analiz edin, hatalarınızı etiketleyin.</p>
+                    <h3 data-i18n="f7-title">Watchlist & Fiyat Alarmları</h3>
+                    <p data-i18n="f7-desc">Takip listenizi canlı fiyatlarla izleyin, hedef seviyeye gelince bildirim alın.</p>
                     <ul class="feature-list">
-                        <li>Sınırsız işlem kaydı</li>
-                        <li>Otomatik istatistik</li>
-                        <li>Hata/pattern etiketleme</li>
-                        <li>CSV dışa aktarım</li>
+                        <li data-i18n="f7-1">Canlı fiyat ve 24s değişim</li>
+                        <li data-i18n="f7-2">Hedef fiyat alarmı (≥ / ≤)</li>
+                        <li data-i18n="f7-3">Tarayıcı bildirimi</li>
+                        <li data-i18n="f7-4">Ekonomik takvim</li>
                     </ul>
-                    <span class="feature-badge free">ÜCRETSİZ</span>
+                    <span class="feature-badge free" data-i18n="badge-free">ÜCRETSİZ</span>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon purple-icon">
                         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            <rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/>
                         </svg>
                     </div>
-                    <h3>Korelasyon Matrisi</h3>
-                    <p>BTC, ETH, SPX, AAPL, THYAO, GARAN arasındaki korelasyonları görselleştirin.</p>
+                    <h3 data-i18n="f8-title">AI Copilot</h3>
+                    <p data-i18n="f8-desc">Claude yapay zekâsı portföyünüzü, risk metriklerinizi ve işlem günlüğünüzü okuyup size özel analiz yapar.</p>
                     <ul class="feature-list">
-                        <li>6 varlık korelasyonu</li>
-                        <li>Risk yoğunlaşma uyarısı</li>
-                        <li>Renk kodlu matris</li>
-                        <li>Çoklu hesap analizi</li>
-                    </ul>
-                    <span class="feature-badge elite">ELITE</span>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon purple-icon">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                        </svg>
-                    </div>
-                    <h3 data-i18n="feat-mc-title">Monte Carlo Simülasyonu</h3>
-                    <p data-i18n="feat-mc-desc">Geometric Brownian Motion ile portföyünüzün gelecekteki olası değerlerini 10.000+ senaryo üzerinden simüle edin.</p>
-                    <ul class="feature-list">
-                        <li data-i18n="feat-mc-1">10.000+ portföy yolu simülasyonu</li>
-                        <li data-i18n="feat-mc-2">VaR & CVaR hesaplama</li>
-                        <li data-i18n="feat-mc-3">Stres testi & Black Swan modu</li>
-                        <li data-i18n="feat-mc-4">Olasılık tablosu & AI yorumlama</li>
-                        <li data-i18n="feat-mc-5">CSV rapor indirme</li>
+                        <li data-i18n="f8-1">Gerçek verinizle kişisel analiz</li>
+                        <li data-i18n="f8-2">Günlük AI brief</li>
+                        <li data-i18n="f8-3">Senaryo soruları ("Fed faiz artırırsa?")</li>
+                        <li data-i18n="f8-4">Kendi API anahtarınızla, gizli</li>
                     </ul>
                     <span class="feature-badge elite">ELITE</span>
                 </div>
@@ -5517,153 +5532,103 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     </section>
 
     <!-- Waitlist Section -->
-    <section class="section section-waitlist" id="waitlist">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge">ERKEN ERİŞİM</span>
-                <h2 class="section-title">Erken Erişim <span class="gradient-text">Bekleme Listesi</span></h2>
-                <p class="section-desc">İlk 6 ay her şey ücretsiz. Ön kaydınızı yaptırın, lansmanda öncelikli erişim kazanın.</p>
-            </div>
-            <div class="waitlist-container">
-                <div class="waitlist-benefits">
-                    <div class="waitlist-benefit">
-                        <span class="benefit-icon">🎯</span>
-                        <div>
-                            <strong>Öncelikli Erişim</strong>
-                            <span>İlk 1.000 kullanıcı arasında olun</span>
-                        </div>
-                    </div>
-                    <div class="waitlist-benefit">
-                        <span class="benefit-icon">💰</span>
-                        <div>
-                            <strong>6 Ay Ücretsiz</strong>
-                            <span>Lansman sonrası her şey dahil</span>
-                        </div>
-                    </div>
-                    <div class="waitlist-benefit">
-                        <span class="benefit-icon">📊</span>
-                        <div>
-                            <strong>Geri Bildirim Hakkı</strong>
-                            <span>Ürün yol haritasına katkı verin</span>
-                        </div>
-                    </div>
-                </div>
-                <form class="waitlist-form" id="waitlistForm" onsubmit="return handleWaitlistSubmit(event)">
-                    <input type="hidden" name="_subject" value="Equilyze Bekleme Listesi">
-                    <input type="text" name="_honey" style="display:none">
-                    <input type="hidden" name="_captcha" value="true">
-                    <div class="waitlist-micro-survey" id="microSurvey">
-                        <p class="wms-title">🌟 2 soruluk mikro anket (opsiyonel)</p>
-                        <div class="wms-field">
-                            <label>En çok hangi özellik ilginizi çekiyor?</label>
-                            <select name="feature_interest">
-                                <option value="">Seçiniz</option>
-                                <option value="risk_test">Risk Profili Testi</option>
-                                <option value="monte_carlo">Monte Carlo Simülasyonu</option>
-                                <option value="api_entegrasyon">Borsa API Entegrasyonu</option>
-                                <option value="shock_test">Makro Şok Testleri</option>
-                                <option value="journal">Trading Journal</option>
-                                <option value="korrelasyon">Korelasyon Analizi</option>
-                            </select>
-                        </div>
-                        <div class="wms-field">
-                            <label>Bunun için aylık ne ödersiniz?</label>
-                            <select name="price_signal">
-                                <option value="">Seçiniz</option>
-                                <option value="0">Ücretsiz olmalı</option>
-                                <option value="100">100 TL'ye kadar</option>
-                                <option value="250">250 TL'ye kadar</option>
-                                <option value="500">500 TL'ye kadar</option>
-                                <option value="1000">1.000 TL'ye kadar</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="waitlist-form-group">
-                        <input type="email" name="email" id="waitlistEmail" class="waitlist-input" placeholder="E-posta adresiniz" required>
-                        <button type="submit" class="btn btn-primary waitlist-submit" id="waitlistSubmitBtn">Ön Kaydol</button>
-                    </div>
-                    <div class="waitlist-form-hint">KVKK aydınlatma metnini okudum, kabul ediyorum. (Hukuki inceleme bekliyor)</div>
-                    <div class="waitlist-form-hint" style="margin-top:4px;font-size:0.7rem;">Bu form yalnızca talep sinyali toplar — henüz bir ücretlendirme veya ödeme taahhüdü içermez.</div>
-                </form>
-            </div>
-        </div>
-    </section>
 
     <!-- Pricing Section -->
     <!-- Strategic Roadmap (Layer 5) -->
     <section class="section section-roadmap" id="roadmap">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge badge-pro">STRATEJİ</span>
+                <span class="section-badge badge-pro" data-i18n="roadmap-badge">YOL HARİTASI</span>
                 <h2 class="section-title" data-i18n="roadmap-title">Geliştirme <span class="gradient-text">Yol Haritası</span></h2>
                 <p class="section-desc" data-i18n="roadmap-desc">Equilyze'ı "Yatırım Karar Destek Ekosistemi"ne dönüştürecek stratejik plan.</p>
             </div>
             <div class="roadmap-container">
                 <div class="roadmap-timeline">
-                    <!-- Phase 1 -->
+                    <!-- Tamamlandı -->
                     <div class="roadmap-phase">
                         <div class="phase-dot active"></div>
                         <div class="phase-header">
-                            <span class="phase-number p1">FAZ 1</span>
-                            <span class="phase-duration">⏱ 1 Ay</span>
+                            <span class="phase-number p1" data-i18n="rm-1-tag">TAMAMLANDI</span>
+                            <span class="phase-duration" data-i18n="rm-done">✓ Yayında</span>
                         </div>
-                        <div class="phase-title" data-i18n="phase-1-title">UI/UX İyileştirmeleri</div>
-                        <div class="phase-desc" data-i18n="phase-1-desc">Dashboard ve Veri Analitiği katmanı: P&L Isı Haritası 2.0, Dinamik Korelasyon Analizi, Benchmark Karşılaştırması ve Zero&#8209;Touch Güvenlik İletişimi.</div>
+                        <div class="phase-title" data-i18n="rm-1-title">Risk Motoru & Canlı Veri</div>
+                        <div class="phase-desc" data-i18n="rm-1-desc">Binance'ten çekilen gerçek fiyat geçmişiyle VaR, CVaR, Sharpe, Sortino, beta ve Component VaR hesaplanıyor. Korelasyon matrisi gerçek getiri serilerinden üretiliyor.</div>
                         <div class="phase-tech">
-                            <span class="tech-tag">React/Vue</span>
+                            <span class="tech-tag">Binance API</span>
                             <span class="tech-tag">Chart.js</span>
-                            <span class="tech-tag">CSS Animations</span>
+                            <span class="tech-tag">Vanilla JS</span>
                         </div>
                     </div>
-                    <!-- Phase 2 -->
+                    <div class="roadmap-phase">
+                        <div class="phase-dot active"></div>
+                        <div class="phase-header">
+                            <span class="phase-number p2" data-i18n="rm-2-tag">TAMAMLANDI</span>
+                            <span class="phase-duration" data-i18n="rm-done">✓ Yayında</span>
+                        </div>
+                        <div class="phase-title" data-i18n="rm-2-title">Simülasyon & Backtest</div>
+                        <div class="phase-desc" data-i18n="rm-2-desc">Monte Carlo (10.000 yol) ayrı iş parçacığında çalışıyor; portföye duyarlı makro şok ve Black Swan testleri ile gerçek veri üzerinde strateji backtest'i eklendi.</div>
+                        <div class="phase-tech">
+                            <span class="tech-tag">Web Workers</span>
+                            <span class="tech-tag">Monte Carlo</span>
+                            <span class="tech-tag">GBM</span>
+                        </div>
+                    </div>
+                    <div class="roadmap-phase">
+                        <div class="phase-dot active"></div>
+                        <div class="phase-header">
+                            <span class="phase-number p3" data-i18n="rm-3-tag">TAMAMLANDI</span>
+                            <span class="phase-duration" data-i18n="rm-done">✓ Yayında</span>
+                        </div>
+                        <div class="phase-title" data-i18n="rm-3-title">Journal, Profil & AI</div>
+                        <div class="phase-desc" data-i18n="rm-3-desc">Duygu takipli işlem günlüğü, setup bazlı performans, 20 soruluk çok boyutlu yatırımcı profili, hesap senkronu ve Claude destekli AI Copilot yayında.</div>
+                        <div class="phase-tech">
+                            <span class="tech-tag">Supabase</span>
+                            <span class="tech-tag">Claude API</span>
+                            <span class="tech-tag">PWA</span>
+                        </div>
+                    </div>
+                    <!-- Sırada -->
                     <div class="roadmap-phase">
                         <div class="phase-dot"></div>
                         <div class="phase-header">
-                            <span class="phase-number p2">FAZ 2</span>
-                            <span class="phase-duration">⏱ 2 Ay</span>
+                            <span class="phase-number p4" data-i18n="rm-4-tag">SIRADA</span>
+                            <span class="phase-duration">⏱ Q3 2026</span>
                         </div>
-                        <div class="phase-title" data-i18n="phase-2-title">Gelişmiş Quant Analitiği</div>
-                        <div class="phase-desc" data-i18n="phase-2-desc">Risk yönetimi ve simülasyon motoru: Kişiselleştirilmiş Şok Testleri, Otomatik Stres Testi raporları, Risk Profil Uyumu ve VaR/CVaR modelleri.</div>
+                        <div class="phase-title" data-i18n="rm-4-title">Borsa Hesabı Bağlantısı</div>
+                        <div class="phase-desc" data-i18n="rm-4-desc">Salt-okunur API anahtarıyla gerçek bakiye ve açık pozisyonların otomatik aktarımı. Anahtarlar sunucuda şifrelenir; işlem ve para çekme yetkisi hiçbir koşulda talep edilmez.</div>
                         <div class="phase-tech">
-                            <span class="tech-tag">Python</span>
-                            <span class="tech-tag">Pandas</span>
-                            <span class="tech-tag">VaR Models</span>
-                            <span class="tech-tag">REST API</span>
+                            <span class="tech-tag">Read-only API</span>
+                            <span class="tech-tag">Şifreleme</span>
                         </div>
                     </div>
-                    <!-- Phase 3 -->
                     <div class="roadmap-phase">
-                        <div class="phase-dot elite"></div>
+                        <div class="phase-dot"></div>
                         <div class="phase-header">
-                            <span class="phase-number p3">FAZ 3</span>
-                            <span class="phase-duration">⏱ 1.5 Ay</span>
+                            <span class="phase-number p4" data-i18n="rm-5-tag">SIRADA</span>
+                            <span class="phase-duration">⏱ Q4 2026</span>
                         </div>
-                        <div class="phase-title" data-i18n="phase-3-title">Journal & Psikoloji</div>
-                        <div class="phase-desc" data-i18n="phase-3-desc">Behavioral Finance katmanı: Duygu Analizi (Sentiment Tracking), Görsel Kanıt sistemi, performans-duygu korelasyonu ve otomatik psikolojik içgörüler.</div>
+                        <div class="phase-title" data-i18n="rm-5-title">BIST & Çoklu Varlık</div>
+                        <div class="phase-desc" data-i18n="rm-5-desc">BIST hisseleri, döviz ve emtia için canlı fiyat ve gerçek risk metrikleri; TL bazlı raporlama ve Türkiye'ye özel vergi/K-Z özeti.</div>
                         <div class="phase-tech">
-                            <span class="tech-tag">PostgreSQL</span>
-                            <span class="tech-tag">NLP</span>
-                            <span class="tech-tag">TradingView API</span>
+                            <span class="tech-tag">BIST</span>
+                            <span class="tech-tag">TCMB</span>
+                            <span class="tech-tag">Vergi Raporu</span>
                         </div>
                     </div>
-                    <!-- Phase 4 -->
                     <div class="roadmap-phase">
                         <div class="phase-dot future"></div>
                         <div class="phase-header">
-                            <span class="phase-number p4">FAZ 4</span>
-                            <span class="phase-duration">⏱ 1 Ay</span>
+                            <span class="phase-number p4" data-i18n="rm-6-tag">PLANLANIYOR</span>
+                            <span class="phase-duration">⏱ 2027</span>
                         </div>
-                        <div class="phase-title" data-i18n="phase-4-title">Mobil Web (PWA)</div>
-                        <div class="phase-desc" data-i18n="phase-4-desc">Responsive Design, Push Notifications ile risk alarmları, offline erişim ve mobil-first deneyim optimizasyonu.</div>
+                        <div class="phase-title" data-i18n="rm-6-title">Otomatik Risk Uyarıları</div>
+                        <div class="phase-desc" data-i18n="rm-6-desc">Portföy riski eşiği aştığında, korelasyon yoğunlaştığında veya kritik makro veri öncesinde otomatik bildirim; haftalık performans ve davranış raporu.</div>
                         <div class="phase-tech">
-                            <span class="tech-tag">PWA</span>
-                            <span class="tech-tag">Service Workers</span>
                             <span class="tech-tag">Push API</span>
+                            <span class="tech-tag">Zamanlanmış Görev</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Expense Table -->
             </div>
         </div>
     </section>
@@ -5672,37 +5637,37 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     <section class="section section-pricing" id="pricing">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge">ERKEN ERİŞİM</span>
-                <h2 class="section-title">İlk 6 Ay <span class="gradient-text">Tamamen Ücretsiz</span></h2>
-                <p class="section-desc">Henüz geliştirme aşamasındayız. Bekleme listesine katılın, lansmanda her şey dahil ücretsiz erişim kazanın.</p>
+                <span class="section-badge" data-i18n="pricing-badge">LANSMAN TEKLİFİ</span>
+                <h2 class="section-title" data-i18n="pricing-title">İlk 500 Kullanıcı <span class="gradient-text">Ömür Boyu Ücretsiz</span></h2>
+                <p class="section-desc" data-i18n="pricing-desc">Şimdi üye olun, tüm özellikler hesabınızda kalıcı olarak ücretsiz kalsın. Kredi kartı gerekmez.</p>
             </div>
             <div class="pricing-grid" style="max-width:560px;margin:0 auto;grid-template-columns:1fr;">
                 <div class="pricing-card popular">
-                    <div class="popular-badge" style="background:linear-gradient(135deg,var(--color-primary),var(--color-secondary));color:#fff;padding:4px 16px;border-radius:20px;font-size:0.7rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;position:absolute;top:-10px;left:50%;transform:translateX(-50%);white-space:nowrap">🎯 Öncelikli Erişim</div>
+                    <div class="popular-badge" style="background:linear-gradient(135deg,var(--color-primary),var(--color-secondary));color:#fff;padding:4px 16px;border-radius:20px;font-size:0.7rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;position:absolute;top:-10px;left:50%;transform:translateX(-50%);white-space:nowrap" data-i18n="pricing-popular">🎯 Kurucu Üye</div>
                     <div class="pricing-header" style="padding:24px 24px 16px">
-                        <h3>Erken Erişim Paketi</h3>
+                        <h3 data-i18n="pricing-plan">Kurucu Üye Paketi</h3>
                         <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center">
-                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.12);color:#10b981;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600">💰 6 Ay Ücretsiz</span>
-                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.12);color:#3b82f6;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600">🎯 İlk 1.000 Kullanıcı</span>
+                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.12);color:#10b981;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600" data-i18n="pricing-pill1">♾️ Ömür Boyu Ücretsiz</span>
+                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.12);color:#3b82f6;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600" data-i18n="pricing-pill2">🎯 İlk 500 Kullanıcı</span>
                         </div>
                         <div class="pricing-price" style="margin-top:16px">
                             <span class="price-amount">0</span>
-                            <div class="price-meta"><span class="price-currency">TL</span><span class="price-period">/ay (ilk 6 ay)</span></div>
+                            <div class="price-meta"><span class="price-currency">TL</span><span class="price-period" data-i18n="pricing-period">/ ömür boyu</span></div>
                         </div>
-                        <p class="pricing-subtitle">Lansman sonrası her şey dahil</p>
+                        <p class="pricing-subtitle" data-i18n="pricing-sub">Tüm özellikler dahil — kredi kartı gerekmez</p>
                     </div>
                     <div class="pricing-body" style="padding:0 24px 24px">
                         <ul class="pricing-features">
-                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Risk Profili Testi</li>
-                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Monte Carlo Simülasyonu</li>
-                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Borsa API Entegrasyonu</li>
-                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Makro Şok Testleri</li>
-                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Trading Journal</li>
-                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Korelasyon Matrisi</li>
-                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Sınırsız İşlem Kaydı</li>
+                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span data-i18n="pf-1">Yatırımcı Profili Testi (20 soru)</span></li>
+                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span data-i18n="pf-2">Canlı risk dashboard (VaR, Sharpe, Component VaR)</span></li>
+                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span data-i18n="pf-3">Trading Journal + position sizing</span></li>
+                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span data-i18n="pf-4">Monte Carlo & strateji backtest</span></li>
+                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span data-i18n="pf-5">Makro şok & Black Swan testleri</span></li>
+                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span data-i18n="pf-6">Watchlist, fiyat alarmları, AI Copilot</span></li>
+                            <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span data-i18n="pf-7">Cihazlar arası senkron + tüm veriler indirilebilir</span></li>
                         </ul>
-                        <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:8px;">6 ay sonra fiyatlandırma duyurulacaktır. Ödeme altyapısı henüz mevcut değildir.</div>
-                        <a href="#waitlist" class="btn btn-primary btn-full" style="margin-top:12px;">Bekleme Listesine Katıl</a>
+                        <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:8px;" data-i18n="pricing-note">Kurucu üyelik kontenjanı dolduktan sonra ücretli planlar duyurulacaktır. Şu an ödeme alınmamaktadır.</div>
+                        <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="openAuthModal();switchAuthTab('register')" data-i18n="pricing-cta">Ücretsiz Üye Ol</button>
                     </div>
                 </div>
             </div>
@@ -5900,10 +5865,10 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <a href="#journal">Trading Journal</a>
                 </div>
                 <div class="footer-links">
-                    <h4>Erken Erişim</h4>
-                    <a href="#waitlist">Bekleme Listesi</a>
-                    <a href="#pricing">İlk 6 Ay Ücretsiz</a>
-                    <a href="#risk-test">Risk Testi</a>
+                    <h4 data-i18n="footer-membership">Üyelik</h4>
+                    <a href="javascript:void(0)" onclick="openAuthModal();switchAuthTab('register')" data-i18n="footer-signup">Ücretsiz Üye Ol</a>
+                    <a href="#pricing" data-i18n="footer-lifetime">İlk 500 Kullanıcı Ömür Boyu Ücretsiz</a>
+                    <a href="#risk-test" data-i18n="footer-risktest">Yatırımcı Profili Testi</a>
                 </div>
                 <div class="footer-links">
                     <h4>Kaynaklar</h4>
@@ -6983,6 +6948,11 @@ function selectAnswer(index) {
 
 function updateProgress() {
     const pct = Math.round(((currentQuestionIndex + 1) / riskQuestions.length) * 100);
+    // Toplam soru sayısı ve "Soru/Question" etiketi dinamik
+    const totalEl = document.getElementById('totalQuestions');
+    if (totalEl) totalEl.textContent = riskQuestions.length;
+    const wordEl = document.getElementById('qWordLabel');
+    if (wordEl) wordEl.textContent = isEnLang() ? 'Question' : 'Soru';
     const el = document.getElementById('currentQuestion');
     const pctEl = document.getElementById('progressPercent');
     const fill = document.getElementById('progressFill');
@@ -11712,8 +11682,59 @@ const translations = {
         'investor-profile': '🎯 My Investor Profile',
         'downloads-title': '⬇ Download Center',
         'quick-actions': '⚡ Quick Actions',
-        'nav-pricing': 'Early Access',
-        'hero-subtitle': 'Take data-driven investment decisions with 15-question Risk Test, Monte Carlo Simulation, Macro Shock Engine, Trading Journal, and live API integrations.',
+        'nav-pricing': 'Membership',
+        'hero-subtitle': 'Make data-driven investment decisions with a 20-question Investor Profile Test, Monte Carlo Simulation, Macro Shock Engine, Trading Journal and live market data.',
+        'risk-test-desc': 'Measure your risk tolerance, financial capacity and investor maturity objectively with a comprehensive 20-question test.',
+        'hero-cta1': 'Free Risk Test', 'hero-cta2': 'View Dashboard',
+        'risk-test-title': 'Investor <span class="gradient-text">Profile</span> Test',
+        'macro-desc': 'Simulate the impact of macroeconomic events on your portfolio and be prepared before the storm.',
+        'badge-free-module': 'FREE MODULE',
+        'journal-desc': 'Record every trade, discover your patterns, and keep improving.',
+        'journal-open-cta': '📓 Open Journal →',
+        'features-badge': 'FEATURES', 'features-title': 'Powerful Tools for Every <span class="gradient-text">Trader</span>',
+        'features-desc': 'An interconnected analysis suite that runs on real data.',
+        'roadmap-badge': 'ROADMAP',
+        /* Features */
+        'f1-title': 'Investor Profile Test', 'f1-desc': 'A weighted 20-question test measuring your risk tolerance, financial capacity and investor maturity separately.',
+        'f1-1': '3 dimensions: tolerance, capacity, maturity', 'f1-2': 'Capacity-cap protection', 'f1-3': 'Asset allocation suited to you', 'f1-4': 'Downloadable profile report (PDF)',
+        'f2-title': 'Live Risk Dashboard', 'f2-desc': 'Institutional-grade risk metrics computed from real price history pulled from Binance.',
+        'f2-1': 'VaR, CVaR, Sharpe, Sortino, Beta', 'f2-2': 'Component VaR — which asset carries the risk', 'f2-3': 'Survival Score', 'f2-4': 'Real correlation matrix',
+        'f3-title': 'Trading Journal', 'f3-desc': 'Record every trade with its rationale and emotion; see which setup actually pays off.',
+        'f3-1': 'Win rate, profit factor, expectancy', 'f3-2': 'Performance by setup and emotion', 'f3-3': 'Position sizing + liquidation distance', 'f3-4': 'Image attachments, CSV import/export',
+        'f5-title': 'Macro Shock & Black Swan', 'f5-desc': 'Calculates the impact of Fed, inflation, oil, FX and CBRT shocks based on your actual portfolio composition.',
+        'f5-1': '5 macro shock scenarios', 'f5-2': '3 crisis scenarios (pandemic, 2008, geopolitical)', 'f5-3': 'Build your own scenario', 'f5-4': 'Recovery time estimate',
+        'f6-title': 'Strategy Backtest', 'f6-desc': 'Test your strategy on real Binance data and see whether it truly beats buy-and-hold.',
+        'f6-1': 'SMA crossover and RSI strategies', 'f6-2': 'Strategy vs buy-and-hold comparison', 'f6-3': 'Alpha, Sharpe, max drawdown', 'f6-4': 'Equity curve chart',
+        'f7-title': 'Watchlist & Price Alerts', 'f7-desc': 'Track your watchlist with live prices and get notified when your target level is hit.',
+        'f7-1': 'Live price and 24h change', 'f7-2': 'Target price alert (≥ / ≤)', 'f7-3': 'Browser notification', 'f7-4': 'Economic calendar',
+        'f8-title': 'AI Copilot', 'f8-desc': 'Claude AI reads your portfolio, risk metrics and trading journal to deliver analysis tailored to you.',
+        'f8-1': 'Personal analysis on your real data', 'f8-2': 'Daily AI brief', 'f8-3': 'Scenario questions ("What if the Fed hikes?")', 'f8-4': 'With your own API key, private',
+        'badge-free': 'FREE',
+        /* Pricing */
+        'pricing-badge': 'LAUNCH OFFER', 'pricing-title': 'First 500 Users <span class="gradient-text">Free For Life</span>',
+        'pricing-desc': 'Sign up now and keep every feature free on your account, permanently. No credit card required.',
+        'pricing-popular': '🎯 Founding Member', 'pricing-plan': 'Founding Member Plan',
+        'pricing-pill1': '♾️ Free For Life', 'pricing-pill2': '🎯 First 500 Users',
+        'pricing-period': '/ lifetime', 'pricing-sub': 'All features included — no credit card required',
+        'pf-1': 'Investor Profile Test (20 questions)', 'pf-2': 'Live risk dashboard (VaR, Sharpe, Component VaR)',
+        'pf-3': 'Trading Journal + position sizing', 'pf-4': 'Monte Carlo & strategy backtest',
+        'pf-5': 'Macro shock & Black Swan tests', 'pf-6': 'Watchlist, price alerts, AI Copilot',
+        'pf-7': 'Cross-device sync + all data downloadable',
+        'pricing-note': 'Paid plans will be announced once founding-member spots are filled. No payments are being collected at this time.',
+        'pricing-cta': 'Sign Up Free',
+        /* Footer */
+        'footer-membership': 'Membership', 'footer-signup': 'Sign Up Free',
+        'footer-lifetime': 'First 500 Users Free For Life', 'footer-risktest': 'Investor Profile Test',
+        /* Roadmap */
+        'roadmap-desc': 'What is already live and what comes next.',
+        'rm-done': '✓ Live', 'rm-1-tag': 'COMPLETED', 'rm-2-tag': 'COMPLETED', 'rm-3-tag': 'COMPLETED',
+        'rm-4-tag': 'NEXT', 'rm-5-tag': 'NEXT', 'rm-6-tag': 'PLANNED',
+        'rm-1-title': 'Risk Engine & Live Data', 'rm-1-desc': 'VaR, CVaR, Sharpe, Sortino, beta and Component VaR are computed from real price history pulled from Binance. The correlation matrix is derived from actual return series.',
+        'rm-2-title': 'Simulation & Backtest', 'rm-2-desc': 'Monte Carlo (10,000 paths) runs on a separate thread; portfolio-aware macro shock and Black Swan tests plus strategy backtesting on real data were added.',
+        'rm-3-title': 'Journal, Profile & AI', 'rm-3-desc': 'Emotion-tagged trading journal, setup-based performance, a 20-question multi-dimensional investor profile, account sync and a Claude-powered AI Copilot are live.',
+        'rm-4-title': 'Exchange Account Connection', 'rm-4-desc': 'Automatic import of real balances and open positions via read-only API keys. Keys are encrypted server-side; trading and withdrawal permissions are never requested.',
+        'rm-5-title': 'BIST & Multi-Asset', 'rm-5-desc': 'Live prices and real risk metrics for Turkish equities, FX and commodities; TRY-based reporting and a Türkiye-specific tax/P&L summary.',
+        'rm-6-title': 'Automated Risk Alerts', 'rm-6-desc': 'Automatic notifications when portfolio risk crosses a threshold, correlation concentrates, or ahead of critical macro releases; plus weekly performance and behaviour reports.',
         'slippage-title': '💧 Slippage Analysis',
         'slippage-desc': 'Estimated price impact for simulated orders based on current market depth data.',
         'ps-positions': 'Positions',
