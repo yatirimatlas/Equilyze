@@ -3856,12 +3856,10 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill" style="width: 7%"></div>
                     </div>
-                    <div class="progress-categories">
-                        <span class="prog-cat active" id="cat-psikoloji">Psikoloji</span>
-                        <span class="prog-cat" id="cat-davranis">Davranış</span>
-                        <span class="prog-cat" id="cat-strateji">Strateji</span>
-                        <span class="prog-cat" id="cat-deneyim">Deneyim</span>
-                        <span class="prog-cat" id="cat-hedef">Hedef</span>
+                    <div class="progress-categories" id="progCats">
+                        <span class="prog-cat active" data-dim="tolerance">Risk Toleransı</span>
+                        <span class="prog-cat" data-dim="capacity">Finansal Kapasite</span>
+                        <span class="prog-cat" data-dim="maturity">Olgunluk</span>
                     </div>
                 </div>
                 
@@ -6499,6 +6497,195 @@ const CATEGORY_RANGES = (function () {
     });
     return r;
 })();
+/* ═══════════════════════════════════════════════════════════════
+   RİSK TESTİ — İNGİLİZCE ÇEVİRİ SÖZLÜĞÜ
+   Soru dizisine dokunmadan id ile eşleşir; dil EN ise bu metinler gösterilir.
+   ═══════════════════════════════════════════════════════════════ */
+const RISK_CATEGORY_EN = {
+    'Psikoloji': 'Psychology',
+    'Risk Toleransı': 'Risk Tolerance',
+    'Davranış': 'Behaviour',
+    'Hedef': 'Objective',
+    'Finansal Kapasite': 'Financial Capacity',
+    'Deneyim': 'Experience',
+    'Bilgi Düzeyi': 'Knowledge Level',
+    'Disiplin': 'Discipline',
+    'Davranışsal Bilinç': 'Behavioural Awareness',
+    'Yöntem': 'Method'
+};
+
+const RISK_Q_EN = {
+    1: { q: 'Your portfolio lost 20% of its value within a month. What is your first reaction?',
+         o: ['I can\'t sleep; I sell everything to save what\'s left',
+             'I get seriously anxious and move part of it to cash',
+             'I feel uncomfortable but stick to my plan',
+             'I plan additional purchases since prices got cheaper'] },
+    2: { q: 'How does a 10% intraday swing in your portfolio value affect you?',
+         o: ['I stay uneasy all day and can\'t focus on work',
+             'It bothers me; I check prices frequently',
+             'I take it normally — volatility is part of the game',
+             'It doesn\'t affect me at all; I see it as opportunity'] },
+    3: { q: 'What is the maximum share of your investment you could afford to lose permanently?',
+         o: ['Almost none (0-5%) — my principal must be protected',
+             'Limited (5-15%)',
+             'Moderate (15-30%)',
+             'High (30%+) — I accept it for high returns'] },
+    4: { q: 'Your portfolio declined 25% over a year. What would you ACTUALLY do?',
+         o: ['Exit completely and never return to this market',
+             'Reduce risk and move to safer assets',
+             'Hold my position and continue my plan',
+             'Average down with regular purchases'] },
+    5: { q: 'Which option would you prefer?',
+         o: ['Guaranteed 5% return',
+             '80% chance of 10%, 20% chance of 0%',
+             '60% chance of 25%, 40% chance of -10%',
+             '50% chance of 60%, 50% chance of -30%'] },
+    6: { q: 'One of your positions gained 50%. What do you do?',
+         o: ['Sell all immediately — lock in the profit',
+             'Sell half and recover my cost',
+             'Set a trailing stop and follow the trend',
+             'Add to the position if the trend is strong'] },
+    7: { q: 'What is your primary objective with this investment?',
+         o: ['Protect principal and beat inflation',
+             'Generate regular, predictable income',
+             'Grow wealth over the long term',
+             'Capture high returns in the short term'] },
+    8: { q: 'How many months of essential expenses can you cover in cash without touching your investments?',
+         o: ['Almost none (less than 1 month)',
+             '1-3 months',
+             '3-6 months',
+             'More than 6 months'] },
+    9: { q: 'How stable is your regular income?',
+         o: ['Irregular / I have no income',
+             'Variable (freelance, commission-based, seasonal)',
+             'Stable salary',
+             'Stable and well above my expenses'] },
+    10: { q: 'Approximately what percentage of your total savings does this investment represent?',
+          o: ['Almost all of it (80%+)',
+              'Most of it (50-80%)',
+              'A portion (20-50%)',
+              'A small part (under 20%)'] },
+    11: { q: 'How long can you keep this money invested without needing it?',
+          o: ['Less than 1 year',
+              '1-3 years',
+              '3-7 years',
+              'More than 7 years'] },
+    12: { q: 'If you lost this entire investment, how would your standard of living be affected?',
+          o: ['Devastating; I couldn\'t cover basic needs',
+              'Seriously affected; I would postpone my plans',
+              'It would upset me but life would go on',
+              'No meaningful impact'] },
+    13: { q: 'What is your debt and financial obligation situation?',
+          o: ['High debt (loans/credit cards) and dependents to support',
+              'Moderate debt',
+              'Only a manageable mortgage/car loan',
+              'No debt'] },
+    14: { q: 'How many years have you been actively investing/trading?',
+          o: ['Haven\'t started / less than 1 year',
+              '1-3 years',
+              '3-7 years',
+              'More than 7 years; I\'ve seen multiple market cycles'] },
+    15: { q: 'How well do you understand "maximum drawdown", "Sharpe ratio" and "VaR"?',
+          o: ['I haven\'t heard of any of them',
+              'I\'ve heard of them but can\'t fully explain them',
+              'I know what they mean and can interpret them',
+              'I calculate and use them regularly on my own portfolio'] },
+    16: { q: 'What do you do when your predetermined stop-loss level is triggered?',
+          o: ['I move the stop lower and wait for a recovery',
+              'I sometimes postpone it depending on the situation',
+              'I usually apply it',
+              'I apply it without exception; rules are rules'] },
+    17: { q: 'What is your trading journal habit?',
+          o: ['I don\'t keep one',
+              'I occasionally note important trades',
+              'I keep it regularly',
+              'I record every trade with its rationale and emotion, and review periodically'] },
+    18: { q: 'Someone you trust says "This asset will definitely triple." What do you do?',
+          o: ['Buy immediately so I don\'t miss out',
+              'Try it with a small amount',
+              'Research it and consider it if it fits my criteria',
+              'I don\'t trade unless my own system signals it'] },
+    19: { q: 'What usually happens after several consecutive losing trades?',
+          o: ['I increase position size to win the losses back quickly',
+              'I get frustrated and open trades outside my plan',
+              'I take a break and continue once I\'ve calmed down',
+              'I lower my risk limit and analyse my mistakes'] },
+    20: { q: 'How do you mainly make your investment decisions?',
+          o: ['Social media, news and advice from people around me',
+              'General market commentary and headline fundamentals',
+              'My own technical/fundamental analysis',
+              'A written, tested system with risk management'] }
+};
+
+/* Sonuç profilleri (İngilizce) */
+const RISK_PROFILE_EN = {
+    'Muhafazakar Yatırımcı': {
+        profile: 'Conservative Investor', subtitle: 'Risk Tolerance: Low',
+        description: 'You are a security-focused investor who prioritises protecting your capital.',
+        traits: ['Capital Preserver', 'Risk Averse', 'Long Term', 'Cautious'],
+        recommendations: [
+            'Build a portfolio weighted towards government bonds and treasury bills',
+            'Select high dividend-yield stocks from large-cap indices',
+            'Keep crypto assets below 5% of your portfolio',
+            'Hedge against inflation with commodities (gold)',
+            'Repeat the risk profile test annually to track changes'
+        ],
+        allocation: [
+            { label: 'Bonds/Bills', percent: 50 }, { label: 'Equities', percent: 30 },
+            { label: 'Gold', percent: 10 }, { label: 'Crypto', percent: 5 }, { label: 'Cash', percent: 5 }
+        ]
+    },
+    'Dengeli Yatırımcı': {
+        profile: 'Balanced Investor', subtitle: 'Risk Tolerance: Moderate',
+        description: 'You seek a healthy balance between risk and return, and diversify consciously.',
+        traits: ['Balanced', 'Diversified', 'Disciplined', 'Analytical'],
+        recommendations: [
+            'Spread across equities, bonds and commodities in a balanced way',
+            'Keep crypto exposure in the 10-15% range',
+            'Rebalance your portfolio quarterly',
+            'Set a stop-loss on every position',
+            'Test your portfolio with macro shock scenarios'
+        ],
+        allocation: [
+            { label: 'Equities', percent: 40 }, { label: 'Bonds/Bills', percent: 25 },
+            { label: 'Crypto', percent: 15 }, { label: 'Gold', percent: 10 }, { label: 'Cash', percent: 10 }
+        ]
+    },
+    'Agresif Yatırımcı': {
+        profile: 'Aggressive Investor', subtitle: 'Risk Tolerance: High',
+        description: 'You are a growth-oriented investor who can tolerate volatility in pursuit of high returns.',
+        traits: ['Growth Focused', 'Volatility Tolerant', 'Opportunist', 'Active'],
+        recommendations: [
+            'Balance high-growth assets with risk management rules',
+            'Use position sizing to cap risk per trade at 1-2%',
+            'Apply strict discipline when using leverage',
+            'Watch concentration risk — check your correlation matrix',
+            'Run Black Swan stress tests regularly'
+        ],
+        allocation: [
+            { label: 'Equities', percent: 40 }, { label: 'Crypto', percent: 30 },
+            { label: 'Commodities', percent: 15 }, { label: 'Bonds', percent: 10 }, { label: 'Cash', percent: 5 }
+        ]
+    }
+};
+
+/* Dil duyarlı yardımcılar */
+function isEnLang() { return (typeof currentLang !== 'undefined' && currentLang === 'en'); }
+function qText(q) { const t = isEnLang() && RISK_Q_EN[q.id]; return t ? t.q : q.question; }
+function qOptText(q, i) { const t = isEnLang() && RISK_Q_EN[q.id]; return (t && t.o[i]) ? t.o[i] : q.options[i].text; }
+function qCategory(cat) { return isEnLang() ? (RISK_CATEGORY_EN[cat] || cat) : cat; }
+/* Profil sonucunu dile göre çevir (renk/ikon/oranlar korunur) */
+function localizeProfile(d) {
+    if (!isEnLang()) return d;
+    const en = RISK_PROFILE_EN[d.profile];
+    if (!en) return d;
+    return {
+        ...d,
+        profile: en.profile, subtitle: en.subtitle, description: en.description,
+        traits: en.traits, recommendations: en.recommendations,
+        allocation: d.allocation.map((a, i) => ({ ...a, label: (en.allocation[i] && en.allocation[i].label) || a.label }))
+    };
+}
 
 /* ── Ağırlıklı, çok boyutlu skorlama ──
    Her boyut kendi içinde 0-100'e normalize edilir (tam aralık kullanılır).
@@ -6691,15 +6878,15 @@ function renderQuestion() {
 
     container.innerHTML = `
         <div class="question-card">
-            <div class="question-category">${q.category} — Soru ${currentQuestionIndex + 1}</div>
-            <h3>${q.question}</h3>
+            <div class="question-category">${qCategory(q.category)} — ${isEnLang() ? 'Question' : 'Soru'} ${currentQuestionIndex + 1}</div>
+            <h3>${qText(q)}</h3>
             <div class="answer-options">
                 ${q.options.map((opt, i) => `
                     <label class="answer-option ${answers[currentQuestionIndex] === i ? 'selected' : ''}"
                            onclick="selectAnswer(${i})">
                         <input type="radio" name="answer" value="${i}" ${answers[currentQuestionIndex] === i ? 'checked' : ''}>
                         <span class="option-letter">${'ABCD'[i]}</span>
-                        <span>${opt.text}</span>
+                        <span>${qOptText(q, i)}</span>
                     </label>
                 `).join('')}
             </div>
@@ -6712,14 +6899,18 @@ function renderQuestion() {
     renderDots();
 }
 
-function updateCategoryHighlight(cat) {
-    const catMap = { 'Psikoloji': 'cat-psikoloji', 'Davranış': 'cat-davranis', 'Strateji': 'cat-strateji', 'Deneyim': 'cat-deneyim', 'Hedef': 'cat-hedef' };
-    Object.values(catMap).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('active');
+/* İlerleme çipleri artık 3 BOYUT üzerinden (tolerans/kapasite/olgunluk) ve dile duyarlı */
+function updateCategoryHighlight() {
+    const q = riskQuestions[currentQuestionIndex];
+    if (!q) return;
+    const labels = isEnLang()
+        ? { tolerance: 'Risk Tolerance', capacity: 'Financial Capacity', maturity: 'Maturity' }
+        : { tolerance: 'Risk Toleransı', capacity: 'Finansal Kapasite', maturity: 'Olgunluk' };
+    document.querySelectorAll('#progCats .prog-cat').forEach(el => {
+        const d = el.getAttribute('data-dim');
+        el.textContent = labels[d] || d;
+        el.classList.toggle('active', d === q.dim);
     });
-    const active = document.getElementById(catMap[cat]);
-    if (active) active.classList.add('active');
 }
 
 function renderDots() {
@@ -6866,7 +7057,9 @@ function showResults() {
 let _lastRiskScores = null;
 
 function _showResultsInternal(score) {
-    const rp = getRiskProfile(score);
+    const rpRaw = getRiskProfile(score);
+    const rp = localizeProfile(rpRaw);           // ekranda gösterilecek (dile göre)
+    const storedProfile = rpRaw.profile;         // localStorage'a her zaman TR anahtar
     const { profile, icon, subtitle, description, traits, recommendations, allocation } = rp;
 
     // Hide test, show result
@@ -6916,7 +7109,7 @@ function _showResultsInternal(score) {
     // Save to localStorage
     const _sc = _lastRiskScores || {};
     localStorage.setItem('equilyze-risk-profile', JSON.stringify({
-        score, profile, date: new Date().toISOString(),
+        score, profile: storedProfile, date: new Date().toISOString(),
         tolerance: _sc.tolerance, capacity: _sc.capacity, maturity: _sc.maturity,
         cappedByCapacity: _sc.cappedByCapacity, base: _sc.base
     }));
@@ -9764,10 +9957,12 @@ function renderInvestorSummary() {
     if (!box) return;
     const rp = getStoredRiskProfile();
     if (!rp) {
-        box.innerHTML = '<div style="padding:14px 0;color:var(--text-secondary);font-size:0.88rem">Henüz risk testi yapmadınız. <strong style="color:var(--text-primary)">15 soruluk test</strong> ile nasıl bir yatırımcı olduğunuzu, hangi varlık dağılımının size uygun olduğunu ve tipik davranış kalıplarınızı öğrenin.<br><br><button class="btn btn-sm btn-primary" onclick="closeUserPage(false);document.getElementById(\'risk-test\')?.scrollIntoView({behavior:\'smooth\'})">🎯 Risk Testini Başlat</button></div>';
+        box.innerHTML = isEnLang()
+            ? '<div style="padding:14px 0;color:var(--text-secondary);font-size:0.88rem">You haven\'t taken the risk test yet. The <strong style="color:var(--text-primary)">20-question test</strong> reveals what kind of investor you are, which asset allocation suits you and your typical behavioural patterns.<br><br><button class="btn btn-sm btn-primary" onclick="closeUserPage(false);document.getElementById(\'risk-test\')?.scrollIntoView({behavior:\'smooth\'})">🎯 Start Risk Test</button></div>'
+            : '<div style="padding:14px 0;color:var(--text-secondary);font-size:0.88rem">Henüz risk testi yapmadınız. <strong style="color:var(--text-primary)">20 soruluk test</strong> ile nasıl bir yatırımcı olduğunuzu, hangi varlık dağılımının size uygun olduğunu ve tipik davranış kalıplarınızı öğrenin.<br><br><button class="btn btn-sm btn-primary" onclick="closeUserPage(false);document.getElementById(\'risk-test\')?.scrollIntoView({behavior:\'smooth\'})">🎯 Risk Testini Başlat</button></div>';
         return;
     }
-    const d = (typeof getRiskProfile === 'function') ? getRiskProfile(rp.score) : null;
+    const d = (typeof getRiskProfile === 'function') ? localizeProfile(getRiskProfile(rp.score)) : null;
     if (!d) { box.innerHTML = '<div style="color:var(--text-secondary)">' + rp.profile + ' — ' + rp.score + '/100</div>'; return; }
     const color = rp.score <= 35 ? 'var(--color-success)' : rp.score <= 72 ? 'var(--color-secondary)' : 'var(--color-warning)';
     // Çok boyutlu skor kartları (tolerans / kapasite / olgunluk)
@@ -9783,12 +9978,18 @@ function renderInvestorSummary() {
                 <div style="font-size:0.68rem;color:var(--text-muted);margin-top:3px">${hint}</div></div>`;
         };
         const mat = rp.maturity;
-        const matHint = mat >= 75 ? 'İleri seviye: sistematik ve disiplinli' : mat >= 50 ? 'Gelişmiş: temel disiplin oturmuş' : mat >= 25 ? 'Gelişmekte: eğitim ve journal disiplini fayda sağlar' : 'Başlangıç: küçük pozisyonlarla öğrenme dönemi';
+        const EN = isEnLang();
+        const matHint = EN
+            ? (mat >= 75 ? 'Advanced: systematic and disciplined' : mat >= 50 ? 'Developed: core discipline in place' : mat >= 25 ? 'Developing: education and journal discipline will help' : 'Beginner: learning phase — keep positions small')
+            : (mat >= 75 ? 'İleri seviye: sistematik ve disiplinli' : mat >= 50 ? 'Gelişmiş: temel disiplin oturmuş' : mat >= 25 ? 'Gelişmekte: eğitim ve journal disiplini fayda sağlar' : 'Başlangıç: küçük pozisyonlarla öğrenme dönemi');
+        const L = EN
+            ? { tol: 'Risk Tolerance (psychological)', tolH: 'How much risk you want to take', cap: 'Risk Capacity (financial)', capH: 'How much risk you can carry', mat: 'Maturity (experience + knowledge + discipline)', capped: 'Capacity limit applied:', cappedTxt: `Your psychological risk appetite (${rp.tolerance}) exceeds your financial capacity (${rp.capacity}). Your profile was capped by capacity — a more aggressive portfolio is not advised until your emergency fund and income stability improve.` }
+            : { tol: 'Risk Toleransı (psikolojik)', tolH: 'Ne kadar risk almak istiyorsun', cap: 'Risk Kapasitesi (finansal)', capH: 'Ne kadar riski taşıyabilirsin', mat: 'Olgunluk (deneyim + bilgi + disiplin)', capped: 'Kapasite sınırı uygulandı:', cappedTxt: `Psikolojik risk iştahın (${rp.tolerance}) finansal taşıma gücünden (${rp.capacity}) yüksek. Profilin kapasitene göre sınırlandırıldı — acil durum fonu ve gelir istikrarı güçlenmeden daha agresif portföy önerilmez.` };
         dimsHtml = `<div class="inv-cols" style="margin-bottom:16px">
-            <div>${bar('Risk Toleransı (psikolojik)', rp.tolerance, 'Ne kadar risk almak istiyorsun')}
-                 ${bar('Risk Kapasitesi (finansal)', rp.capacity, 'Ne kadar riski taşıyabilirsin')}</div>
-            <div>${bar('Olgunluk (deneyim + bilgi + disiplin)', mat, matHint)}
-                 ${rp.cappedByCapacity ? `<div style="padding:10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:8px;font-size:0.76rem;color:var(--text-secondary);line-height:1.5">⚠️ <strong style="color:var(--text-primary)">Kapasite sınırı uygulandı:</strong> Psikolojik risk iştahın (${rp.tolerance}) finansal taşıma gücünden (${rp.capacity}) yüksek. Profilin kapasitene göre sınırlandırıldı — acil durum fonu ve gelir istikrarı güçlenmeden daha agresif portföy önerilmez.</div>` : ''}</div>
+            <div>${bar(L.tol, rp.tolerance, L.tolH)}
+                 ${bar(L.cap, rp.capacity, L.capH)}</div>
+            <div>${bar(L.mat, mat, matHint)}
+                 ${rp.cappedByCapacity ? `<div style="padding:10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:8px;font-size:0.76rem;color:var(--text-secondary);line-height:1.5">⚠️ <strong style="color:var(--text-primary)">${L.capped}</strong> ${L.cappedTxt}</div>` : ''}</div>
         </div>`;
     }
     // Portföy uyum kontrolü: mevcut beta profile uygun mu?
@@ -9797,10 +9998,17 @@ function renderInvestorSummary() {
         if (window.rmEngine) {
             const m = window.rmEngine.calculateAll();
             const beta = m.beta;
-            const isConservative = rp.score <= 33, isAggressive = rp.score > 66;
-            if (isConservative && beta > 0.8) fitNote = `⚠️ <strong>Uyumsuzluk:</strong> Profiliniz muhafazakâr ama portföy betanız <strong>${beta.toFixed(2)}</strong> — piyasadan daha hareketli. Nakit/tahvil oranını artırmayı değerlendirin.`;
-            else if (isAggressive && beta < 0.6) fitNote = `ℹ️ <strong>Not:</strong> Profiliniz agresif ama portföy betanız <strong>${beta.toFixed(2)}</strong> — oldukça defansif. Getiri potansiyelini artıracak alan olabilir.`;
-            else fitNote = `✅ <strong>Uyumlu:</strong> Portföy betanız <strong>${beta.toFixed(2)}</strong>, risk profilinizle tutarlı görünüyor.`;
+            const isConservative = rp.score <= 35, isAggressive = rp.score > 72;
+            const EN2 = isEnLang();
+            if (isConservative && beta > 0.8) fitNote = EN2
+                ? `⚠️ <strong>Mismatch:</strong> Your profile is conservative but your portfolio beta is <strong>${beta.toFixed(2)}</strong> — more volatile than the market. Consider increasing cash/bond allocation.`
+                : `⚠️ <strong>Uyumsuzluk:</strong> Profiliniz muhafazakâr ama portföy betanız <strong>${beta.toFixed(2)}</strong> — piyasadan daha hareketli. Nakit/tahvil oranını artırmayı değerlendirin.`;
+            else if (isAggressive && beta < 0.6) fitNote = EN2
+                ? `ℹ️ <strong>Note:</strong> Your profile is aggressive but your portfolio beta is <strong>${beta.toFixed(2)}</strong> — quite defensive. There may be room to increase return potential.`
+                : `ℹ️ <strong>Not:</strong> Profiliniz agresif ama portföy betanız <strong>${beta.toFixed(2)}</strong> — oldukça defansif. Getiri potansiyelini artıracak alan olabilir.`;
+            else fitNote = EN2
+                ? `✅ <strong>Aligned:</strong> Your portfolio beta <strong>${beta.toFixed(2)}</strong> looks consistent with your risk profile.`
+                : `✅ <strong>Uyumlu:</strong> Portföy betanız <strong>${beta.toFixed(2)}</strong>, risk profilinizle tutarlı görünüyor.`;
         }
     } catch {}
     box.innerHTML =
@@ -9808,7 +10016,7 @@ function renderInvestorSummary() {
             <div style="font-size:2.6rem;line-height:1">${d.icon}</div>
             <div style="flex:1;min-width:180px">
                 <div style="font-size:1.15rem;font-weight:800;color:${color}">${d.profile}</div>
-                <div style="font-size:0.8rem;color:var(--text-muted)">${d.subtitle} · Skor <strong style="color:var(--text-primary)">${rp.score}/100</strong> · ${new Date(rp.date).toLocaleDateString('tr-TR')}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted)">${d.subtitle} · ${isEnLang() ? 'Score' : 'Skor'} <strong style="color:var(--text-primary)">${rp.score}/100</strong> · ${new Date(rp.date).toLocaleDateString(isEnLang() ? 'en-GB' : 'tr-TR')}</div>
             </div>
         </div>
         <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.65;margin-bottom:14px">${d.description}</p>
@@ -9816,11 +10024,11 @@ function renderInvestorSummary() {
         ${dimsHtml}
         <div class="inv-cols">
             <div>
-                <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-primary)">📋 Sana Uygun Strateji</h4>
+                <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-primary)">📋 ${isEnLang() ? 'Strategy That Fits You' : 'Sana Uygun Strateji'}</h4>
                 <ul style="margin:0;padding-left:18px;font-size:0.83rem;color:var(--text-secondary);line-height:1.7">${d.recommendations.map(r => `<li>${r}</li>`).join('')}</ul>
             </div>
             <div>
-                <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-primary)">🥧 Önerilen Varlık Dağılımı</h4>
+                <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-primary)">🥧 ${isEnLang() ? 'Suggested Asset Allocation' : 'Önerilen Varlık Dağılımı'}</h4>
                 ${d.allocation.map(a => `<div style="margin-bottom:7px">
                     <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:3px"><span style="color:var(--text-secondary)">${a.label}</span><span style="font-family:var(--font-mono);color:${a.color}">%${a.percent}</span></div>
                     <div style="height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><div style="height:100%;width:${a.percent}%;background:${a.color};border-radius:4px"></div></div>
@@ -9828,7 +10036,7 @@ function renderInvestorSummary() {
             </div>
         </div>
         ${fitNote ? `<div style="margin-top:14px;padding:12px;background:var(--bg-tertiary);border-radius:10px;font-size:0.82rem;color:var(--text-secondary);line-height:1.6">${fitNote}</div>` : ''}
-        <div style="margin-top:10px;font-size:0.72rem;color:var(--text-muted)">Bu analiz risk testi yanıtlarınıza dayanır ve yatırım tavsiyesi değildir.</div>`;
+        <div style="margin-top:10px;font-size:0.72rem;color:var(--text-muted)">${isEnLang() ? 'This analysis is based on your risk test answers and does not constitute investment advice.' : 'Bu analiz risk testi yanıtlarınıza dayanır ve yatırım tavsiyesi değildir.'}</div>`;
 }
 
 /* ── İndirmeler ── */
@@ -9871,7 +10079,7 @@ function downloadMetricsCSV() {
 function downloadRiskProfileReport() {
     const rp = getStoredRiskProfile();
     if (!rp) { showToast('Önce risk testini tamamlayın.', 'info'); return; }
-    const d = getRiskProfile(rp.score);
+    const d = localizeProfile(getRiskProfile(rp.score));
     const now = new Date().toLocaleString('tr-TR');
     let html = `<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><title>Equilyze — Yatırımcı Profili Raporu</title>
 <style>body{font-family:system-ui,Segoe UI,Arial;max-width:800px;margin:32px auto;padding:0 20px;color:#111;line-height:1.65}
@@ -11544,6 +11752,19 @@ function setLanguage(lang) {
             }
         });
     }
+    // Risk testi açıksa soruyu/çipleri ve sonuç ekranını yeni dilde tazele
+    try {
+        if (typeof riskQuestions !== 'undefined' && document.getElementById('questionContainer') && typeof renderQuestion === 'function') {
+            const resCont = document.getElementById('riskResultContainer');
+            if (resCont && getComputedStyle(resCont).display !== 'none') {
+                const saved = JSON.parse(localStorage.getItem('equilyze-risk-profile') || 'null');
+                if (saved && typeof _showResultsInternal === 'function') _showResultsInternal(saved.score);
+            } else {
+                renderQuestion();
+            }
+        }
+        if (typeof renderInvestorSummary === 'function') renderInvestorSummary();
+    } catch {}
 }
 
 // Init language on load
