@@ -3812,11 +3812,11 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             <div class="hero-content">
                 <div class="hero-badge">
                     <span class="badge-dot"></span>
-                    Türkiye'nin İlk Kapsamlı Trading Analiz Platformu
+                    <span data-i18n="hero-badge">Gerçek Piyasa Verisiyle Portföy Risk Analizi</span>
                 </div>
-                <h1 class="hero-title">
-                    Risk Profilinizi <span class="gradient-text">Öğrenin</span>,<br>
-                    Portföyünüzü <span class="gradient-text">Analiz Edin</span>
+                <h1 class="hero-title" data-i18n="hero-title">
+                    Riskinizi <span class="gradient-text">Ölçün</span>,<br>
+                    Kararlarınızı <span class="gradient-text">Verilerle Alın</span>
                 </h1>
                 <p class="hero-subtitle" data-i18n="hero-subtitle">
                     20 soruluk Yatırımcı Profili Testi, Monte Carlo Simülasyonu, Macro Shock Engine, Trading Journal ve canlı piyasa verisi ile
@@ -3964,9 +3964,9 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     <section class="section section-dashboard" id="dashboard">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge badge-pro">PRO / ELITE</span>
-                <h2 class="section-title">All-in-One <span class="gradient-text">Dashboard</span></h2>
-                <p class="section-desc">Tüm borsa hesaplarınızı tek yerden yönetin, canlı pozisyonlarınızı ve risk metriklerinizi izleyin.</p>
+                <span class="section-badge badge-pro" data-i18n="dash-badge">KONTROL MERKEZİ</span>
+                <h2 class="section-title" data-i18n="dash-title">All-in-One <span class="gradient-text">Dashboard</span></h2>
+                <p class="section-desc" data-i18n="dash-desc">Portföyünüzün risk metriklerini, pozisyonlarınızı ve tüm analiz araçlarınızı tek ekranda izleyin.</p>
                 <button class="btn btn-sm btn-ghost" onclick="closeDashboardPage()" id="dashboardBackBtn" style="display:none">← Ana Sayfa</button>
             </div>
 
@@ -3979,10 +3979,10 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="dt-stat"><span class="dt-stat-label">Value at Risk (95%)</span><span class="dt-stat-value" id="dtVar" style="color:var(--color-danger)">—</span></div>
                 </div>
                 <ul class="dashboard-teaser-features">
-                    <li>📊 Canlı pozisyonlar, P&amp;L ısı haritası, risk metrikleri</li>
-                    <li>🎲 Monte Carlo simülasyonu + Component VaR</li>
-                    <li>🔗 Korelasyon matrisi, likidite &amp; kayma analizi</li>
-                    <li>🧠 Hayatta kalma skoru + AI içgörüler</li>
+                    <li data-i18n="dt-f1">📊 Canlı pozisyonlar, P&amp;L ısı haritası, risk metrikleri</li>
+                    <li data-i18n="dt-f2">🎲 Monte Carlo simülasyonu + Component VaR</li>
+                    <li data-i18n="dt-f3">🔗 Korelasyon matrisi, likidite &amp; kayma analizi</li>
+                    <li data-i18n="dt-f4">🧠 Hayatta kalma skoru + AI içgörüler</li>
                 </ul>
                 <button class="btn btn-primary btn-lg" onclick="openToolInDashboard('')" data-i18n="dash-teaser-cta">Dashboard'u Aç →</button>
                 <p class="dashboard-teaser-hint" data-i18n="dash-teaser-hint">Tüm analiz araçları tek ekranda.</p>
@@ -5797,17 +5797,17 @@ body.overlay-open .mobile-bottom-nav { display: none; }
         <div class="container" style="max-width:760px">
             <div class="section-header">
                 <button class="btn btn-sm btn-ghost" onclick="closeOverlayPage()" style="margin-bottom:14px">← Ana Sayfa</button>
-                <span class="section-badge">HAKKIMIZDA</span>
-                <h2 class="section-title">Equilyze <span class="gradient-text">Hakkında</span></h2>
+                <span class="section-badge" data-i18n="about-badge">HAKKIMIZDA</span>
+                <h2 class="section-title" data-i18n="about-title">Equilyze <span class="gradient-text">Hakkında</span></h2>
             </div>
             <div class="about-body" style="font-size:0.95rem;color:var(--text-secondary);line-height:1.8">
-                <p><strong style="color:var(--text-primary)">Equilyze</strong>, Türkiye'deki yatırımcı ve trader'lar için geliştirilen kapsamlı bir portföy analiz ve risk yönetimi platformudur. Amacımız, kurumsal seviye analiz araçlarını herkes için erişilebilir kılmak.</p>
-                <p style="margin-top:16px">Platform; canlı kripto veri (Binance), gerçek VaR/CVaR/Sharpe hesaplamaları, Monte Carlo simülasyonu, portföye duyarlı makro şok testleri, strateji backtest, trading journal ve gerçek yapay zeka (Claude) destekli analiz sunar.</p>
-                <p style="margin-top:16px">Metriklerin çoğu <strong style="color:var(--text-primary)">gerçek piyasa verisiyle</strong> hesaplanır; sentetik/örnek veriler açıkça etiketlenir. Verileriniz cihazlar arası güvenli şekilde senkronlanır (Supabase, satır-bazlı güvenlik).</p>
-                <p style="margin-top:16px;font-size:0.85rem;color:var(--text-muted)">⚠️ Equilyze yatırım tavsiyesi vermez. Tüm araçlar eğitim ve analiz amaçlıdır.</p>
+                <p data-i18n="about-p1"><strong style="color:var(--text-primary)">Equilyze</strong>, bireysel yatırımcı ve trader'lar için geliştirilen bir portföy risk analizi ve işlem takip platformudur. Amacımız, kurumsal seviye analiz araçlarını herkes için anlaşılır ve erişilebilir kılmak.</p>
+                <p style="margin-top:16px" data-i18n="about-p2">Platform; Binance'ten çekilen canlı fiyat verisi, gerçek VaR/CVaR/Sharpe hesaplamaları, Monte Carlo simülasyonu, portföye duyarlı makro şok testleri, strateji backtest'i, duygu takipli trading journal ve Claude destekli yapay zekâ analizi sunar.</p>
+                <p style="margin-top:16px" data-i18n="about-p3">Metrikler <strong style="color:var(--text-primary)">gerçek piyasa verisiyle</strong> hesaplanır; örnek/sentetik veriler arayüzde açıkça etiketlenir. Verileriniz cihazlar arasında güvenli şekilde senkronlanır (Supabase, satır-bazlı güvenlik).</p>
+                <p style="margin-top:16px;font-size:0.85rem;color:var(--text-muted)" data-i18n="about-disclaimer">⚠️ Equilyze yatırım tavsiyesi vermez, portföy yönetimi yapmaz ve müşteri varlığı tutmaz. Tüm araçlar eğitim ve analiz amaçlıdır.</p>
                 <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">
-                    <button class="btn btn-primary" onclick="closeOverlayPage();document.getElementById('waitlist')?.scrollIntoView({behavior:'smooth'})">Erken Erişim Listesi</button>
-                    <button class="btn btn-outline" onclick="openOverlayPage('kvkkPage')">KVKK & Gizlilik</button>
+                    <button class="btn btn-primary" onclick="closeOverlayPage();openAuthModal();switchAuthTab('register')" data-i18n="about-cta1">Ücretsiz Üye Ol</button>
+                    <button class="btn btn-outline" onclick="openOverlayPage('kvkkPage')" data-i18n="about-cta2">KVKK & Gizlilik</button>
                 </div>
             </div>
         </div>
@@ -5818,20 +5818,24 @@ body.overlay-open .mobile-bottom-nav { display: none; }
         <div class="container" style="max-width:760px">
             <div class="section-header">
                 <button class="btn btn-sm btn-ghost" onclick="closeOverlayPage()" style="margin-bottom:14px">← Ana Sayfa</button>
-                <span class="section-badge">YASAL</span>
-                <h2 class="section-title">KVKK & <span class="gradient-text">Gizlilik</span></h2>
-                <p class="section-desc">Kişisel verilerin korunması ve gizlilik politikamız.</p>
+                <span class="section-badge" data-i18n="kvkk-badge">YASAL</span>
+                <h2 class="section-title" data-i18n="kvkk-title">KVKK & <span class="gradient-text">Gizlilik</span></h2>
+                <p class="section-desc" data-i18n="kvkk-desc">Kişisel verilerin korunması ve gizlilik politikamız.</p>
             </div>
             <div class="about-body" style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
-                <h3 style="color:var(--text-primary);font-size:1rem;margin:8px 0">Toplanan Veriler</h3>
-                <p>Kayıt olduğunuzda ad ve e-posta adresiniz alınır. Portföy, işlem günlüğü, watchlist ve risk profili verileriniz hesabınızla ilişkilendirilerek saklanır.</p>
-                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px">Verilerin Saklanması</h3>
-                <p>Verileriniz Supabase altyapısında, <strong style="color:var(--text-primary)">satır-bazlı güvenlik (RLS)</strong> ile korunur — her kullanıcı yalnızca kendi verisine erişebilir. Şifreler tarafımızca düz metin olarak tutulmaz.</p>
-                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px">Üçüncü Taraflar</h3>
-                <p>Canlı fiyat için Binance/CoinGecko public API'leri kullanılır. AI analizi için (kendi anahtarınızı bağlarsanız) doğrudan Anthropic API'sine bağlanılır — API anahtarınız yalnızca tarayıcınızda saklanır.</p>
-                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px">Haklarınız</h3>
-                <p>Verilerinizi profil sayfasından JSON olarak dışa aktarabilir, hesabınızı ve verilerinizi silmeyi talep edebilirsiniz.</p>
-                <p style="margin-top:16px;font-size:0.8rem;color:var(--text-muted)">Bu metin bilgilendirme amaçlıdır ve nihai hukuki inceleme sürecindedir. Sorularınız için iletişime geçebilirsiniz.</p>
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:8px 0" data-i18n="kvkk-h1">Toplanan Veriler</h3>
+                <p data-i18n="kvkk-p1">Kayıt olurken <strong style="color:var(--text-primary)">ad ve e-posta adresiniz</strong> alınır. Uygulamayı kullandıkça portföyünüz, işlem günlüğünüz, takip listeniz, alarmlarınız ve risk profili sonucunuz hesabınızla ilişkilendirilerek saklanır. Kimlik numarası, adres veya ödeme bilgisi toplanmaz.</p>
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px" data-i18n="kvkk-h2">Verilerin Saklanması ve Güvenliği</h3>
+                <p data-i18n="kvkk-p2">Veriler Supabase altyapısında (AB bölgesi) tutulur ve <strong style="color:var(--text-primary)">satır-bazlı güvenlik (RLS)</strong> ile korunur — teknik olarak her kullanıcı yalnızca kendi kaydına erişebilir. Şifreniz tarafımızca düz metin olarak saklanmaz. Giriş yapmadan kullanırsanız veriler yalnızca kendi tarayıcınızda kalır.</p>
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px" data-i18n="kvkk-h3">Üçüncü Taraflar</h3>
+                <p data-i18n="kvkk-p3">Canlı fiyat ve piyasa verisi için Binance ve CoinGecko'nun herkese açık API'leri kullanılır; bu isteklerde kişisel veriniz paylaşılmaz. AI analizi yalnızca kendi API anahtarınızı bağlarsanız çalışır ve doğrudan Anthropic'e gider — anahtarınız yalnızca sizin tarayıcınızda saklanır, sunucularımıza iletilmez.</p>
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px" data-i18n="kvkk-h4">Çerezler</h3>
+                <p data-i18n="kvkk-p4">Reklam veya üçüncü taraf takip çerezi kullanılmaz. Tema tercihi, dil seçimi ve oturum bilgisi için tarayıcınızın yerel depolaması (localStorage) kullanılır.</p>
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px" data-i18n="kvkk-h5">Haklarınız (KVKK m.11)</h3>
+                <p data-i18n="kvkk-p5">Verilerinize erişme, düzeltme, silme ve taşıma hakkınız vardır. Tüm verilerinizi <strong style="color:var(--text-primary)">Profil → İndirme Merkezi</strong>'nden JSON olarak indirebilirsiniz. Hesabınızın ve verilerinizin tamamen silinmesini talep etmek için bize yazabilirsiniz.</p>
+                <h3 style="color:var(--text-primary);font-size:1rem;margin:16px 0 8px" data-i18n="kvkk-h6">İletişim</h3>
+                <p data-i18n="kvkk-p6">Gizlilik ve veri talepleri için: <strong style="color:var(--text-primary)">destek@equilyze.com</strong></p>
+                <p style="margin-top:16px;font-size:0.8rem;color:var(--text-muted)" data-i18n="kvkk-note">Bu metin bilgilendirme amaçlıdır ve hukuki inceleme sürecindedir. Platform yatırım danışmanlığı hizmeti vermez; SPK lisanslı bir kuruluş değildir.</p>
             </div>
         </div>
     </section>
@@ -10319,6 +10323,8 @@ function authLogout() {
     clearSession();
     document.querySelector('.nav-login').textContent = 'Giriş Yap';
     document.querySelector('.nav-login').style.display = '';
+    const _cta = document.querySelector('.btn-nav-cta');
+    if (_cta) _cta.style.display = '';   // çıkışta CTA geri gelsin
     document.querySelector('.auth-user-card')?.remove();
     sbSignOut();
     // Çıkışta ana sayfaya dön (dashboard'a değil): tüm sayfa modlarını kapat
@@ -10664,6 +10670,9 @@ function applyAuthState(email) {
     const users = getUsers();
     const user = users[email];
     if (!user) return;
+    // Giriş yapıldı: "Ücretsiz Başla" CTA'sı artık anlamsız — gizle
+    const navCta = document.querySelector('.btn-nav-cta');
+    if (navCta) navCta.style.display = 'none';
     // Replace nav login with user card
     const navLogin = document.querySelector('.nav-login');
     if (!navLogin) return;
@@ -10719,7 +10728,9 @@ function openUserPage() {
     document.getElementById('userAvatarLarge').textContent = (user.name || '?')[0].toUpperCase();
     document.getElementById('userDisplayName').textContent = user.name || 'Kullanıcı';
     document.getElementById('userEmail').textContent = user.email;
-    document.getElementById('userMemberSince').textContent = 'Kayıt: ' + (user.registeredAt ? new Date(user.registeredAt).toLocaleDateString('tr-TR') : '--');
+    const _memberLbl = (typeof isEnLang === 'function' && isEnLang()) ? 'Member since: ' : 'Kayıt: ';
+    const _memberLoc = (typeof isEnLang === 'function' && isEnLang()) ? 'en-GB' : 'tr-TR';
+    document.getElementById('userMemberSince').textContent = _memberLbl + (user.registeredAt ? new Date(user.registeredAt).toLocaleDateString(_memberLoc) : '--');
     document.getElementById('upRegDate').textContent = user.registeredAt ? new Date(user.registeredAt).toLocaleDateString('tr-TR') : '--';
     // Populate live metrics
     if (metricsEngine) {
@@ -11686,6 +11697,37 @@ const translations = {
         'hero-subtitle': 'Make data-driven investment decisions with a 20-question Investor Profile Test, Monte Carlo Simulation, Macro Shock Engine, Trading Journal and live market data.',
         'risk-test-desc': 'Measure your risk tolerance, financial capacity and investor maturity objectively with a comprehensive 20-question test.',
         'hero-cta1': 'Free Risk Test', 'hero-cta2': 'View Dashboard',
+        'hero-badge': 'Portfolio Risk Analysis with Real Market Data',
+        'hero-title': 'Measure Your <span class="gradient-text">Risk</span>,<br>Decide with <span class="gradient-text">Data</span>',
+        'dash-badge': 'CONTROL CENTER', 'dash-title': 'All-in-One <span class="gradient-text">Dashboard</span>',
+        'dash-desc': 'Track your portfolio risk metrics, positions and every analysis tool on a single screen.',
+        'dt-f1': '📊 Live positions, P&amp;L heatmap, risk metrics',
+        'dt-f2': '🎲 Monte Carlo simulation + Component VaR',
+        'dt-f3': '🔗 Correlation matrix, liquidity &amp; slippage analysis',
+        'dt-f4': '🧠 Survival score + AI insights',
+        /* About */
+        'about-badge': 'ABOUT', 'about-title': 'About <span class="gradient-text">Equilyze</span>',
+        'about-p1': '<strong style="color:var(--text-primary)">Equilyze</strong> is a portfolio risk analysis and trade tracking platform built for individual investors and traders. Our goal is to make institutional-grade analysis tools understandable and accessible to everyone.',
+        'about-p2': 'The platform offers live price data from Binance, real VaR/CVaR/Sharpe calculations, Monte Carlo simulation, portfolio-aware macro shock tests, strategy backtesting, an emotion-tagged trading journal and Claude-powered AI analysis.',
+        'about-p3': 'Metrics are computed from <strong style="color:var(--text-primary)">real market data</strong>; sample/synthetic values are clearly labelled in the interface. Your data syncs securely across devices (Supabase, row-level security).',
+        'about-disclaimer': '⚠️ Equilyze does not provide investment advice, does not manage portfolios and does not hold client assets. All tools are for education and analysis purposes.',
+        'about-cta1': 'Sign Up Free', 'about-cta2': 'Privacy & Data Protection',
+        /* KVKK / Privacy */
+        'kvkk-badge': 'LEGAL', 'kvkk-title': 'Privacy & <span class="gradient-text">Data Protection</span>',
+        'kvkk-desc': 'How we handle and protect your personal data.',
+        'kvkk-h1': 'Data We Collect',
+        'kvkk-p1': 'When you sign up we collect your <strong style="color:var(--text-primary)">name and email address</strong>. As you use the app, your portfolio, trading journal, watchlist, alerts and risk profile result are stored linked to your account. We do not collect identity numbers, addresses or payment details.',
+        'kvkk-h2': 'Storage and Security',
+        'kvkk-p2': 'Data is stored on Supabase infrastructure (EU region) and protected by <strong style="color:var(--text-primary)">row-level security (RLS)</strong> — technically, each user can only access their own record. Your password is never stored by us in plain text. If you use the app without signing in, data stays only in your own browser.',
+        'kvkk-h3': 'Third Parties',
+        'kvkk-p3': 'Live price and market data come from the public APIs of Binance and CoinGecko; no personal data is shared in those requests. AI analysis only works if you connect your own API key and goes directly to Anthropic — your key is stored only in your browser and is never sent to our servers.',
+        'kvkk-h4': 'Cookies',
+        'kvkk-p4': 'We use no advertising or third-party tracking cookies. Your browser\'s local storage is used for theme preference, language selection and session information.',
+        'kvkk-h5': 'Your Rights',
+        'kvkk-p5': 'You have the right to access, correct, delete and port your data. You can download all of your data as JSON from <strong style="color:var(--text-primary)">Profile → Download Center</strong>. To request full deletion of your account and data, please contact us.',
+        'kvkk-h6': 'Contact',
+        'kvkk-p6': 'For privacy and data requests: <strong style="color:var(--text-primary)">destek@equilyze.com</strong>',
+        'kvkk-note': 'This text is for information purposes and is under legal review. The platform does not provide investment advisory services and is not a licensed institution.',
         'risk-test-title': 'Investor <span class="gradient-text">Profile</span> Test',
         'macro-desc': 'Simulate the impact of macroeconomic events on your portfolio and be prepared before the storm.',
         'badge-free-module': 'FREE MODULE',
@@ -11804,6 +11846,226 @@ const translations = {
     }
 };
 
+/* ═══════════════════════════════════════════════════════════════
+   METİN BAZLI ÇEVİRİ KATMANI
+   data-i18n işareti olmayan (dashboard/profil/blog içi) sabit metinleri
+   birebir eşleşmeyle çevirir. Orijinal metin data-orig-text'te saklanır,
+   TR'ye dönüşte geri yüklenir.
+   ═══════════════════════════════════════════════════════════════ */
+const TEXT_MAP_EN = {
+    /* Dashboard — genel */
+    'Portföy Performansı': 'Portfolio Performance',
+    'Canlı Pozisyonlar': 'Live Positions',
+    'P&L Isı Haritası': 'P&L Heatmap',
+    'Risk Metrikleri': 'Risk Metrics',
+    'Risk Katkısı': 'Risk Contribution',
+    '(Component VaR)': '(Component VaR)',
+    'Son İşlemler': 'Recent Trades',
+    'Risk Uyarıları': 'Risk Alerts',
+    'Benchmark Karşılaştırması': 'Benchmark Comparison',
+    'Korelasyon Matrisi': 'Correlation Matrix',
+    'Kripto Piyasa Göstergeleri': 'Crypto Market Indicators',
+    'Canlı': 'Live',
+    'Kontrol Merkezi': 'Control Center',
+    'Canlı izleme & analiz': 'Live monitoring & analysis',
+    'Tümünü Gör': 'View All',
+    'Detaya Git →': 'View Details →',
+    'GÜNLÜK DURUM RAPORU': 'DAILY STATUS REPORT',
+    'HAYATTA KALMA SKORU': 'SURVIVAL SCORE',
+    'Monte Carlo + Black Swan ortalaması': 'Monte Carlo + Black Swan average',
+    'Açık Pozisyon': 'Open Positions',
+    'Risk Durumu': 'Risk Status',
+    'Kripto 24s K/Z': 'Crypto 24h P&L',
+    'Canlı Binance': 'Live Binance',
+    'Düşük': 'Low', 'Orta': 'Medium', 'Yüksek': 'High',
+    'Düzenle': 'Edit', 'Rapor': 'Report',
+    /* API / borsa */
+    '🔌 API Bağlantıları': '🔌 API Connections',
+    'Hesaplarınızı güvenle bağlayın — yalnızca okuma yetkisi kullanılır': 'Connect your accounts securely — read-only access is used',
+    'Bağlan': 'Connect', 'Bağlı': 'Connected', 'Bağlı Değil': 'Not Connected',
+    '+ Bağla': '+ Connect', '+ Bağlantı Ekle': '+ Add Connection',
+    'Bağlı Borsalar': 'Connected Exchanges',
+    '🔗 Bağlı Borsalar': '🔗 Connected Exchanges',
+    /* Toolbar */
+    '🌅 Brief': '🌅 Brief', '🔄 Yenile': '🔄 Refresh', '✎ Portföy': '✎ Portfolio',
+    '📓 Journal': '📓 Journal', '📅 Takvim': '📅 Calendar', '📄 Rapor Al': '📄 Get Report',
+    /* Monte Carlo */
+    'Simülasyonu Başlat': 'Run Simulation', 'Yeniden Çalıştır': 'Run Again',
+    'Simülasyon Sayısı': 'Number of Simulations', 'SİMÜLASYON SAYISI': 'SIMULATIONS',
+    'Zaman Ufku': 'Time Horizon', 'ZAMAN UFKU': 'TIME HORIZON',
+    'Güven Düzeyi': 'Confidence Level', 'GÜVEN DÜZEYİ': 'CONFIDENCE LEVEL',
+    'Senaryo Modu': 'Scenario Mode', 'SENARYO MODU': 'SCENARIO MODE',
+    'Normal Piyasa': 'Normal Market', 'Stres Testi': 'Stress Test',
+    '1 Ay (30 gün)': '1 Month (30 days)', '3 Ay (90 gün)': '3 Months (90 days)',
+    '1 Yıl (252 gün)': '1 Year (252 days)', '2 Yıl (504 gün)': '2 Years (504 days)',
+    'Beklenen Değer': 'Expected Value', 'Medyan': 'Median',
+    'Simülasyon Yolları (50 örnek)': 'Simulation Paths (50 samples)',
+    'Portföy Değer Dağılımı': 'Portfolio Value Distribution',
+    /* Backtest */
+    '▶ Backtest Çalıştır': '▶ Run Backtest',
+    'Strateji': 'Strategy', 'Sembol': 'Symbol', 'Gün': 'Days',
+    'Hızlı / Periyot': 'Fast / Period', 'Yavaş / Eşik': 'Slow / Threshold',
+    'SMA Kesişimi (Hızlı/Yavaş)': 'SMA Crossover (Fast/Slow)',
+    'RSI (aşırı satım/alım)': 'RSI (oversold/overbought)',
+    'Strateji Getirisi': 'Strategy Return', 'Al-Tut Getirisi': 'Buy & Hold Return',
+    'Fark (Alpha)': 'Difference (Alpha)', 'İşlem Sayısı': 'Number of Trades',
+    'Kazanma Oranı': 'Win Rate', 'Max Drawdown': 'Max Drawdown',
+    /* Macro shock */
+    '⚡ Şok Senaryo Simülatörü': '⚡ Shock Scenario Simulator',
+    'Senaryoya tıklayarak portföy etkisini anında hesaplayın': 'Click a scenario to instantly compute its portfolio impact',
+    'FED Faiz Kararı': 'Fed Rate Decision', '+50bp faiz artışı': '+50bp rate hike',
+    'Enflasyon Şoku': 'Inflation Shock', 'Beklenti üstü TÜFE': 'CPI above expectations',
+    'Petrol Şoku': 'Oil Shock', '+20% fiyat artışı': '+20% price increase',
+    'Dolar/TL Hareketi': 'USD/TRY Move', '+15% kur artışı': '+15% FX move',
+    'TCMB Faiz Şoku': 'CBRT Rate Shock', 'Sürpriz faiz indirimi': 'Surprise rate cut',
+    'Yüksek Etki': 'High Impact', 'Orta Etki': 'Medium Impact',
+    '🎯 Kendi Senaryonuzu Oluşturun': '🎯 Build Your Own Scenario',
+    'USD/TRY Değişim (%)': 'USD/TRY Change (%)', 'BTC Değişim (%)': 'BTC Change (%)',
+    'Faiz Değişimi (bp)': 'Rate Change (bp)', '⚡ Simülasyonu Çalıştır': '⚡ Run Simulation',
+    'Büyük Bunalım': 'Great Depression', 'Boğa Koşusu': 'Bull Run', 'TCMB Sıkılaştırma': 'CBRT Tightening',
+    'Her şey %20 düşerse ne olur?': 'What if everything drops 20%?',
+    'BTC $150k olursa ne olur?': 'What if BTC hits $150k?',
+    'Faiz %50\'ye çıkarsa ne olur?': 'What if rates hit 50%?',
+    /* Black swan */
+    '🦢 Black Swan Stres Testi': '🦢 Black Swan Stress Test',
+    'Ekstrem senaryolarda portföyünüzün dayanıklılığını ve iyileşme süresini analiz edin': 'Analyse your portfolio\'s resilience and recovery time under extreme scenarios',
+    'Pandemi Senaryosu': 'Pandemic Scenario', 'COVID-19 benzeri kriz': 'COVID-19 style crisis',
+    '2008 Finansal Kriz': '2008 Financial Crisis', 'Sistemik finansal çöküş': 'Systemic financial collapse',
+    'Jeopolitik Kriz': 'Geopolitical Crisis', 'Bölgesel savaş/gerilim': 'Regional war/tension',
+    /* Journal */
+    '📐 Position Sizing Hesaplayıcı': '📐 Position Sizing Calculator',
+    'Hesap Büyüklüğü (₺)': 'Account Size (₺)', 'Risk / İşlem (%)': 'Risk / Trade (%)',
+    'Giriş Fiyatı': 'Entry Price', 'Stop Fiyatı': 'Stop Price', 'Hedef Fiyat (ops.)': 'Target Price (opt.)',
+    'Kaldıraç (x)': 'Leverage (x)', 'Yön': 'Direction',
+    'Long (Alış)': 'Long (Buy)', 'Short (Satış)': 'Short (Sell)',
+    'Risk-per-trade → pozisyon boyutu → R-multiple': 'Risk-per-trade → position size → R-multiple',
+    '🎯 Setup / Etiket Performansı': '🎯 Setup / Tag Performance',
+    'Hangi setup kazandırıyor?': 'Which setup pays off?',
+    'CSV Dışa Aktar': 'Export CSV', 'CSV İçe Aktar': 'Import CSV',
+    'İşlem Ekle': 'Add Trade', 'İlk İşlemi Ekle': 'Add Your First Trade',
+    'Henüz işlem kaydı yok.': 'No trades recorded yet.',
+    'Sembol ara...': 'Search symbol...', 'Tümü': 'All', 'Alım': 'Buy', 'Satım': 'Sell',
+    'Tüm Sonuçlar': 'All Results', 'Kârlı': 'Profitable', 'Zararlı': 'Losing',
+    'Toplam K/Z': 'Total P&L', 'Profit Factor': 'Profit Factor',
+    'Ort. Risk/Ödül': 'Avg. Risk/Reward', 'En İyi İşlem': 'Best Trade', 'En Kötü İşlem': 'Worst Trade',
+    'Beklenti (Expectancy)': 'Expectancy', 'İşlem başına ort.': 'Avg. per trade',
+    'Kazanan/Kaybeden': 'Winners/Losers', 'Risk : Ödül': 'Risk : Reward',
+    /* Watchlist */
+    '👁️ Watchlist & Alarmlar': '👁️ Watchlist & Alerts',
+    '🔔 Fiyat Alarmları': '🔔 Price Alerts', '+ Alarm Kur': '+ Set Alert',
+    '+ Ekle': '+ Add', 'Kur': 'Set', 'Henüz alarm yok.': 'No alerts yet.',
+    '📅 Ekonomik Takvim': '📅 Economic Calendar', 'Yaklaşan kritik veriler': 'Upcoming key data',
+    /* Analiz sonuçları */
+    '🧪 Analiz Sonuçlarım': '🧪 My Analysis Results',
+    'Monte Carlo ve Backtest sonuçların burada saklanır.': 'Your Monte Carlo and Backtest results are stored here.',
+    'Henüz analiz çalıştırılmadı. Monte Carlo veya Backtest çalıştırdığınızda sonuçlar burada birikir.': 'No analysis run yet. Results will accumulate here once you run Monte Carlo or Backtest.',
+    '⬇ CSV İndir': '⬇ Download CSV',
+    /* Profil */
+    'Portföy Değeri': 'Portfolio Value', 'Hayatta Kalma': 'Survival', 'Hayatta Kalma Skoru': 'Survival Score',
+    'Risk Profili': 'Risk Profile', 'Test edilmedi': 'Not tested',
+    'Sharpe Oranı': 'Sharpe Ratio', 'Sortino Oranı': 'Sortino Ratio', 'Treynor Oranı': 'Treynor Ratio',
+    'Jensen Alpha (Yıllık)': 'Jensen Alpha (Annual)', 'Yıllık Volatilite': 'Annual Volatility',
+    'Ort. Korelasyon': 'Avg. Correlation', 'Kar/Zarar': 'Profit/Loss',
+    'MC Simülasyon': 'MC Simulations', 'Şok Testi': 'Shock Tests', 'Kayıt Tarihi': 'Registration Date',
+    '📊 Portföy Özeti': '📊 Portfolio Summary', '📈 Aktivite': '📈 Activity',
+    '🎯 Detaylı Risk Metrikleri': '🎯 Detailed Risk Metrics',
+    '📓 Trading İstatistikleri': '📓 Trading Statistics',
+    '📊 Pozisyon Dağılımı': '📊 Position Breakdown',
+    '🎯 Yatırımcı Profilim': '🎯 My Investor Profile',
+    '⬇ İndirmeler': '⬇ Downloads', '⬇ İndirme Merkezi': '⬇ Download Center',
+    'Tüm verilerini ve raporlarını indir.': 'Download all your data and reports.',
+    '⬇ Profil Raporu': '⬇ Profile Report', '🔄 Testi Yap / Tekrarla': '🔄 Take / Retake Test',
+    '📊 Dashboard': '📊 Dashboard', '✎ Portföyü Düzenle': '✎ Edit Portfolio',
+    '⬇ Verilerimi İndir': '⬇ Download My Data', '📄 Rapor Al': '📄 Get Report',
+    'Dashboard\'a Dön': 'Back to Dashboard', 'Çıkış Yap': 'Sign Out',
+    '🔗 Bağlı Borsalar': '🔗 Connected Exchanges',
+    '📊 Özet': '📊 Summary', '🧪 Analizlerim': '🧪 My Analyses',
+    'Yatırımcı Profili Raporu': 'Investor Profile Report',
+    'Tam Portföy Raporu': 'Full Portfolio Report',
+    'Tüm Verilerim (JSON)': 'All My Data (JSON)',
+    'Trading Journal (CSV)': 'Trading Journal (CSV)',
+    'Portföy (CSV)': 'Portfolio (CSV)',
+    'Risk Metrikleri (CSV)': 'Risk Metrics (CSV)',
+    'Risk testi sonucu + öneriler (HTML/PDF)': 'Risk test result + recommendations (HTML/PDF)',
+    'Metrikler + pozisyonlar (HTML/PDF)': 'Metrics + positions (HTML/PDF)',
+    'Profil, portföy, journal, risk profili': 'Profile, portfolio, journal, risk profile',
+    'Tüm işlemler, Excel uyumlu': 'All trades, Excel compatible',
+    'Pozisyonlar, ağırlıklar, tutarlar': 'Positions, weights, amounts',
+    'VaR, Sharpe, korelasyon, skor': 'VaR, Sharpe, correlation, score',
+    /* Blog */
+    'Piyasa, risk yönetimi ve kantitatif analiz üzerine yazılar.': 'Articles on markets, risk management and quantitative analysis.',
+    'Component VaR: Riskin Gerçek Kaynağını Bulmak': 'Component VaR: Finding the Real Source of Risk',
+    'Monte Carlo ile Portföyünüzün Geleceğini Görün': 'See Your Portfolio\'s Future with Monte Carlo',
+    'Kaldıraç ve Likidasyon: Stop\'unuz Nerede Olmalı?': 'Leverage and Liquidation: Where Should Your Stop Be?',
+    'FOMO Sizi Neden Zarara Uğratıyor?': 'Why Is FOMO Costing You Money?',
+    'Çeşitlendirme Yanılsaması: Korelasyon 1\'e Yaklaşınca': 'The Diversification Illusion: When Correlation Approaches 1',
+    'Makro Şoklar Portföyünüzü Nasıl Etkiler?': 'How Do Macro Shocks Affect Your Portfolio?',
+    'Yeni yazılar yakında — erken erişim listesine katılın.': 'New articles coming soon.',
+    'Risk Yönetimi': 'Risk Management', 'Simülasyon': 'Simulation',
+    'Position Sizing': 'Position Sizing', 'Davranışsal Finans': 'Behavioural Finance',
+    'Korelasyon': 'Correlation', 'Makro': 'Macro',
+    /* Footer / genel */
+    'Profesyonel portföy ve trading analiz platformu. Veriye dayalı yatırım kararları için.': 'Portfolio and trading analysis platform for data-driven investment decisions.',
+    '© 2026 Equilyze. Tüm hakları saklıdır.': '© 2026 Equilyze. All rights reserved.',
+    'Equilyze yatırım tavsiyesi vermez. Tüm araçlar eğitim ve analiz amaçlıdır.': 'Equilyze does not provide investment advice. All tools are for education and analysis.',
+    'Ürün': 'Product', 'Üyelik': 'Membership', 'Kaynaklar': 'Resources',
+    'Risk Profili Testi': 'Risk Profile Test', 'Eğitim / Rehber': 'Education / Guide',
+    'Hakkımızda': 'About Us', 'Ücretsiz Üye Ol': 'Sign Up Free',
+    'Tüm işlem takibi ve analiz araçları Dashboard içinde.': 'All trade tracking and analysis tools live inside the Dashboard.',
+    '← Ana Sayfa': '← Home', 'Giriş Yap': 'Sign In', 'Giriş': 'Sign In',
+    'Ana Sayfa': 'Home', 'Journal': 'Journal', 'Analiz': 'Analysis', 'Profil': 'Profile',
+    'ÜCRETSİZ': 'FREE', 'Demo Kullanıcı': 'Demo User',
+    '⚡ Hızlı İşlemler': '⚡ Quick Actions',
+    /* Hero / genel kalanlar */
+    'Aşağı Kaydır': 'Scroll Down', 'DEMO ÖNİZLEME': 'DEMO PREVIEW',
+    'Read-Only Mimari İlkesi': 'Read-Only Architecture Principle',
+    '● Canlı veri': '● Live data', 'Canlı veri': 'Live data',
+    'Salt-Okunur API': 'Read-Only API', 'KVKK Uyumlu': 'GDPR-Aligned', 'GBM Monte Carlo': 'GBM Monte Carlo',
+    /* Isı haritası */
+    'Bu Ay K/Z': 'This Month P&L', 'En İyi Gün': 'Best Day', 'En Kötü Gün': 'Worst Day',
+    'Kârlı Gün': 'Profitable Days', 'Kâr': 'Profit', 'Nötr': 'Neutral', 'Zarar': 'Loss',
+    'Düşük Risk': 'Low Risk', 'Orta Risk': 'Medium Risk', 'Yüksek Risk': 'High Risk',
+    'KRİTİK': 'CRITICAL', 'ORTA': 'MEDIUM', 'DÜŞÜK': 'LOW',
+    /* Journal teaser */
+    'Her işlemi kaydet': 'Record every trade',
+    'Giriş/çıkış, stop, hedef, etiket, duygu ve ekran görüntüsü': 'Entry/exit, stop, target, tags, emotion and screenshot',
+    'Gerçek istatistik': 'Real statistics',
+    'Kazanma oranı, profit factor, beklenti (expectancy), R:R': 'Win rate, profit factor, expectancy, R:R',
+    'Setup performansı': 'Setup performance',
+    'Hangi kurulum kazandırıyor, hangi duygu kaybettiriyor': 'Which setup pays off, which emotion costs you',
+    'Risk/işlem, pozisyon boyutu, likidasyon mesafesi': 'Risk/trade, position size, liquidation distance',
+    '📓 Journal\'ı Aç →': '📓 Open Journal →',
+    /* Macro teaser */
+    'Faiz kararlarının portföyüne etkisi': 'Impact of rate decisions on your portfolio',
+    'Kur şoklarının gerçek etkisi': 'Real impact of FX shocks',
+    'Kriz senaryolarında dayanıklılık': 'Resilience under crisis scenarios',
+    /* Roadmap etiketleri */
+    'Şifreleme': 'Encryption', 'Zamanlanmış Görev': 'Scheduled Jobs', 'Vergi Raporu': 'Tax Report',
+    'TAMAMLANDI': 'COMPLETED', 'SIRADA': 'NEXT', 'PLANLANIYOR': 'PLANNED', '✓ Yayında': '✓ Live'
+};
+
+/* Metin bazlı çeviriyi uygula/geri al */
+function applyTextMap(lang) {
+    const toEn = (lang === 'en');
+    const els = document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,button,a,label,li,option,small,strong,div,td,th');
+    els.forEach(el => {
+        if (el.hasAttribute('data-i18n')) return;          // zaten çevriliyor
+        if (el.children.length > 0) return;                 // yalnızca yaprak düğümler
+        const orig = el.getAttribute('data-orig-text');
+        if (toEn) {
+            const key = (el.textContent || '').trim();
+            if (!key) return;
+            const tr = TEXT_MAP_EN[key];
+            if (tr && tr !== key) {
+                if (orig === null) el.setAttribute('data-orig-text', el.textContent);
+                el.textContent = tr;
+            }
+        } else if (orig !== null) {
+            el.textContent = orig;
+            el.removeAttribute('data-orig-text');
+        }
+    });
+}
 function setLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('equilyze-lang', lang);
@@ -11831,6 +12093,8 @@ function setLanguage(lang) {
             }
         });
     }
+    // data-i18n olmayan sabit metinleri (dashboard/profil/blog içi) çevir
+    try { applyTextMap(lang); } catch {}
     // Risk testi açıksa soruyu/çipleri ve sonuç ekranını yeni dilde tazele
     try {
         if (typeof riskQuestions !== 'undefined' && document.getElementById('questionContainer') && typeof renderQuestion === 'function') {
@@ -11843,6 +12107,9 @@ function setLanguage(lang) {
             }
         }
         if (typeof renderInvestorSummary === 'function') renderInvestorSummary();
+        // Profil açıksa dile bağlı dinamik alanları tazele
+        const _up = document.getElementById('userPage');
+        if (_up && getComputedStyle(_up).display !== 'none' && typeof openUserPage === 'function') openUserPage();
     } catch {}
 }
 
