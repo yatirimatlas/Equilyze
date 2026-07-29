@@ -279,6 +279,13 @@ input, select, textarea { font-family: var(--font-sans); }
     transition: all 0.2s;
 }
 .theme-toggle:hover { border-color: var(--color-primary); color: var(--color-primary); }
+/* Mobilde tema düğmesi hamburger'in yanında kalır (nav-actions gizlense de) */
+@media (max-width: 1024px) {
+    /* Tema ikonu hamburger'e bitişik dursun (ortada asılı kalmasın) */
+    .theme-toggle { display: flex !important; margin-left: auto !important; margin-right: 0 !important; width: 38px; height: 38px; }
+    .mobile-toggle { margin-left: 2px !important; padding-right: 0; }
+    .nav-container { gap: 8px; }
+}
 .icon-moon { display: none; }
 [data-theme="light"] .icon-sun { display: none; }
 [data-theme="light"] .icon-moon { display: block; }
@@ -1704,11 +1711,22 @@ body.user-page-open .auth-user-card { display: none; } /* hide nav avatar when o
 @keyframes spin { to { transform:rotate(360deg); } }
 body.user-page-open .hero, body.user-page-open .section:not(.user-page) { display: none; }
 /* Dashboard modunda #dashboard + #macro-engine (araçlar) görünür */
-body.dashboard-open .hero, body.dashboard-open .section:not(#dashboard):not(#macro-engine) { display: none; }
+body.dashboard-open .hero, body.dashboard-open .section:not(#dashboard):not(#macro-engine):not(#journal) { display: none; }
 body.dashboard-open #macro-engine { display: block; padding-top: 0; }
 /* Ana sayfada makro bölümü tanıtım (teaser) modunda — simülasyon çalıştırılmaz */
 body:not(.dashboard-open) #macro-engine .macro-container { display: none; }
 body.dashboard-open #macro-engine .macro-teaser { display: none; }
+/* Journal: ana sayfada tanıtım, Dashboard'da tam çalışma alanı */
+body.dashboard-open #journal { display: block; padding-top: 0; }
+body:not(.dashboard-open) #journal .journal-inner { display: none; }
+body.dashboard-open #journal .journal-teaser { display: none; }
+.journal-teaser { max-width: 760px; margin: 0 auto; text-align: center; }
+.jt-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 22px; text-align: left; }
+.jt-item { display: flex; gap: 12px; align-items: flex-start; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 14px 16px; }
+.jt-item > span { font-size: 1.3rem; flex-shrink: 0; }
+.jt-item strong { display: block; font-size: 0.88rem; margin-bottom: 2px; color: var(--text-primary); }
+.jt-item small { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+.jt-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; }
 body.dashboard-open #dashboard { padding-top: 80px; display: block; min-height: 100vh; }
 body.dashboard-open .footer { display: none; }
 body.user-page-open .footer { display: none; }
@@ -2100,8 +2118,16 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     .pricing-card { padding: 24px 20px; }
     
     /* Footer */
-    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
-    .footer-bottom { flex-direction: column; text-align: center; }
+    /* Mobil footer: kompakt 2 kolon, marka tam genişlik */
+    .footer { padding: 32px 0 20px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 18px 14px; margin-bottom: 20px; }
+    .footer-brand { grid-column: 1 / -1; }
+    .footer-desc { font-size: 0.8rem; margin-bottom: 10px; }
+    .footer-links h4 { font-size: 0.8rem; margin-bottom: 8px; }
+    .footer-links a { font-size: 0.8rem; margin-bottom: 7px; }
+    .footer-bottom { flex-direction: column; text-align: center; gap: 6px; font-size: 0.72rem; padding-top: 14px; }
+    .footer-disclaimer { font-size: 0.68rem; line-height: 1.5; }
+    .footer-social { gap: 8px; }
     
     /* Modal */
     .modal { max-height: 95vh; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
@@ -3754,19 +3780,20 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <button class="lang-btn active" data-lang="tr" onclick="setLanguage('tr')">TR</button>
                     <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
                 </div>
-                <button class="theme-toggle" id="themeToggle" aria-label="Tema Değiştir">
-                    <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                    </svg>
-                    <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                    </svg>
-                </button>
                 <a href="#" class="nav-login">Giriş Yap</a>
                 <a href="#risk-test" class="btn btn-nav-cta">Ücretsiz Başla</a>
             </div>
+            <!-- Tema düğmesi: mobilde de görünür (hamburger'in yanında), yalnızca ikon -->
+            <button class="theme-toggle" id="themeToggle" aria-label="Tema Değiştir" title="Tema Değiştir">
+                <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                </svg>
+                <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
             <button class="mobile-toggle" id="mobileToggle" aria-label="Menü">
                 <span></span><span></span><span></span>
             </button>
@@ -3997,6 +4024,8 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <button class="dash-chip" onclick="scrollToWidget('monteCarloWidget')" data-i18n="chip-montecarlo">🎲 Monte Carlo</button>
                 <button class="dash-chip" onclick="scrollToWidget('realBacktestWidget')" data-i18n="chip-backtest">🔬 Backtest</button>
                 <button class="dash-chip" onclick="scrollToWidget('slippage')" data-i18n="chip-liquidity">💧 Likidite</button>
+                <button class="dash-chip" onclick="scrollToWidget('journal')">📓 Journal</button>
+                <button class="dash-chip" onclick="scrollToWidget('macro-engine')">⚡ Macro Shock</button>
             </nav>
 
             <!-- API Panel -->
@@ -5128,6 +5157,19 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <p class="section-desc">Her işleminizi kaydedin, pattern'lerinizi keşfedin, sürekli gelişin.</p>
             </div>
 
+            <!-- Ana sayfa tanıtımı (Dashboard'da gizlenir) -->
+            <div class="journal-teaser">
+                <div class="jt-features">
+                    <div class="jt-item"><span>📝</span><div><strong>Her işlemi kaydet</strong><small>Giriş/çıkış, stop, hedef, etiket, duygu ve ekran görüntüsü</small></div></div>
+                    <div class="jt-item"><span>📊</span><div><strong>Gerçek istatistik</strong><small>Kazanma oranı, profit factor, beklenti (expectancy), R:R</small></div></div>
+                    <div class="jt-item"><span>🎯</span><div><strong>Setup performansı</strong><small>Hangi kurulum kazandırıyor, hangi duygu kaybettiriyor</small></div></div>
+                    <div class="jt-item"><span>📐</span><div><strong>Position sizing</strong><small>Risk/işlem, pozisyon boyutu, likidasyon mesafesi</small></div></div>
+                </div>
+                <button class="btn btn-primary btn-lg" onclick="openJournalWorkspace()">📓 Journal'ı Aç →</button>
+                <p class="jt-hint">Tüm işlem takibi ve analiz araçları Dashboard içinde.</p>
+            </div>
+
+            <div class="journal-inner">
             <!-- Position Sizing Calculator -->
             <div class="possize-card" style="margin-bottom:24px;padding:20px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg)">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
@@ -5291,6 +5333,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     </tbody>
                 </table>
             </div>
+            </div><!-- end journal-inner -->
         </div>
     </section>
 
@@ -5892,18 +5935,18 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             </svg>
             <span>Dashboard</span>
         </a>
-        <a href="#journal" class="mbn-item" onclick="setActiveMbn(this)">
+        <a href="javascript:void(0)" class="mbn-item" onclick="setActiveMbn(this);openJournalWorkspace()">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
             </svg>
-            <span>Günlük</span>
+            <span>Journal</span>
         </a>
-        <a href="javascript:void(0)" class="mbn-item" id="mbnTheme" onclick="toggleThemeMobile()" aria-label="Tema Değiştir">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="mbnThemeIcon">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        <a href="javascript:void(0)" class="mbn-item" onclick="setActiveMbn(this);openToolInDashboard('analysisResultsWidget')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3v18h18"/><polyline points="7 14 11 10 15 13 21 7"/>
             </svg>
-            <span id="mbnThemeLabel">Tema</span>
+            <span>Analiz</span>
         </a>
         <a href="#" class="mbn-item" id="mbnLogin" onclick="event.preventDefault();if(getSession()){openUserPage()}else{openAuthModal()}">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -10695,7 +10738,11 @@ function openUserPage() {
     const users = getUsers();
     const user = users[session.email];
     if (!user) { authLogout(); return; }
-    // Hide main content, show user page
+    // Hide main content, show user page (dashboard modundan tam çıkış — sayfa ayrımı net olsun)
+    document.body.classList.remove('dashboard-open', 'overlay-open');
+    document.querySelectorAll('.overlay-page').forEach(p => p.classList.remove('open'));
+    const _dbb = document.getElementById('dashboardBackBtn');
+    if (_dbb) _dbb.style.display = 'none';
     document.body.classList.add('user-page-open');
     document.getElementById('userPage').classList.add('open');
     document.getElementById('userPage').style.display = 'block';
@@ -10931,12 +10978,23 @@ function scrollToUserCard(id) {
     el.classList.add('widget-flash');
     setTimeout(() => el.classList.remove('widget-flash'), 1300);
 }
-function goToJournal() {
-    closeDashboardPage();
+/* Journal artık Dashboard çalışma alanının parçası */
+function goToJournal() { openJournalWorkspace(); }
+function openJournalWorkspace() {
+    if (!requireAuth('journal')) return;
     document.body.classList.remove('overlay-open', 'user-page-open');
     document.querySelectorAll('.overlay-page').forEach(p => p.classList.remove('open'));
     const up = document.getElementById('userPage'); if (up) { up.classList.remove('open'); up.style.display = 'none'; }
-    setTimeout(() => { document.getElementById('journal')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120);
+    openDashboardPage();
+    setTimeout(() => {
+        const el = document.getElementById('journal');
+        if (el) {
+            const y = el.getBoundingClientRect().top + window.scrollY - 110;
+            window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+            el.classList.add('widget-flash');
+            setTimeout(() => el.classList.remove('widget-flash'), 1300);
+        }
+    }, 380);
 }
 
 /* ── Bağımsız sayfalar (Blog, Eğitim) ── */
