@@ -1869,6 +1869,65 @@ body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .exch-badge { font-size: 0.62rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.04em; }
 .exch-badge.demo { background: rgba(245,158,11,0.14); color: var(--color-warning); border: 1px solid rgba(245,158,11,0.3); }
 .exch-badge.live { background: rgba(16,185,129,0.14); color: var(--color-success); border: 1px solid rgba(16,185,129,0.3); }
+/* ── SSS sayfası & Hakkımızda ── */
+.faqp-cat { font-size: 1rem; font-weight: 800; color: var(--text-primary); margin: 30px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
+.faqp-cat:first-of-type { margin-top: 8px; }
+#faqPage .faq-container { margin-bottom: 4px; }
+.faqp-foot { margin-top: 34px; padding: 22px; text-align: center; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); }
+.faqp-foot p { font-size: 0.86rem; color: var(--text-secondary); }
+.about-h { font-size: 1.02rem; font-weight: 800; color: var(--text-primary); margin: 26px 0 10px; padding-left: 12px; border-left: 3px solid var(--color-primary); }
+/* ── Mobil üyelik (pricing) kartı düzeni ── */
+@media (max-width: 600px) {
+    .pricing-grid { grid-template-columns: 1fr !important; max-width: 100% !important; }
+    .pricing-card { margin-top: 14px; }
+    .pricing-card .popular-badge { font-size: 0.62rem !important; padding: 4px 12px !important; white-space: nowrap; }
+    .pricing-header { padding: 22px 16px 14px !important; }
+    .pricing-header h3 { font-size: 1.02rem; }
+    .pricing-price .price-amount { font-size: 2.4rem; }
+    .pricing-body { padding: 0 16px 20px !important; }
+    .pricing-features li { font-size: 0.8rem; line-height: 1.45; align-items: flex-start; }
+    .pricing-features li svg { margin-top: 3px; flex-shrink: 0; }
+}
+/* Hero ve journal ikonları: emoji yerine tutarlı SVG */
+.hero-stat .stat-icon, .jt-item .jt-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.22); color: var(--color-primary); flex-shrink: 0; }
+.hero-stat { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.jt-item .jt-icon { width: 34px; height: 34px; }
+/* ── Üyelik (giriş/kayıt) modalı ── */
+.auth-modal { position: relative; overflow: hidden; }
+.auth-close { position: absolute; top: 12px; right: 12px; z-index: 2; background: var(--bg-hover); border: 1px solid var(--border-subtle); color: var(--text-secondary); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+.auth-close:hover { color: var(--text-primary); border-color: var(--border-hover); }
+.auth-hero { text-align: center; padding: 28px 24px 14px; background: linear-gradient(180deg, rgba(16,185,129,0.08), transparent); }
+.auth-logo { width: 46px; height: 46px; margin: 0 auto 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: #fff; }
+.auth-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 5px; color: var(--text-primary); }
+.auth-sub { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; max-width: 340px; margin: 0 auto; }
+.auth-tabs { display: flex; gap: 6px; background: var(--bg-tertiary); padding: 4px; border-radius: 10px; margin: 16px 0 18px; }
+.auth-tab { flex: 1; padding: 9px 12px; border: none; background: none; color: var(--text-secondary); font-size: 0.86rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.auth-tab.active { background: var(--bg-card); color: var(--text-primary); box-shadow: var(--shadow-sm); }
+.auth-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin: 12px 0 5px; }
+.auth-form input { width: 100%; padding: 11px 13px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; transition: border-color 0.2s; }
+.auth-form input:focus { outline: none; border-color: var(--color-primary); }
+.auth-pass-wrap { position: relative; }
+.auth-pass-wrap input { padding-right: 44px; }
+.auth-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 0.95rem; opacity: 0.55; padding: 6px 8px; }
+.auth-eye:hover { opacity: 1; }
+.auth-submit { margin-top: 18px; padding: 12px; font-size: 0.95rem; }
+.auth-divider { display: flex; align-items: center; gap: 10px; margin: 16px 0 12px; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+.auth-switch-hint { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; }
+.auth-switch-hint a { color: var(--color-primary); font-weight: 600; }
+.auth-perk { display: flex; flex-direction: column; gap: 5px; padding: 12px 14px; background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.22); border-radius: 10px; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
+.auth-perk-badge { align-self: flex-start; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.06em; color: var(--color-primary); background: rgba(16,185,129,0.14); padding: 2px 8px; border-radius: 999px; }
+.pass-strength { height: 4px; background: var(--bg-tertiary); border-radius: 3px; margin-top: 7px; overflow: hidden; }
+.pass-strength-bar { height: 100%; width: 0; border-radius: 3px; transition: width 0.25s, background 0.25s; }
+.pass-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; }
+.auth-legal { font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: 12px; line-height: 1.5; }
+.auth-legal a { color: var(--color-secondary); text-decoration: underline; }
+.auth-error:not(:empty) { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: var(--color-danger); padding: 9px 12px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 4px; }
+@media (max-width: 600px) {
+    .auth-hero { padding: 22px 18px 10px; }
+    .auth-title { font-size: 1.08rem; }
+    .auth-modal .modal-body { padding-left: 18px; padding-right: 18px; }
+}
 /* Analiz sonuçları (dashboard + profil) */
 .analysis-results { display: flex; flex-direction: column; gap: 10px; }
 .ar-item { background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px 14px; }
@@ -3771,9 +3830,9 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             <div class="nav-links" id="navLinks">
                 <a href="#risk-test" class="nav-link" data-i18n="nav-risk">Risk Testi</a>
                 <a href="javascript:void(0)" onclick="openToolInDashboard('')" class="nav-link" data-i18n="nav-dashboard">Dashboard</a>
-                <a href="#macro-engine" class="nav-link" data-i18n="nav-macro">Macro Shock</a>
-                <a href="#journal" class="nav-link" data-i18n="nav-journal">Trading Journal</a>
-                <a href="#pricing" class="nav-link" data-i18n="nav-pricing">Üyelik</a>
+                <a href="javascript:void(0)" onclick="openOverlayPage('educationPage')" class="nav-link" data-i18n="nav-education">Eğitim</a>
+                <a href="javascript:void(0)" onclick="openOverlayPage('blogPage')" class="nav-link" data-i18n="nav-blog">Blog</a>
+                <a href="javascript:void(0)" onclick="openOverlayPage('faqPage')" class="nav-link" data-i18n="nav-faq">SSS</a>
             </div>
             <div class="nav-actions">
                 <div class="lang-toggle" id="langToggle">
@@ -3824,16 +3883,28 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </p>
                 <div class="hero-stats">
                     <div class="hero-stat">
-                        <span class="stat-num">🔒</span>
-                        <span class="stat-label">Salt-Okunur API</span>
+                        <span class="stat-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </span>
+                        <span class="stat-label">Salt-Okunur Erişim</span>
                     </div>
                     <div class="hero-stat">
-                        <span class="stat-num">📋</span>
+                        <span class="stat-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+                            </svg>
+                        </span>
                         <span class="stat-label">KVKK Uyumlu</span>
                     </div>
                     <div class="hero-stat">
-                        <span class="stat-num">🧮</span>
-                        <span class="stat-label">GBM Monte Carlo</span>
+                        <span class="stat-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 3v18h18"/><polyline points="7 15 11 9 15 13 21 6"/>
+                            </svg>
+                        </span>
+                        <span class="stat-label">Gerçek Piyasa Verisi</span>
                     </div>
                 </div>
                 <div class="hero-ctas">
@@ -5160,10 +5231,10 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             <!-- Ana sayfa tanıtımı (Dashboard'da gizlenir) -->
             <div class="journal-teaser">
                 <div class="jt-features">
-                    <div class="jt-item"><span>📝</span><div><strong>Her işlemi kaydet</strong><small>Giriş/çıkış, stop, hedef, etiket, duygu ve ekran görüntüsü</small></div></div>
-                    <div class="jt-item"><span>📊</span><div><strong>Gerçek istatistik</strong><small>Kazanma oranı, profit factor, beklenti (expectancy), R:R</small></div></div>
-                    <div class="jt-item"><span>🎯</span><div><strong>Setup performansı</strong><small>Hangi kurulum kazandırıyor, hangi duygu kaybettiriyor</small></div></div>
-                    <div class="jt-item"><span>📐</span><div><strong>Position sizing</strong><small>Risk/işlem, pozisyon boyutu, likidasyon mesafesi</small></div></div>
+                    <div class="jt-item"><span class="jt-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span><div><strong>Her işlemi kaydet</strong><small>Giriş/çıkış, stop, hedef, etiket, duygu ve ekran görüntüsü</small></div></div>
+                    <div class="jt-item"><span class="jt-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><div><strong>Gerçek istatistik</strong><small>Kazanma oranı, profit factor, beklenti (expectancy), R:R</small></div></div>
+                    <div class="jt-item"><span class="jt-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><div><strong>Setup performansı</strong><small>Hangi kurulum kazandırıyor, hangi duygu kaybettiriyor</small></div></div>
+                    <div class="jt-item"><span class="jt-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg></span><div><strong>Position sizing</strong><small>Risk/işlem, pozisyon boyutu, likidasyon mesafesi</small></div></div>
                 </div>
                 <button class="btn btn-primary btn-lg" onclick="openJournalWorkspace()" data-i18n="journal-open-cta">📓 Journal'ı Aç →</button>
                 <p class="jt-hint">Tüm işlem takibi ve analiz araçları Dashboard içinde.</p>
@@ -5703,11 +5774,11 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
                 <div class="faq-item" onclick="toggleFaq(this)">
                     <button class="faq-question">
-                        <span data-i18n="faq-q3">Hangi borsaları destekliyorsunuz?</span>
+                        <span data-i18n="faq-q3">Borsa hesabımı bağlayabiliyor muyum?</span>
                         <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="faq-answer">
-                        <p data-i18n="faq-a3">Şu anda Binance, MetaTrader 5 ve TradingView API entegrasyonlarını destekliyoruz. Yakında Paribu, BtcTurk ve BIST entegrasyonları da eklenecektir.</p>
+                        <p data-i18n="faq-a3">Henüz değil. Şu anda portföyünüzü elle tanımlıyorsunuz; fiyat ve risk hesaplamaları büyük kripto borsalarının halka açık veri servislerinden gelen <strong>gerçek piyasa verisiyle</strong> yapılır. Salt-okunur hesap bağlantısı yol haritasında yer alıyor ve geldiğinde işlem/para çekme yetkisi asla talep edilmeyecek.</p>
                     </div>
                 </div>
                 <div class="faq-item" onclick="toggleFaq(this)">
@@ -5721,11 +5792,11 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
                 <div class="faq-item" onclick="toggleFaq(this)">
                     <button class="faq-question">
-                        <span data-i18n="faq-q5">Ücretsiz planda neler var?</span>
+                        <span data-i18n="faq-q5">Ücretsiz üyelikte neler var?</span>
                         <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="faq-answer">
-                        <p data-i18n="faq-a5">Ücretsiz planda Risk Profili Testi, 50 işleme kadar Trading Journal, temel dashboard ve haftalık P&L grafiği bulunur. Hiçbir kredi kartı gerekmez.</p>
+                        <p data-i18n="faq-a5">İlk 500 kurucu üye <strong>tüm özellikleri ömür boyu ücretsiz</strong> kullanır: yatırımcı profili testi, sınırsız işlem günlüğü, risk dashboard'u, Monte Carlo, backtest, makro şok testleri, watchlist ve alarmlar. Kredi kartı gerekmez, şu anda ödeme alınmıyor.</p>
                     </div>
                 </div>
                 <div class="faq-item" onclick="toggleFaq(this)">
@@ -5734,13 +5805,144 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                         <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="faq-answer">
-                        <p data-i18n="faq-a6">Kesinlikle! Equilyze hem kripto (Bitcoin, Ethereum vb.) hem de geleneksel borsa (BIST, forex) yatırımcıları için tasarlandı. Tüm varlık türlerini tek panelde analiz edebilirsiniz.</p>
+                        <p data-i18n="faq-a6">Her ikisi için de kullanılabilir. Portföyünüze kripto, hisse, tahvil, döviz ve nakit tanımlayabilirsiniz; risk metrikleri tüm varlıklar üzerinden hesaplanır. Şu an <strong>canlı fiyat</strong> yalnızca kripto varlıklarda mevcut; hisse ve döviz için canlı veri yol haritasında.</p>
                     </div>
                 </div>
+            </div>
+            <div style="text-align:center;margin-top:28px">
+                <button class="btn btn-outline" onclick="openOverlayPage('faqPage')" data-i18n="faq-all-cta">Tüm soruları görüntüle →</button>
             </div>
         </div>
     </section>
 
+    <!-- Kapsamlı SSS Sayfası -->
+    <section class="section overlay-page" id="faqPage">
+        <div class="container" style="max-width:820px">
+            <div class="section-header">
+                <button class="btn btn-sm btn-ghost" onclick="closeOverlayPage()" style="margin-bottom:14px" data-i18n="back-home">← Ana Sayfa</button>
+                <span class="section-badge" data-i18n="faqp-badge">YARDIM MERKEZİ</span>
+                <h2 class="section-title" data-i18n="faqp-title">Sıkça Sorulan <span class="gradient-text">Sorular</span></h2>
+                <p class="section-desc" data-i18n="faqp-desc">Platform, veriler, hesaplamalar, gizlilik ve üyelik hakkında bilmeniz gereken her şey.</p>
+            </div>
+
+            <!-- Kategori: Genel -->
+            <h3 class="faqp-cat" data-i18n="faqp-cat1">🧭 Genel</h3>
+            <div class="faq-container">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq1">Equilyze tam olarak ne yapar?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa1">Equilyze portföyünüzün <strong>riskini ölçen</strong> ve işlemlerinizi takip etmenizi sağlayan bir analiz platformudur. Portföyünüzü tanımlarsınız; platform gerçek piyasa verisiyle VaR, CVaR, Sharpe, Sortino, beta, korelasyon ve hangi varlığın riski taşıdığını (Component VaR) hesaplar. Ayrıca Monte Carlo simülasyonu, makro şok testleri, strateji backtest'i ve duygu takipli işlem günlüğü sunar.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq2">Kimler için uygun?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa2">Portföyünü bilinçli yönetmek isteyen bireysel yatırımcılar ve işlem disiplinini ölçmek isteyen trader'lar için. Yeni başlayanlar risk testi ve eğitim rehberiyle başlayabilir; deneyimli kullanıcılar Component VaR, Monte Carlo ve backtest gibi kantitatif araçları kullanır.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq3">Yatırım tavsiyesi veriyor musunuz?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa3"><strong>Hayır.</strong> Equilyze yatırım danışmanlığı hizmeti vermez, portföy yönetmez, müşteri varlığı tutmaz ve al/sat emri iletmez. Tüm çıktılar eğitim ve analiz amaçlıdır; kararlar tamamen size aittir.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq4">Kurulum gerekiyor mu?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa4">Hayır, tarayıcıda çalışır. Dilerseniz uygulamayı telefonunuzun ana ekranına ekleyebilirsiniz (PWA) — bu durumda çevrimdışı da açılır ve uygulama gibi tam ekran çalışır.</p></div>
+                </div>
+            </div>
+
+            <!-- Kategori: Veri & Hesaplama -->
+            <h3 class="faqp-cat" data-i18n="faqp-cat2">📊 Veri ve Hesaplamalar</h3>
+            <div class="faq-container">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq5">Veriler gerçek mi, simülasyon mu?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa5">Kripto varlıklar için fiyat ve getiri geçmişi <strong>gerçek piyasa verisidir</strong> (büyük kripto borsalarının halka açık veri servisleri). Risk metrikleri bu gerçek serilerden hesaplanır. Canlı verisi bulunmayan varlık türlerinde model bazlı seriler kullanılır ve arayüzde <em>örnek/demo</em> olarak açıkça etiketlenir.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq6">VaR ve CVaR ne anlama geliyor?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa6"><strong>VaR (%95)</strong>, normal koşullarda 100 günün 95'inde aşmayacağınız tahmini kayıp seviyesidir. <strong>CVaR</strong> ise en kötü %5'lik senaryolarda <em>ortalama</em> kaybı gösterir — yani kuyruk riskini. CVaR her zaman VaR'dan büyüktür ve kriz anlarını daha iyi tarif eder.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq7">Component VaR neden önemli?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa7">Bir varlık portföyünüzün küçük bir kısmı olsa bile riskin çoğunu taşıyabilir. Component VaR toplam riskin yüzde kaçının hangi pozisyondan geldiğini gösterir. Örneğin ağırlığı %25 olan bir varlık riskin %50'sini taşıyorsa, bu bir <strong>yoğunlaşma sinyalidir</strong>.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq8">Monte Carlo simülasyonu nasıl çalışıyor?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa8">Geometric Brownian Motion modeliyle, varlıklarınızın volatilite ve korelasyon yapısını koruyarak 10.000 farklı gelecek senaryosu üretir. Sonuçta beklenen değer, medyan, VaR/CVaR ve "belirli bir seviyenin altına düşme olasılığı" gibi çıktılar alırsınız. Hesaplama ayrı bir iş parçacığında çalışır, bu yüzden arayüz donmaz.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq9">Hayatta Kalma Skoru nasıl hesaplanıyor?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa9">Sharpe, maksimum drawdown, VaR, Sortino, Calmar, çeşitlendirme (ortalama korelasyon), alpha ve beta uyumu bileşenlerinin ağırlıklı toplamıdır (0-100). Yüksek skor portföyün şoklara daha dayanıklı olduğunu; düşük skor kırılganlık ve yoğunlaşma riskini gösterir.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq10">Backtest sonuçları neden garanti değil?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa10">Backtest geçmiş veriye dayanır ve komisyon, kayma (slippage) ile likidite kısıtlarını tam yansıtmaz. Geçmişte iyi çalışan bir kural gelecekte çalışmayabilir. Backtest'i "bu strateji al-tut'a göre değer katıyor mu?" sorusunu <em>test etmek</em> için kullanın, kesin bir getiri vaadi olarak değil.</p></div>
+                </div>
+            </div>
+
+            <!-- Kategori: Güvenlik & Gizlilik -->
+            <h3 class="faqp-cat" data-i18n="faqp-cat3">🔒 Güvenlik ve Gizlilik</h3>
+            <div class="faq-container">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq11">Verilerim nerede saklanıyor?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa11">Üye olursanız verileriniz AB bölgesindeki bir veritabanında, <strong>satır-bazlı güvenlik</strong> ile saklanır: teknik olarak yalnızca kendi kaydınıza erişebilirsiniz. Üye olmadan kullanırsanız hiçbir şey sunucuya gitmez, veriler yalnızca kendi tarayıcınızda kalır.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq12">Hesabımı bağlarsam paramı çekebilir misiniz?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa12">Hayır. Hesap bağlantısı geldiğinde yalnızca <strong>salt-okunur</strong> yetki istenecek; işlem açma, kapatma ve para çekme yetkisi hiçbir koşulda talep edilmeyecek. Bugün itibarıyla hesap bağlama özelliği henüz aktif değildir.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq13">AI Copilot verilerimi başkasıyla paylaşıyor mu?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa13">AI özelliği yalnızca <strong>kendi API anahtarınızı</strong> bağladığınızda çalışır. İstek doğrudan tarayıcınızdan yapay zekâ sağlayıcısına gider; anahtarınız yalnızca sizin cihazınızda saklanır, bizim sunucularımıza iletilmez. Anahtarı bağlamazsanız hiçbir veri dışarı çıkmaz.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq14">Verilerimi indirebilir veya silebilir miyim?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa14">Evet. <strong>Profil → İndirme Merkezi</strong>'nden portföyünüzü, işlem günlüğünüzü, risk metriklerinizi ve profil raporunuzu JSON/CSV/PDF olarak indirebilirsiniz. Hesabınızın tamamen silinmesini talep etmek için bize yazmanız yeterli.</p></div>
+                </div>
+            </div>
+
+            <!-- Kategori: Üyelik -->
+            <h3 class="faqp-cat" data-i18n="faqp-cat4">💳 Üyelik</h3>
+            <div class="faq-container">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq15">"İlk 500 kullanıcı ömür boyu ücretsiz" ne demek?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa15">İlk 500 üye <strong>kurucu üye</strong> sayılır ve mevcut tüm özellikleri hesabı açık kaldığı sürece ücretsiz kullanır. Kontenjan dolduktan sonra ücretli planlar duyurulacak; kurucu üyeler bundan etkilenmez. Şu anda hiçbir ödeme alınmamaktadır.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq16">Üye olmadan kullanabilir miyim?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa16">Ana sayfadaki tanıtımları ve demo hesabı üyelik olmadan görebilirsiniz. Ancak dashboard, işlem günlüğü ve kişisel analizler için üyelik gerekir — çünkü bu veriler hesabınıza bağlanır ve cihazlar arasında senkronlanır.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq17">Kredi kartı bilgisi istiyor musunuz?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa17">Hayır. Kayıt için yalnızca ad ve e-posta gerekir. Ödeme altyapısı henüz mevcut değildir; kimlik numarası, adres veya kart bilgisi toplanmaz.</p></div>
+                </div>
+            </div>
+
+            <!-- Kategori: Kullanım -->
+            <h3 class="faqp-cat" data-i18n="faqp-cat5">🚀 Kullanım</h3>
+            <div class="faq-container">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq18">Nereden başlamalıyım?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa18">Üç adım: <strong>1)</strong> Yatırımcı profili testini çözün (20 soru), <strong>2)</strong> Dashboard'da "Portföy" ile kendi varlıklarınızı girin, <strong>3)</strong> İşlemlerinizi Journal'a kaydetmeye başlayın. Sonrasında Monte Carlo ve şok testleriyle portföyünüzü sınayabilirsiniz.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq19">Geçmiş işlemlerimi toplu ekleyebilir miyim?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa19">Evet. Journal'daki <strong>CSV İçe Aktar</strong> ile borsanızdan indirdiğiniz işlem geçmişini yükleyebilirsiniz. Tarih, sembol, yön, fiyat ve miktar kolonları otomatik algılanır (Türkçe ve İngilizce başlıklar desteklenir).</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq20">Zararlı işlemleri de kaydetmeli miyim?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa20"><strong>Mutlaka.</strong> Kazanma oranı, profit factor ve beklenti (expectancy) yalnızca zararlar da kayıtlıysa anlam taşır. Ayrıca duygu etiketleri sayesinde hangi ruh halinde daha çok kaybettiğinizi görebilirsiniz — platformun en değerli içgörülerinden biri budur.</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <button class="faq-question"><span data-i18n="fq21">Bir hata buldum veya önerim var, nasıl iletirim?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa21">Geri bildirimleriniz yol haritasını doğrudan etkiliyor: <strong>destek@equilyze.com</strong> adresine yazabilirsiniz.</p></div>
+                </div>
+            </div>
+
+            <div class="faqp-foot">
+                <p data-i18n="faqp-foot">Sorunuzun cevabını bulamadınız mı? <strong>destek@equilyze.com</strong></p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px">
+                    <button class="btn btn-primary" onclick="closeOverlayPage();openAuthModal();switchAuthTab('register')" data-i18n="faqp-cta1">Ücretsiz Üye Ol</button>
+                    <button class="btn btn-outline" onclick="openOverlayPage('educationPage')" data-i18n="faqp-cta2">Eğitim Rehberi</button>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- Blog Page (bağımsız sayfa) -->
     <section class="section overlay-page" id="blogPage">
         <div class="container">
@@ -5801,10 +6003,25 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <h2 class="section-title" data-i18n="about-title">Equilyze <span class="gradient-text">Hakkında</span></h2>
             </div>
             <div class="about-body" style="font-size:0.95rem;color:var(--text-secondary);line-height:1.8">
-                <p data-i18n="about-p1"><strong style="color:var(--text-primary)">Equilyze</strong>, bireysel yatırımcı ve trader'lar için geliştirilen bir portföy risk analizi ve işlem takip platformudur. Amacımız, kurumsal seviye analiz araçlarını herkes için anlaşılır ve erişilebilir kılmak.</p>
-                <p style="margin-top:16px" data-i18n="about-p2">Platform; Binance'ten çekilen canlı fiyat verisi, gerçek VaR/CVaR/Sharpe hesaplamaları, Monte Carlo simülasyonu, portföye duyarlı makro şok testleri, strateji backtest'i, duygu takipli trading journal ve Claude destekli yapay zekâ analizi sunar.</p>
-                <p style="margin-top:16px" data-i18n="about-p3">Metrikler <strong style="color:var(--text-primary)">gerçek piyasa verisiyle</strong> hesaplanır; örnek/sentetik veriler arayüzde açıkça etiketlenir. Verileriniz cihazlar arasında güvenli şekilde senkronlanır (Supabase, satır-bazlı güvenlik).</p>
-                <p style="margin-top:16px;font-size:0.85rem;color:var(--text-muted)" data-i18n="about-disclaimer">⚠️ Equilyze yatırım tavsiyesi vermez, portföy yönetimi yapmaz ve müşteri varlığı tutmaz. Tüm araçlar eğitim ve analiz amaçlıdır.</p>
+                <p data-i18n="about-p1"><strong style="color:var(--text-primary)">Equilyze</strong>, bireysel yatırımcı ve trader'lar için geliştirilen bir portföy risk analizi ve işlem takip platformudur. Amacımız, kurumsal fonların yıllardır kullandığı risk ölçüm araçlarını sade, anlaşılır ve herkes için erişilebilir hale getirmek.</p>
+
+                <h3 class="about-h" data-i18n="about-h1">Neden Equilyze?</h3>
+                <p data-i18n="about-p2">Çoğu yatırımcı ne kadar kazandığını bilir, ama <strong style="color:var(--text-primary)">ne kadar risk taşıdığını</strong> bilmez. Portföyünüzün %25'i tek bir varlıkta olabilir ama riskinizin %50'sini o varlık taşıyor olabilir. Bir strateji kâr ediyor görünse de al-tut'un gerisinde kalıyor olabilir. Zararlarınızın çoğu belirli bir ruh halinde açtığınız işlemlerden geliyor olabilir. Equilyze tam olarak bu görünmeyen tarafı ölçer.</p>
+
+                <h3 class="about-h" data-i18n="about-h2">Nasıl çalışır?</h3>
+                <p data-i18n="about-p3">Portföyünüzü tanımlarsınız; platform büyük kripto borsalarının halka açık veri servislerinden <strong style="color:var(--text-primary)">gerçek fiyat geçmişini</strong> çeker ve şunları hesaplar: VaR/CVaR (kuyruk riski), Sharpe ve Sortino, beta, gerçek getiri serilerinden korelasyon matrisi, hangi pozisyonun riski taşıdığını gösteren Component VaR ve portföyün şoklara dayanıklılığını özetleyen Hayatta Kalma Skoru.</p>
+                <p style="margin-top:12px" data-i18n="about-p4">Üzerine dört analiz katmanı gelir: <strong style="color:var(--text-primary)">Monte Carlo</strong> (10.000 olası gelecek senaryosu), <strong style="color:var(--text-primary)">makro şok ve kriz testleri</strong> (faiz, enflasyon, kur şoklarının portföyünüze özel etkisi), <strong style="color:var(--text-primary)">strateji backtest'i</strong> (kuralınız al-tut'u gerçekten geçiyor mu) ve <strong style="color:var(--text-primary)">duygu takipli işlem günlüğü</strong> (hangi kurulum kazandırıyor, hangi ruh hali kaybettiriyor).</p>
+
+                <h3 class="about-h" data-i18n="about-h3">Yaklaşımımız</h3>
+                <p data-i18n="about-p5"><strong style="color:var(--text-primary)">Dürüst veri.</strong> Gerçek piyasa verisiyle hesaplanan metrikler ile model bazlı örnek veriler arayüzde birbirinden ayrılır; hiçbir sayı olduğundan daha kesin gösterilmez.<br>
+                <strong style="color:var(--text-primary)">Salt-okunur ilke.</strong> Platform hiçbir zaman işlem açma, kapatma veya para çekme yetkisi istemez. Hesap bağlantısı geldiğinde de yalnızca okuma yetkisiyle çalışacaktır.<br>
+                <strong style="color:var(--text-primary)">Veriniz sizin.</strong> Tüm portföy, günlük ve analiz verilerinizi tek tuşla indirebilirsiniz. Üye olmadan kullanırsanız hiçbir veri cihazınızdan çıkmaz.<br>
+                <strong style="color:var(--text-primary)">Reklamsız.</strong> Üçüncü taraf takip çerezi ve reklam ağı kullanılmaz.</p>
+
+                <h3 class="about-h" data-i18n="about-h4">Şu an neredeyiz?</h3>
+                <p data-i18n="about-p6">Risk motoru, simülasyon ve backtest katmanı, işlem günlüğü, yatırımcı profili testi ve yapay zekâ destekli analiz <strong style="color:var(--text-primary)">yayında ve çalışır durumda</strong>. Sırada salt-okunur hesap bağlantısı, yerel piyasa (hisse/döviz) canlı verisi ve otomatik risk uyarıları var. Kurucu üyelerin geri bildirimi bu sıralamayı doğrudan belirliyor.</p>
+
+                <p style="margin-top:18px;font-size:0.85rem;color:var(--text-muted)" data-i18n="about-disclaimer">⚠️ Equilyze yatırım tavsiyesi vermez, portföy yönetimi yapmaz, müşteri varlığı tutmaz ve emir iletimi gerçekleştirmez. Lisanslı bir yatırım kuruluşu değildir; tüm araçlar eğitim ve analiz amaçlıdır.</p>
                 <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">
                     <button class="btn btn-primary" onclick="closeOverlayPage();openAuthModal();switchAuthTab('register')" data-i18n="about-cta1">Ücretsiz Üye Ol</button>
                     <button class="btn btn-outline" onclick="openOverlayPage('kvkkPage')" data-i18n="about-cta2">KVKK & Gizlilik</button>
@@ -5864,9 +6081,10 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <div class="footer-links">
                     <h4>Ürün</h4>
                     <a href="#risk-test">Risk Profili Testi</a>
-                    <a href="#dashboard">Dashboard</a>
-                    <a href="#macro-engine">Macro Shock</a>
-                    <a href="#journal">Trading Journal</a>
+                    <a href="javascript:void(0)" onclick="openToolInDashboard('')">Dashboard</a>
+                    <a href="javascript:void(0)" onclick="openJournalWorkspace()">Trading Journal</a>
+                    <a href="javascript:void(0)" onclick="openToolInDashboard('macro-engine')">Macro Shock</a>
+                    <a href="javascript:void(0)" onclick="openToolInDashboard('monteCarloWidget')">Monte Carlo</a>
                 </div>
                 <div class="footer-links">
                     <h4 data-i18n="footer-membership">Üyelik</h4>
@@ -5876,10 +6094,12 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
                 <div class="footer-links">
                     <h4>Kaynaklar</h4>
-                    <a href="javascript:void(0)" onclick="openOverlayPage('blogPage')">Blog</a>
                     <a href="javascript:void(0)" onclick="openOverlayPage('educationPage')">Eğitim / Rehber</a>
+                    <a href="javascript:void(0)" onclick="openOverlayPage('blogPage')">Blog</a>
+                    <a href="javascript:void(0)" onclick="openOverlayPage('faqPage')">SSS / Yardım</a>
                     <a href="javascript:void(0)" onclick="openOverlayPage('aboutPage')">Hakkımızda</a>
                     <a href="javascript:void(0)" onclick="openOverlayPage('kvkkPage')">KVKK &amp; Gizlilik</a>
+                    <a href="mailto:destek@equilyze.com">İletişim</a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -6044,34 +6264,74 @@ body.overlay-open .mobile-bottom-nav { display: none; }
 
     <!-- Auth Modal -->
     <div class="modal-overlay" id="authModalOverlay" onclick="if(event.target===this)closeAuthModal()" role="dialog" aria-modal="true" aria-label="Hesap">
-        <div class="modal" style="max-width:440px">
-            <div class="modal-header">
-                <h3 id="authModalTitle">Hesap</h3>
-                <button class="modal-close" onclick="closeAuthModal()">✕</button>
+        <div class="modal auth-modal" style="max-width:460px">
+            <button class="auth-close" onclick="closeAuthModal()" aria-label="Kapat">✕</button>
+            <div class="auth-hero">
+                <div class="auth-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <h3 class="auth-title" id="authModalTitle" data-i18n="auth-title-login">Tekrar hoş geldiniz</h3>
+                <p class="auth-sub" id="authModalSub" data-i18n="auth-sub-login">Portföyünüz ve analizleriniz hesabınızda sizi bekliyor.</p>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding-top:0">
                 <div class="auth-tabs">
-                    <button class="auth-tab active" data-auth-tab="login" onclick="switchAuthTab('login')">Giriş</button>
-                    <button class="auth-tab" data-auth-tab="register" onclick="switchAuthTab('register')">Kayıt Ol</button>
+                    <button class="auth-tab active" data-auth-tab="login" onclick="switchAuthTab('login')" data-i18n="auth-tab-login">Giriş Yap</button>
+                    <button class="auth-tab" data-auth-tab="register" onclick="switchAuthTab('register')" data-i18n="auth-tab-register">Üye Ol</button>
                 </div>
                 <div class="auth-error" id="authError"></div>
+
                 <!-- Login Form -->
                 <form class="auth-form" id="authLoginForm" onsubmit="authLogin(event)" style="display:block">
-                    <input type="email" id="authLoginEmail" placeholder="E-posta adresiniz" required>
-                    <input type="password" id="authLoginPassword" placeholder="Şifreniz" required minlength="6">
-                    <button type="submit" class="btn btn-primary" style="width:100%" data-orig-text="Giriş Yap">Giriş Yap</button>
-                    <div class="auth-divider">— veya —</div>
-                    <button type="button" class="btn btn-ghost" style="width:100%" onclick="demoLogin()">Demo Hesap ile Devam Et</button>
+                    <label class="auth-label" for="authLoginEmail" data-i18n="auth-email">E-posta</label>
+                    <input type="email" id="authLoginEmail" autocomplete="email" placeholder="ornek@eposta.com" required>
+                    <label class="auth-label" for="authLoginPassword" data-i18n="auth-password">Şifre</label>
+                    <div class="auth-pass-wrap">
+                        <input type="password" id="authLoginPassword" autocomplete="current-password" placeholder="••••••••" required minlength="6">
+                        <button type="button" class="auth-eye" onclick="toggleAuthPass('authLoginPassword',this)" aria-label="Şifreyi göster">👁</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full auth-submit" data-orig-text="Giriş Yap" data-i18n="auth-cta-login">Giriş Yap</button>
+                    <div class="auth-divider"><span data-i18n="auth-or">veya</span></div>
+                    <button type="button" class="btn btn-outline btn-full" onclick="demoLogin()" data-i18n="auth-demo">🚀 Demo hesapla hızlı bak</button>
+                    <p class="auth-switch-hint">
+                        <span data-i18n="auth-no-account">Hesabınız yok mu?</span>
+                        <a href="javascript:void(0)" onclick="switchAuthTab('register')" data-i18n="auth-goto-register">Ücretsiz üye olun</a>
+                    </p>
                 </form>
+
                 <!-- Register Form -->
                 <form class="auth-form" id="authRegisterForm" onsubmit="authRegister(event)" style="display:none">
-                    <div class="form-row">
-                        <input type="text" id="authRegName" placeholder="Adınız" required>
-                        <input type="email" id="authRegEmail" placeholder="E-posta" required>
+                    <div class="auth-perk">
+                        <span class="auth-perk-badge" data-i18n="auth-perk-badge">KURUCU ÜYE</span>
+                        <span data-i18n="auth-perk-text">İlk 500 üye tüm özellikleri ömür boyu ücretsiz kullanır. Kredi kartı gerekmez.</span>
                     </div>
-                    <input type="password" id="authRegPassword" placeholder="Şifre (en az 6 karakter)" required minlength="6">
-                    <input type="password" id="authRegConfirm" placeholder="Şifre tekrar" required minlength="6">
-                    <button type="submit" class="btn btn-primary" style="width:100%" data-orig-text="Hesap Oluştur">Hesap Oluştur</button>
+                    <label class="auth-label" for="authRegName" data-i18n="auth-name">Adınız</label>
+                    <input type="text" id="authRegName" autocomplete="name" placeholder="Ad Soyad" required>
+                    <label class="auth-label" for="authRegEmail" data-i18n="auth-email">E-posta</label>
+                    <input type="email" id="authRegEmail" autocomplete="email" placeholder="ornek@eposta.com" required>
+                    <label class="auth-label" for="authRegPassword" data-i18n="auth-password">Şifre</label>
+                    <div class="auth-pass-wrap">
+                        <input type="password" id="authRegPassword" autocomplete="new-password" placeholder="En az 6 karakter" required minlength="6" oninput="updatePassStrength(this.value)">
+                        <button type="button" class="auth-eye" onclick="toggleAuthPass('authRegPassword',this)" aria-label="Şifreyi göster">👁</button>
+                    </div>
+                    <div class="pass-strength" id="passStrength"><div class="pass-strength-bar" id="passStrengthBar"></div></div>
+                    <div class="pass-hint" id="passHint" data-i18n="auth-pass-rule">En az 6 karakter, bir büyük harf ve bir rakam</div>
+                    <label class="auth-label" for="authRegConfirm" data-i18n="auth-password-again">Şifre (tekrar)</label>
+                    <div class="auth-pass-wrap">
+                        <input type="password" id="authRegConfirm" autocomplete="new-password" placeholder="••••••••" required minlength="6">
+                        <button type="button" class="auth-eye" onclick="toggleAuthPass('authRegConfirm',this)" aria-label="Şifreyi göster">👁</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full auth-submit" data-orig-text="Hesap Oluştur" data-i18n="auth-cta-register">Ücretsiz Hesap Oluştur</button>
+                    <p class="auth-legal">
+                        <span data-i18n="auth-legal">Üye olarak</span>
+                        <a href="javascript:void(0)" onclick="closeAuthModal();openOverlayPage('kvkkPage')" data-i18n="auth-legal-link">KVKK &amp; Gizlilik</a>
+                        <span data-i18n="auth-legal2">metnini kabul etmiş olursunuz.</span>
+                    </p>
+                    <p class="auth-switch-hint">
+                        <span data-i18n="auth-have-account">Zaten hesabınız var mı?</span>
+                        <a href="javascript:void(0)" onclick="switchAuthTab('login')" data-i18n="auth-goto-login">Giriş yapın</a>
+                    </p>
                 </form>
             </div>
         </div>
@@ -10250,6 +10510,42 @@ function switchAuthTab(tab) {
     document.getElementById('authLoginForm').style.display = tab === 'login' ? 'block' : 'none';
     document.getElementById('authRegisterForm').style.display = tab === 'register' ? 'block' : 'none';
     document.getElementById('authError').textContent = '';
+    // Başlık/alt başlığı sekmeye göre güncelle (dile duyarlı)
+    const en = (typeof isEnLang === 'function') && isEnLang();
+    const t = document.getElementById('authModalTitle');
+    const s = document.getElementById('authModalSub');
+    if (t && s) {
+        if (tab === 'register') {
+            t.textContent = en ? 'Create your free account' : 'Ücretsiz hesabınızı oluşturun';
+            s.textContent = en ? 'Your portfolio, journal and analyses sync across devices.' : 'Portföyünüz, günlüğünüz ve analizleriniz cihazlar arasında senkronlanır.';
+        } else {
+            t.textContent = en ? 'Welcome back' : 'Tekrar hoş geldiniz';
+            s.textContent = en ? 'Your portfolio and analyses are waiting in your account.' : 'Portföyünüz ve analizleriniz hesabınızda sizi bekliyor.';
+        }
+    }
+}
+/* Şifre göster/gizle */
+function toggleAuthPass(id, btn) {
+    const inp = document.getElementById(id);
+    if (!inp) return;
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    btn.textContent = show ? '🙈' : '👁';
+    btn.style.opacity = show ? '1' : '0.55';
+}
+/* Şifre gücü göstergesi */
+function updatePassStrength(v) {
+    const bar = document.getElementById('passStrengthBar');
+    if (!bar) return;
+    let score = 0;
+    if (v.length >= 6) score++;
+    if (v.length >= 10) score++;
+    if (/[A-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    const pct = Math.min(100, score * 20);
+    bar.style.width = pct + '%';
+    bar.style.background = score <= 2 ? 'var(--color-danger)' : score <= 3 ? 'var(--color-warning)' : 'var(--color-success)';
 }
 function setAuthLoading(loading) {
     const btns = document.querySelectorAll('#authLoginForm button[type="submit"], #authRegisterForm button[type="submit"]');
@@ -11698,6 +11994,75 @@ const translations = {
         'risk-test-desc': 'Measure your risk tolerance, financial capacity and investor maturity objectively with a comprehensive 20-question test.',
         'hero-cta1': 'Free Risk Test', 'hero-cta2': 'View Dashboard',
         'hero-badge': 'Portfolio Risk Analysis with Real Market Data',
+        'nav-education': 'Education', 'nav-blog': 'Blog', 'nav-faq': 'FAQ', 'back-home': '← Home',
+        /* Auth modal */
+        'auth-title-login': 'Welcome back', 'auth-sub-login': 'Your portfolio and analyses are waiting in your account.',
+        'auth-tab-login': 'Sign In', 'auth-tab-register': 'Sign Up',
+        'auth-email': 'Email', 'auth-password': 'Password', 'auth-password-again': 'Password (again)', 'auth-name': 'Your name',
+        'auth-cta-login': 'Sign In', 'auth-cta-register': 'Create Free Account',
+        'auth-or': 'or', 'auth-demo': '🚀 Take a quick look with a demo account',
+        'auth-no-account': 'Don\'t have an account?', 'auth-goto-register': 'Sign up free',
+        'auth-have-account': 'Already have an account?', 'auth-goto-login': 'Sign in',
+        'auth-perk-badge': 'FOUNDING MEMBER', 'auth-perk-text': 'The first 500 members use every feature free for life. No credit card required.',
+        'auth-pass-rule': 'At least 6 characters, one uppercase letter and one number',
+        'auth-legal': 'By signing up you accept our', 'auth-legal-link': 'Privacy & Data Protection', 'auth-legal2': 'terms.',
+        /* FAQ page */
+        'faqp-badge': 'HELP CENTER', 'faqp-title': 'Frequently Asked <span class="gradient-text">Questions</span>',
+        'faqp-desc': 'Everything you need to know about the platform, data, calculations, privacy and membership.',
+        'faqp-cat1': '🧭 General', 'faqp-cat2': '📊 Data and Calculations', 'faqp-cat3': '🔒 Security and Privacy',
+        'faqp-cat4': '💳 Membership', 'faqp-cat5': '🚀 Usage',
+        'faqp-foot': 'Couldn\'t find your answer? <strong>destek@equilyze.com</strong>',
+        'faqp-cta1': 'Sign Up Free', 'faqp-cta2': 'Education Guide',
+        'faq-all-cta': 'View all questions →',
+        'fq1': 'What exactly does Equilyze do?',
+        'fa1': 'Equilyze is an analysis platform that <strong>measures your portfolio\'s risk</strong> and helps you track your trades. You define your portfolio; the platform uses real market data to compute VaR, CVaR, Sharpe, Sortino, beta, correlation and which asset actually carries the risk (Component VaR). It also offers Monte Carlo simulation, macro shock tests, strategy backtesting and an emotion-tagged trading journal.',
+        'fq2': 'Who is it for?',
+        'fa2': 'Individual investors who want to manage their portfolio consciously, and traders who want to measure their trading discipline. Beginners can start with the risk test and education guide; experienced users get quantitative tools like Component VaR, Monte Carlo and backtesting.',
+        'fq3': 'Do you provide investment advice?',
+        'fa3': '<strong>No.</strong> Equilyze does not provide investment advisory services, does not manage portfolios, does not hold client assets and does not route orders. All outputs are for education and analysis; decisions are entirely yours.',
+        'fq4': 'Do I need to install anything?',
+        'fa4': 'No, it runs in your browser. You can optionally add the app to your phone\'s home screen (PWA) — it then opens offline too and runs full screen like a native app.',
+        'fq5': 'Is the data real or simulated?',
+        'fa5': 'For crypto assets, price and return history is <strong>real market data</strong> (public data services of major crypto exchanges). Risk metrics are computed from these real series. For asset types without live data, model-based series are used and clearly labelled as <em>sample/demo</em> in the interface.',
+        'fq6': 'What do VaR and CVaR mean?',
+        'fa6': '<strong>VaR (95%)</strong> is the estimated loss level you would not exceed on 95 out of 100 days under normal conditions. <strong>CVaR</strong> shows the <em>average</em> loss in the worst 5% of scenarios — the tail risk. CVaR is always larger than VaR and describes crisis conditions better.',
+        'fq7': 'Why does Component VaR matter?',
+        'fa7': 'An asset can carry most of your risk even if it is a small part of your portfolio. Component VaR shows what percentage of total risk comes from each position. For example, if an asset weighted 25% carries 50% of the risk, that is a <strong>concentration signal</strong>.',
+        'fq8': 'How does the Monte Carlo simulation work?',
+        'fa8': 'Using a Geometric Brownian Motion model, it generates 10,000 different future scenarios while preserving your assets\' volatility and correlation structure. You get expected value, median, VaR/CVaR and probabilities such as "chance of falling below a given level". The computation runs on a separate thread, so the interface never freezes.',
+        'fq9': 'How is the Survival Score calculated?',
+        'fa9': 'It is a weighted sum of Sharpe, maximum drawdown, VaR, Sortino, Calmar, diversification (average correlation), alpha and beta alignment components (0-100). A high score means the portfolio is more resilient to shocks; a low score signals fragility and concentration risk.',
+        'fq10': 'Why aren\'t backtest results a guarantee?',
+        'fa10': 'A backtest relies on past data and does not fully reflect commissions, slippage and liquidity constraints. A rule that worked in the past may not work in the future. Use backtesting to <em>test</em> the question "does this strategy add value over buy-and-hold?", not as a promise of returns.',
+        'fq11': 'Where is my data stored?',
+        'fa11': 'If you sign up, your data is stored in a database in the EU region with <strong>row-level security</strong>: technically you can only access your own record. If you use the app without signing up, nothing goes to a server — data stays only in your browser.',
+        'fq12': 'If I connect my account, can you withdraw my funds?',
+        'fa12': 'No. When account connection arrives, only <strong>read-only</strong> permission will be requested; trading and withdrawal permissions will never be requested under any circumstances. As of today, account connection is not yet active.',
+        'fq13': 'Does the AI Copilot share my data with anyone?',
+        'fa13': 'The AI feature only works when you connect <strong>your own API key</strong>. The request goes directly from your browser to the AI provider; your key is stored only on your device and is never sent to our servers. If you don\'t connect a key, no data leaves the app.',
+        'fq14': 'Can I download or delete my data?',
+        'fa14': 'Yes. From <strong>Profile → Download Center</strong> you can download your portfolio, trading journal, risk metrics and profile report as JSON/CSV/PDF. To request full deletion of your account, just write to us.',
+        'fq15': 'What does "first 500 users free for life" mean?',
+        'fa15': 'The first 500 members are considered <strong>founding members</strong> and use all current features free for as long as their account stays open. Once the quota is filled, paid plans will be announced; founding members are unaffected. No payments are being collected at this time.',
+        'fq16': 'Can I use it without signing up?',
+        'fa16': 'You can browse the landing page and the demo account without membership. However the dashboard, trading journal and personal analyses require an account, because that data is tied to your profile and synced across devices.',
+        'fq17': 'Do you ask for credit card details?',
+        'fa17': 'No. Sign-up only requires a name and email. There is no payment infrastructure yet; no identity numbers, addresses or card details are collected.',
+        'fq18': 'Where should I start?',
+        'fa18': 'Three steps: <strong>1)</strong> Take the investor profile test (20 questions), <strong>2)</strong> Enter your own holdings via "Portfolio" on the dashboard, <strong>3)</strong> Start logging your trades in the Journal. Then stress-test your portfolio with Monte Carlo and shock tests.',
+        'fq19': 'Can I bulk-import my past trades?',
+        'fa19': 'Yes. Use <strong>Import CSV</strong> in the Journal to upload the trade history exported from your exchange. Date, symbol, side, price and quantity columns are detected automatically (Turkish and English headers supported).',
+        'fq20': 'Should I record losing trades too?',
+        'fa20': '<strong>Absolutely.</strong> Win rate, profit factor and expectancy only mean something if losses are recorded as well. Emotion tags also let you see which state of mind costs you the most — one of the platform\'s most valuable insights.',
+        'fq21': 'I found a bug or have a suggestion — how do I report it?',
+        'fa21': 'Your feedback directly shapes the roadmap: write to <strong>destek@equilyze.com</strong>.',
+        /* About extra */
+        'about-h1': 'Why Equilyze?', 'about-h2': 'How does it work?', 'about-h3': 'Our approach', 'about-h4': 'Where are we now?',
+        'about-p2': 'Most investors know how much they made, but not <strong style="color:var(--text-primary)">how much risk they carry</strong>. A quarter of your portfolio may sit in one asset, yet that asset may carry half of your risk. A strategy may look profitable while still lagging buy-and-hold. Most of your losses may come from trades opened in one particular state of mind. Equilyze measures exactly this invisible side.',
+        'about-p3': 'You define your portfolio; the platform pulls <strong style="color:var(--text-primary)">real price history</strong> from the public data services of major crypto exchanges and computes: VaR/CVaR (tail risk), Sharpe and Sortino, beta, a correlation matrix from actual return series, Component VaR showing which position carries the risk, and a Survival Score summarising resilience to shocks.',
+        'about-p4': 'Four analysis layers sit on top: <strong style="color:var(--text-primary)">Monte Carlo</strong> (10,000 possible futures), <strong style="color:var(--text-primary)">macro shock and crisis tests</strong> (the specific impact of rate, inflation and FX shocks on your portfolio), <strong style="color:var(--text-primary)">strategy backtesting</strong> (does your rule really beat buy-and-hold) and an <strong style="color:var(--text-primary)">emotion-tagged trading journal</strong> (which setup pays off, which mood costs you).',
+        'about-p5': '<strong style="color:var(--text-primary)">Honest data.</strong> Metrics computed from real market data are visually separated from model-based sample data; no number is presented as more certain than it is.<br><strong style="color:var(--text-primary)">Read-only principle.</strong> The platform never requests permission to open, close or withdraw. Even when account connection arrives, it will work with read access only.<br><strong style="color:var(--text-primary)">Your data is yours.</strong> You can download all portfolio, journal and analysis data with one click. If you use the app without an account, no data leaves your device.<br><strong style="color:var(--text-primary)">Ad-free.</strong> No third-party tracking cookies or ad networks.',
+        'about-p6': 'The risk engine, simulation and backtest layer, trading journal, investor profile test and AI-assisted analysis are <strong style="color:var(--text-primary)">live and working</strong>. Next up: read-only account connection, live local-market (equity/FX) data and automated risk alerts. Founding members\' feedback directly sets this order.',
         'hero-title': 'Measure Your <span class="gradient-text">Risk</span>,<br>Decide with <span class="gradient-text">Data</span>',
         'dash-badge': 'CONTROL CENTER', 'dash-title': 'All-in-One <span class="gradient-text">Dashboard</span>',
         'dash-desc': 'Track your portfolio risk metrics, positions and every analysis tool on a single screen.',
@@ -12021,6 +12386,8 @@ const TEXT_MAP_EN = {
     'Read-Only Mimari İlkesi': 'Read-Only Architecture Principle',
     '● Canlı veri': '● Live data', 'Canlı veri': 'Live data',
     'Salt-Okunur API': 'Read-Only API', 'KVKK Uyumlu': 'GDPR-Aligned', 'GBM Monte Carlo': 'GBM Monte Carlo',
+    'Salt-Okunur Erişim': 'Read-Only Access', 'Gerçek Piyasa Verisi': 'Real Market Data',
+    'SSS / Yardım': 'FAQ / Help', 'İletişim': 'Contact', 'SSS': 'FAQ', 'Eğitim': 'Education',
     /* Isı haritası */
     'Bu Ay K/Z': 'This Month P&L', 'En İyi Gün': 'Best Day', 'En Kötü Gün': 'Worst Day',
     'Kârlı Gün': 'Profitable Days', 'Kâr': 'Profit', 'Nötr': 'Neutral', 'Zarar': 'Loss',
