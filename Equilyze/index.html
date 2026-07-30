@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
@@ -279,9 +279,71 @@ input, select, textarea { font-family: var(--font-sans); }
     transition: all 0.2s;
 }
 .theme-toggle:hover { border-color: var(--color-primary); color: var(--color-primary); }
+/* ══ Bildirim merkezi (zil) ══
+   Tema düğmesinin solunda; hem masaüstünde hem mobilde görünür, yalnızca üyelere. */
+.notif-btn {
+    display: none; position: relative; width: 36px; height: 36px;
+    align-items: center; justify-content: center;
+    background: var(--bg-tertiary); border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm); color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
+}
+.notif-btn.visible { display: flex; }
+.notif-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.notif-btn.has-unread { color: var(--color-primary); border-color: rgba(16,185,129,0.35); }
+.notif-count {
+    position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; padding: 0 4px;
+    display: none; align-items: center; justify-content: center;
+    background: var(--color-danger); color: #fff; font-size: 0.6rem; font-weight: 800;
+    border-radius: 999px; border: 2px solid var(--bg-primary); line-height: 1;
+}
+.notif-count.on { display: flex; }
+.notif-bell-ring { animation: bellRing 0.7s ease; }
+@keyframes bellRing { 0%,100% { transform: rotate(0); } 20% { transform: rotate(14deg); } 40% { transform: rotate(-12deg); } 60% { transform: rotate(8deg); } 80% { transform: rotate(-5deg); } }
+.notif-panel {
+    position: fixed; top: 66px; right: 16px; z-index: 1200;
+    width: min(390px, calc(100vw - 24px)); max-height: min(540px, 72vh);
+    display: none; flex-direction: column;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden;
+}
+.notif-panel.open { display: flex; animation: fadeInUp 0.2s ease; }
+.notif-head { display: flex; align-items: center; gap: 8px; padding: 13px 15px; border-bottom: 1px solid var(--border-subtle); flex: 0 0 auto; }
+.notif-head strong { font-size: 0.92rem; color: var(--text-primary); }
+.notif-head-actions { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.notif-link { background: none; border: none; color: var(--color-primary); font-family: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
+.notif-link:hover { background: rgba(16,185,129,0.08); }
+.notif-list { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; }
+.notif-item { position: relative; display: flex; gap: 11px; padding: 12px 15px 12px 17px; border-bottom: 1px solid var(--border-subtle); cursor: pointer; transition: background 0.15s; }
+.notif-item:hover { background: var(--bg-hover); }
+.notif-item.unread { background: rgba(16,185,129,0.045); }
+.notif-item.unread::before { content: ''; position: absolute; left: 6px; top: 18px; width: 5px; height: 5px; border-radius: 50%; background: var(--color-primary); }
+.notif-ico { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+.notif-ico.high { background: rgba(239,68,68,0.13); }
+.notif-ico.medium { background: rgba(245,158,11,0.13); }
+.notif-ico.low { background: rgba(59,130,246,0.13); }
+.notif-ico.info { background: rgba(139,92,246,0.13); }
+.notif-body { flex: 1 1 auto; min-width: 0; }
+.notif-title { font-size: 0.84rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+.notif-desc { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5; }
+.notif-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 0.68rem; color: var(--text-muted); }
+.notif-sev { font-weight: 800; letter-spacing: 0.04em; }
+.notif-sev.high { color: var(--color-danger); }
+.notif-sev.medium { color: var(--color-warning); }
+.notif-sev.low { color: #3b82f6; }
+.notif-sev.info { color: #8b5cf6; }
+.notif-empty { padding: 34px 20px; text-align: center; color: var(--text-muted); font-size: 0.82rem; line-height: 1.6; }
+.notif-foot { flex: 0 0 auto; padding: 10px 15px; border-top: 1px solid var(--border-subtle); background: var(--bg-secondary); }
+.notif-push-row { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--text-muted); }
+.notif-push-row button { margin-left: auto; }
+@media (max-width: 640px) {
+    .notif-panel { top: auto; bottom: 0; left: 0; right: 0; width: 100%; max-height: 78vh; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+}
+
 /* Mobilde tema düğmesi hamburger'in yanında kalır (nav-actions gizlense de) */
 @media (max-width: 1024px) {
-    /* Tema ikonu hamburger'e bitişik dursun (ortada asılı kalmasın) */
+    /* Tema + bildirim ikonu hamburger'e bitişik dursun (ortada asılı kalmasın) */
+    .notif-btn.visible { display: flex !important; margin-left: auto !important; width: 38px; height: 38px; }
+    .notif-btn.visible + .theme-toggle { margin-left: 0 !important; }
     .theme-toggle { display: flex !important; margin-left: auto !important; margin-right: 0 !important; width: 38px; height: 38px; }
     .mobile-toggle { margin-left: 2px !important; padding-right: 0; }
     .nav-container { gap: 8px; }
@@ -1748,8 +1810,45 @@ body.dashboard-open #dashboard .dashboard-teaser { display: none; }
 /* ── Dashboard sıralaması: önce veri, API/güvenlik en altta ── */
 .dashboard-inner { display: flex; flex-direction: column; }
 .dashboard-inner > .dashboard-toolbar { order: 1; }
-.dashboard-inner > #dashboardGrid { order: 2; }
-.dashboard-inner > #apiPanel { order: 3; margin-top: 16px; }
+.dashboard-inner > .dash-tabs { order: 2; }
+.dashboard-inner > #dashboardGrid { order: 3; }
+.dashboard-inner > #apiPanel { order: 4; margin-top: 16px; }
+
+/* ══ Dashboard sekmeleri ══
+   Her şeyi tek sayfada göstermek yerine 6 kategoriye ayırıyoruz.
+   Filtre: aktif sekmeye ait olmayan bloklar gizlenir; görünenlerin
+   orijinal display değeri (flex/grid/block) korunur. */
+.dash-tabs {
+    display: flex; gap: 4px; padding: 5px; margin-bottom: 18px;
+    background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 14px;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    position: sticky; top: 68px; z-index: 41; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.dash-tabs::-webkit-scrollbar { display: none; }
+.dash-tab {
+    flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    white-space: nowrap; padding: 10px 14px; border: none; background: none; color: var(--text-secondary);
+    font-family: inherit; font-size: 0.84rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.18s;
+}
+.dash-tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+.dash-tab.active { background: var(--bg-card); color: var(--color-primary); box-shadow: var(--shadow-sm); }
+.dash-tab-badge { font-size: 0.6rem; font-weight: 800; min-width: 16px; padding: 1px 5px; border-radius: 999px; background: var(--color-danger); color: #fff; }
+.dash-tab-badge:empty, .dash-tab-badge[data-n="0"] { display: none; }
+/* Sekme başlığı (hangi kategoride olduğunu belirtir) */
+.dash-tab-head { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px; margin: 2px 0 -2px; }
+.dash-tab-head h3 { font-size: 1.05rem; font-weight: 800; color: var(--text-primary); }
+.dash-tab-head span { font-size: 0.78rem; color: var(--text-muted); }
+/* Sekme filtresi — yalnızca dashboard modunda çalışır (ana sayfa etkilenmez) */
+body.dashboard-open[data-dtab="ozet"] [data-dtab]:not([data-dtab~="ozet"]),
+body.dashboard-open[data-dtab="risk"] [data-dtab]:not([data-dtab~="risk"]),
+body.dashboard-open[data-dtab="gunluk"] [data-dtab]:not([data-dtab~="gunluk"]),
+body.dashboard-open[data-dtab="sim"] [data-dtab]:not([data-dtab~="sim"]),
+body.dashboard-open[data-dtab="backtest"] [data-dtab]:not([data-dtab~="backtest"]),
+body.dashboard-open[data-dtab="piyasa"] [data-dtab]:not([data-dtab~="piyasa"]) { display: none !important; }
+@media (max-width: 768px) {
+    .dash-tabs { top: 56px; padding: 4px; border-radius: 12px; margin-bottom: 14px; }
+    .dash-tab { padding: 9px 12px; font-size: 0.8rem; }
+}
 /* Dashboard sayfasında pazarlama başlığını gizle — toolbar zaten başlık/kontrol */
 body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .dash-back-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-primary); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 1.05rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
@@ -1768,10 +1867,11 @@ body.dashboard-open #dashboard > .container > .section-header { display: none; }
 /* ── Dashboard toolbar (Kontrol Merkezi) ── */
 .dashboard-toolbar {
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-    padding: 14px 18px; margin-bottom: 20px;
+    padding: 14px 18px; margin-bottom: 14px;
     background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05), var(--bg-card));
     border: 1px solid var(--border-color); border-radius: var(--radius-lg);
-    position: sticky; top: 68px; z-index: 40; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    /* Sticky olan artık sekme çubuğu — navigasyon her zaman erişilebilir olsun */
+    position: relative; z-index: 40;
 }
 .dash-toolbar-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
 .dash-toolbar-sub { font-size: 0.72rem; font-weight: 500; color: var(--text-muted); margin-left: 4px; }
@@ -1893,14 +1993,22 @@ body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .hero-stat { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .jt-item .jt-icon { width: 34px; height: 34px; }
 /* ── Üyelik (giriş/kayıt) modalı ── */
-.auth-modal { position: relative; overflow: hidden; }
+/* Auth modal: hero + kapat butonu sabit, form alanı kaydırılabilir.
+   NOT: 'overflow:hidden' burada .modal'ın overflow-y:auto'sunu eziyordu ve
+   uzun kayıt formunun altı (üye ol linki, şifre tekrar) erişilemez oluyordu. */
+.auth-modal { position: relative; display: flex; flex-direction: column; max-height: 92vh; overflow: hidden; }
+.auth-modal .auth-hero { flex: 0 0 auto; }
+.auth-modal .modal-body { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; }
+/* Kaydırılacak içerik varsa alt kenarda solma ipucu (sona gelince kaybolur) */
+.auth-modal::after { content: ''; position: absolute; left: 1px; right: 1px; bottom: 0; height: 28px; border-radius: 0 0 var(--radius-xl) var(--radius-xl); background: linear-gradient(to bottom, transparent, var(--bg-card) 78%); pointer-events: none; opacity: 1; transition: opacity 0.2s; z-index: 1; }
+.auth-modal.at-end::after { opacity: 0; }
 .auth-close { position: absolute; top: 12px; right: 12px; z-index: 2; background: var(--bg-hover); border: 1px solid var(--border-subtle); color: var(--text-secondary); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
 .auth-close:hover { color: var(--text-primary); border-color: var(--border-hover); }
-.auth-hero { text-align: center; padding: 28px 24px 14px; background: linear-gradient(180deg, rgba(16,185,129,0.08), transparent); }
-.auth-logo { width: 46px; height: 46px; margin: 0 auto 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: #fff; }
+.auth-hero { text-align: center; padding: 22px 24px 10px; background: linear-gradient(180deg, rgba(16,185,129,0.08), transparent); }
+.auth-logo { width: 42px; height: 42px; margin: 0 auto 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: #fff; }
 .auth-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 5px; color: var(--text-primary); }
 .auth-sub { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; max-width: 340px; margin: 0 auto; }
-.auth-tabs { display: flex; gap: 6px; background: var(--bg-tertiary); padding: 4px; border-radius: 10px; margin: 16px 0 18px; }
+.auth-tabs { display: flex; gap: 6px; background: var(--bg-tertiary); padding: 4px; border-radius: 10px; margin: 12px 0 14px; }
 .auth-tab { flex: 1; padding: 9px 12px; border: none; background: none; color: var(--text-secondary); font-size: 0.86rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
 .auth-tab.active { background: var(--bg-card); color: var(--text-primary); box-shadow: var(--shadow-sm); }
 .auth-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin: 12px 0 5px; }
@@ -1910,10 +2018,10 @@ body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .auth-pass-wrap input { padding-right: 44px; }
 .auth-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 0.95rem; opacity: 0.55; padding: 6px 8px; }
 .auth-eye:hover { opacity: 1; }
-.auth-submit { margin-top: 18px; padding: 12px; font-size: 0.95rem; }
-.auth-divider { display: flex; align-items: center; gap: 10px; margin: 16px 0 12px; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.auth-submit { margin-top: 16px; padding: 12px; font-size: 0.95rem; }
+.auth-divider { display: flex; align-items: center; gap: 10px; margin: 12px 0 10px; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
 .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
-.auth-switch-hint { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; }
+.auth-switch-hint { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 13px; padding-bottom: 4px; }
 .auth-switch-hint a { color: var(--color-primary); font-weight: 600; }
 .auth-perk { display: flex; flex-direction: column; gap: 5px; padding: 12px 14px; background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.22); border-radius: 10px; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
 .auth-perk-badge { align-self: flex-start; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.06em; color: var(--color-primary); background: rgba(16,185,129,0.14); padding: 2px 8px; border-radius: 999px; }
@@ -1923,6 +2031,27 @@ body.dashboard-open #dashboard > .container > .section-header { display: none; }
 .auth-legal { font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: 12px; line-height: 1.5; }
 .auth-legal a { color: var(--color-secondary); text-decoration: underline; }
 .auth-error:not(:empty) { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: var(--color-danger); padding: 9px 12px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 4px; }
+/* Google ile giriş */
+.auth-google { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; padding: 11px 14px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-secondary); color: var(--text-primary); font-size: 0.88rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.18s; }
+.auth-google:hover { border-color: var(--border-hover); background: var(--bg-hover); transform: translateY(-1px); }
+.auth-google svg { flex: 0 0 auto; }
+/* Kayıt formunu kısaltmak için ikili alan satırı (mobilde tek kolona düşer) */
+.auth-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.auth-uname-wrap { position: relative; }
+.auth-uname-wrap input { padding-left: 26px; }
+.auth-uname-at { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.88rem; pointer-events: none; }
+.auth-uname-note { font-size: 0.68rem; color: var(--text-muted); margin-top: 5px; line-height: 1.45; }
+.auth-uname-note.ok { color: var(--color-success); }
+.auth-uname-note.bad { color: var(--color-danger); }
+/* Gizlilik güvencesi şeridi */
+.auth-privacy { display: flex; align-items: flex-start; gap: 8px; margin-top: 14px; padding: 10px 12px; background: var(--bg-tertiary); border-radius: 9px; font-size: 0.7rem; color: var(--text-muted); line-height: 1.5; }
+.auth-privacy svg { flex: 0 0 auto; margin-top: 1px; color: var(--color-primary); }
+@media (max-width: 640px) {
+    .auth-modal { max-height: 88vh; }
+    .auth-grid2 { grid-template-columns: 1fr; gap: 0; }
+    .auth-hero { padding: 20px 20px 10px; }
+    .auth-logo { width: 40px; height: 40px; margin-bottom: 9px; }
+}
 @media (max-width: 600px) {
     .auth-hero { padding: 22px 18px 10px; }
     .auth-title { font-size: 1.08rem; }
@@ -2020,6 +2149,35 @@ body.overlay-open .mobile-bottom-nav { display: none; }
 }
 .form-group textarea { resize: vertical; min-height: 72px; }
 .tag-options { display: flex; gap: 8px; flex-wrap: wrap; }
+/* ══ Setup kütüphanesi + kural onay listesi ══ */
+.setup-check-box { margin-top: 10px; padding: 12px 14px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 10px; }
+.setup-check-head { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; }
+.setup-check-score { font-family: var(--font-mono); font-weight: 800; color: var(--color-primary); }
+.setup-rule { display: flex; align-items: flex-start; gap: 9px; padding: 6px 0; font-size: 0.82rem; color: var(--text-primary); cursor: pointer; line-height: 1.45; }
+.setup-rule input { margin-top: 3px; accent-color: var(--color-primary); flex: 0 0 auto; }
+.setup-check-note { margin-top: 8px; font-size: 0.68rem; color: var(--text-muted); line-height: 1.45; }
+.setup-card { padding: 13px 15px; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); margin-bottom: 9px; }
+.setup-card-head { display: flex; align-items: center; gap: 9px; margin-bottom: 5px; }
+.setup-card-head strong { font-size: 0.9rem; color: var(--text-primary); }
+.setup-badge { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.04em; padding: 2px 7px; border-radius: 999px; background: var(--bg-tertiary); color: var(--text-secondary); }
+.setup-card-meta { font-size: 0.74rem; color: var(--text-muted); line-height: 1.5; }
+.setup-card-actions { margin-left: auto; display: flex; gap: 5px; }
+.setup-card-actions button { background: none; border: 1px solid var(--border-subtle); color: var(--text-secondary); border-radius: 7px; padding: 3px 8px; font-size: 0.72rem; cursor: pointer; font-family: inherit; }
+.setup-card-actions button:hover { border-color: var(--color-primary); color: var(--color-primary); }
+/* Setup performans tablosu */
+.sp-row { padding: 12px 0; border-bottom: 1px solid var(--border-subtle); }
+.sp-row-top { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.sp-name { font-weight: 700; font-size: 0.88rem; color: var(--text-primary); }
+.sp-verdict { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; }
+.sp-verdict.good { background: rgba(16,185,129,0.14); color: var(--color-success); }
+.sp-verdict.bad { background: rgba(239,68,68,0.13); color: var(--color-danger); }
+.sp-verdict.thin { background: rgba(245,158,11,0.13); color: var(--color-warning); }
+.sp-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 8px; margin-top: 9px; }
+.sp-metric { background: var(--bg-tertiary); border-radius: 8px; padding: 8px 10px; }
+.sp-metric-l { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 3px; }
+.sp-metric-v { font-size: 0.9rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+.sp-discipline { margin-top: 9px; padding: 9px 11px; background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.2); border-radius: 9px; font-size: 0.76rem; color: var(--text-secondary); line-height: 1.55; }
+.sp-discipline strong { color: var(--text-primary); }
 .tag-check {
     display: flex; align-items: center; gap: 6px;
     padding: 5px 12px;
@@ -3842,6 +4000,13 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <a href="#" class="nav-login">Giriş Yap</a>
                 <a href="#risk-test" class="btn btn-nav-cta">Ücretsiz Başla</a>
             </div>
+            <!-- Bildirim merkezi: yalnızca giriş yapan üyelerde görünür -->
+            <button class="notif-btn" id="notifBtn" onclick="toggleNotifPanel(event)" aria-label="Bildirimler" title="Bildirimler">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span class="notif-count" id="notifCount"></span>
+            </button>
             <!-- Tema düğmesi: mobilde de görünür (hamburger'in yanında), yalnızca ikon -->
             <button class="theme-toggle" id="themeToggle" aria-label="Tema Değiştir" title="Tema Değiştir">
                 <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3858,6 +4023,24 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             </button>
         </div>
     </nav>
+
+    <!-- Bildirim paneli -->
+    <div class="notif-panel" id="notifPanel" role="dialog" aria-label="Bildirimler">
+        <div class="notif-head">
+            <strong data-i18n="notif-title">🔔 Bildirimler</strong>
+            <div class="notif-head-actions">
+                <button class="notif-link" onclick="markAllNotifsRead()" data-i18n="notif-readall">Tümünü okundu işaretle</button>
+                <button class="notif-link" onclick="clearNotifs()" title="Tümünü temizle">✕</button>
+            </div>
+        </div>
+        <div class="notif-list" id="notifList"></div>
+        <div class="notif-foot">
+            <div class="notif-push-row">
+                <span id="notifPushState" data-i18n="notif-push-off">Tarayıcı bildirimleri kapalı</span>
+                <button class="btn btn-sm btn-outline" id="notifPushBtn" onclick="enablePushNotifs()" data-i18n="notif-push-enable">Aç</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero" id="home">
@@ -4081,26 +4264,18 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
             </div>
 
-            <!-- Dashboard hızlı navigasyon (tek tıkla widget'a atla) -->
-            <nav class="dash-nav" id="dashNav" aria-label="Dashboard bileşenleri">
-                <button class="dash-chip" onclick="scrollToWidget('positions')" data-i18n="chip-positions">📊 Pozisyonlar</button>
-                <button class="dash-chip" onclick="scrollToWidget('chart')" data-i18n="chip-performance">📈 Performans</button>
-                <button class="dash-chip" onclick="scrollToWidget('risk')" data-i18n="chip-riskmetrics">🎯 Risk Metrikleri</button>
-                <button class="dash-chip" onclick="scrollToWidget('componentvar')" data-i18n="chip-riskcontrib">🧩 Risk Katkısı</button>
-                <button class="dash-chip" onclick="scrollToWidget('correlation')" data-i18n="chip-correlation">🔗 Korelasyon</button>
-                <button class="dash-chip" onclick="scrollToWidget('exchangesWidget')" data-i18n="exchanges-title">🔗 Bağlı Borsalar</button>
-                <button class="dash-chip" onclick="scrollToWidget('analysisResultsWidget')" data-i18n="chip-analyses">🧪 Analizlerim</button>
-                <button class="dash-chip" onclick="scrollToWidget('watchlistWidget')" data-i18n="chip-watchlist">👁️ Watchlist</button>
-                <button class="dash-chip" onclick="scrollToWidget('dashCalendar')" data-i18n="btn-calendar">📅 Takvim</button>
-                <button class="dash-chip" onclick="scrollToWidget('monteCarloWidget')" data-i18n="chip-montecarlo">🎲 Monte Carlo</button>
-                <button class="dash-chip" onclick="scrollToWidget('realBacktestWidget')" data-i18n="chip-backtest">🔬 Backtest</button>
-                <button class="dash-chip" onclick="scrollToWidget('slippage')" data-i18n="chip-liquidity">💧 Likidite</button>
-                <button class="dash-chip" onclick="scrollToWidget('journal')">📓 Journal</button>
-                <button class="dash-chip" onclick="scrollToWidget('macro-engine')">⚡ Macro Shock</button>
+            <!-- Dashboard sekmeleri: araçlar kategorilere ayrıldı (tek sayfa yığını yerine) -->
+            <nav class="dash-tabs" id="dashTabs" role="tablist" aria-label="Dashboard bölümleri">
+                <button class="dash-tab active" role="tab" data-dt="ozet" onclick="switchDashTab('ozet')" data-i18n="dt-ozet">📊 Özet</button>
+                <button class="dash-tab" role="tab" data-dt="risk" onclick="switchDashTab('risk')" data-i18n="dt-risk">🎯 Risk<span class="dash-tab-badge" id="dtRiskBadge" data-n="0"></span></button>
+                <button class="dash-tab" role="tab" data-dt="gunluk" onclick="switchDashTab('gunluk')" data-i18n="dt-gunluk">📓 Günlük</button>
+                <button class="dash-tab" role="tab" data-dt="sim" onclick="switchDashTab('sim')" data-i18n="dt-sim">🎲 Simülasyon</button>
+                <button class="dash-tab" role="tab" data-dt="backtest" onclick="switchDashTab('backtest')" data-i18n="dt-backtest">🔬 Backtest</button>
+                <button class="dash-tab" role="tab" data-dt="piyasa" onclick="switchDashTab('piyasa')" data-i18n="dt-piyasa">📡 Piyasa</button>
             </nav>
 
             <!-- API Panel -->
-            <div class="api-panel" id="apiPanel">
+            <div class="api-panel" id="apiPanel" data-dtab="piyasa">
                 <!-- Read-Only Certified Seal -->
                 <div class="read-only-seal" data-i18n-group="seal">
                     <div class="seal-shield">
@@ -4236,8 +4411,16 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             <!-- Dashboard Widgets -->
             <div class="dashboard-grid" id="dashboardGrid">
 
+                <!-- Sekme başlıkları: kullanıcı hangi kategoride olduğunu bilsin -->
+                <div class="dash-tab-head" data-dtab="ozet"><h3 data-i18n="dth-ozet-t">Portföy Özeti</h3><span data-i18n="dth-ozet-s">Değer, pozisyonlar, performans ve son hareketler</span></div>
+                <div class="dash-tab-head" data-dtab="risk"><h3 data-i18n="dth-risk-t">Risk Analizi</h3><span data-i18n="dth-risk-s">VaR, risk katkısı, korelasyon ve uyarılar</span></div>
+                <div class="dash-tab-head" data-dtab="gunluk"><h3 data-i18n="dth-gunluk-t">İşlem Günlüğü</h3><span data-i18n="dth-gunluk-s">İşlemlerinizi kaydedin, istatistiklerinizi ölçün</span></div>
+                <div class="dash-tab-head" data-dtab="sim"><h3 data-i18n="dth-sim-t">Simülasyonlar</h3><span data-i18n="dth-sim-s">Monte Carlo geleceği modeller, makro şok senaryoları test eder</span></div>
+                <div class="dash-tab-head" data-dtab="backtest"><h3 data-i18n="dth-backtest-t">Backtest &amp; İşlem Maliyeti</h3><span data-i18n="dth-backtest-s">Stratejinizi gerçek veriyle test edin, likidite maliyetini görün</span></div>
+                <div class="dash-tab-head" data-dtab="piyasa"><h3 data-i18n="dth-piyasa-t">Piyasa &amp; Bağlantılar</h3><span data-i18n="dth-piyasa-s">Watchlist, alarmlar, göstergeler, takvim ve borsa bağlantıları</span></div>
+
                 <!-- AI Günlük Brief -->
-                <div class="daily-brief" id="dailyBrief" style="grid-column:1/-1;display:none">
+                <div class="daily-brief" id="dailyBrief" style="grid-column:1/-1;display:none" data-dtab="ozet">
                     <div class="db-head">
                         <span class="db-title">🌅 Günlük AI Brief</span>
                         <button class="db-close" onclick="document.getElementById('dailyBrief').style.display='none'">✕</button>
@@ -4246,14 +4429,14 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Skeleton overlay shown during init -->
-                <div id="dashboardSkeleton" style="grid-column:1/-1;display:grid;gap:12px;grid-template-columns:2fr 1fr">
+                <div id="dashboardSkeleton" style="grid-column:1/-1;display:grid;gap:12px;grid-template-columns:2fr 1fr" data-dtab="ozet">
                     <div><div class="skeleton skeleton-chart" style="height:60px;margin-bottom:12px"></div><div class="skeleton skeleton-chart"></div></div>
                     <div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div></div>
                     <div style="grid-column:1/-1"><div class="skeleton skeleton-chart"></div></div>
                 </div>
 
                 <!-- Insight Bar (Action-Oriented Summary) -->
-                <div class="insight-bar" id="insightBar">
+                <div class="insight-bar" id="insightBar" data-dtab="ozet risk">
                     <div class="insight-icon warning" id="insightIcon">⚠️</div>
                     <div class="insight-body">
                         <div class="insight-title" data-i18n="insight-title">Günlük Durum Raporu</div>
@@ -4265,7 +4448,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Portfolio Summary Row -->
-                <div class="dashboard-row portfolio-summary-row">
+                <div class="dashboard-row portfolio-summary-row" data-dtab="ozet risk">
                     <div class="portfolio-stat-card">
                         <div class="psc-icon" style="background: rgba(16,185,129,0.15);">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
@@ -4321,7 +4504,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Survival Score -->
-                <div class="survival-score-card" style="grid-column: 1 / -1;" id="survivalScoreCard">
+                <div class="survival-score-card" style="grid-column: 1 / -1;" id="survivalScoreCard" data-dtab="ozet risk">
                     <div class="survival-ring">
                         <svg width="64" height="64" viewBox="0 0 64 64">
                             <circle class="survival-ring-bg" cx="32" cy="32" r="28"/>
@@ -4341,7 +4524,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Portfolio Chart Widget -->
-                <div class="widget widget-half" data-widget="chart">
+                <div class="widget widget-half" data-widget="chart" data-dtab="ozet">
                     <div class="widget-header">
                         <h4>Portföy Performansı</h4>
                         <div class="chart-timeframes">
@@ -4357,7 +4540,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Live Positions Widget -->
-                <div class="widget widget-half" data-widget="positions">
+                <div class="widget widget-half" data-widget="positions" data-dtab="ozet">
                     <div class="widget-header">
                         <h4>Canlı Pozisyonlar</h4>
                         <span class="live-dot"><span class="dot-pulse"></span>Canlı</span>
@@ -4407,7 +4590,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- P&L Heatmap Widget -->
-                <div class="widget widget-medium" data-widget="heatmap">
+                <div class="widget widget-medium" data-widget="heatmap" data-dtab="ozet">
                     <div class="widget-header">
                         <h4>P&L Isı Haritası</h4>
                         <div class="heatmap-legend">
@@ -4428,7 +4611,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Risk Metrics Widget -->
-                <div class="widget widget-half" data-widget="risk">
+                <div class="widget widget-half" data-widget="risk" data-dtab="risk">
                     <div class="widget-header">
                         <h4>Risk Metrikleri</h4>
                         <div style="display:flex;gap:8px;align-items:center">
@@ -4506,7 +4689,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Benchmark Widget -->
-                <div class="widget widget-half" data-widget="benchmark">
+                <div class="widget widget-half" data-widget="benchmark" data-dtab="risk">
                     <div class="widget-header">
                         <h4 data-i18n="bm-title">Benchmark Karşılaştırması</h4>
                     </div>
@@ -4522,7 +4705,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Correlation Matrix Widget -->
-                <div class="widget widget-medium" data-widget="correlation">
+                <div class="widget widget-medium" data-widget="correlation" data-dtab="risk">
                     <div class="widget-header">
                         <h4>Korelasyon Matrisi</h4>
                         <span class="elite-badge-sm">ELITE</span>
@@ -4552,7 +4735,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Component VaR Widget -->
-                <div class="widget widget-medium" data-widget="componentvar">
+                <div class="widget widget-medium" data-widget="componentvar" data-dtab="risk">
                     <div class="widget-header">
                         <h4>Risk Katkısı <span class="metric-info" style="font-size:0.7rem;color:var(--text-muted)">(Component VaR)</span></h4>
                         <span class="elite-badge-sm">ELITE</span>
@@ -4564,7 +4747,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Economic Calendar Widget -->
-                <div class="widget widget-medium" data-widget="calendar" id="dashCalendar">
+                <div class="widget widget-medium" data-widget="calendar" id="dashCalendar" data-dtab="piyasa">
                     <div class="widget-header">
                         <h4>📅 Ekonomik Takvim</h4>
                         <span style="font-size:0.7rem;color:var(--text-muted)">Yaklaşan kritik veriler</span>
@@ -4575,7 +4758,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Bağlı Borsalar Widget -->
-                <div class="widget widget-medium" data-widget="exchanges" id="exchangesWidget">
+                <div class="widget widget-medium" data-widget="exchanges" id="exchangesWidget" data-dtab="piyasa">
                     <div class="widget-header">
                         <h4>🔗 Bağlı Borsalar <span style="font-size:0.7rem;color:var(--text-muted)">(<span id="exchCount">0</span>)</span></h4>
                         <button class="btn btn-sm btn-outline" onclick="document.getElementById('apiPanel')?.scrollIntoView({behavior:'smooth',block:'center'})">+ Bağla</button>
@@ -4586,7 +4769,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Analiz Sonuçları Widget -->
-                <div class="widget widget-medium" data-widget="analysisresults" id="analysisResultsWidget">
+                <div class="widget widget-medium" data-widget="analysisresults" id="analysisResultsWidget" data-dtab="ozet">
                     <div class="widget-header">
                         <h4>🧪 Analiz Sonuçlarım</h4>
                         <div style="display:flex;gap:6px">
@@ -4600,7 +4783,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Watchlist & Alarmlar Widget -->
-                <div class="widget widget-medium" data-widget="watchlist" id="watchlistWidget">
+                <div class="widget widget-medium" data-widget="watchlist" id="watchlistWidget" data-dtab="piyasa">
                     <div class="widget-header">
                         <h4>👁️ Watchlist & Alarmlar</h4>
                         <span class="live-data-badge" style="display:inline-flex">📡 CANLI</span>
@@ -4626,7 +4809,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Gerçek Strateji Backtest Widget -->
-                <div class="widget widget-full" data-widget="backtest" id="realBacktestWidget" style="grid-column:1/-1">
+                <div class="widget widget-full" data-widget="backtest" id="realBacktestWidget" style="grid-column:1/-1" data-dtab="backtest">
                     <div class="widget-header">
                         <h4>🔬 Strateji Backtest <span style="font-size:0.7rem;color:var(--text-muted)">(Gerçek Binance Verisi)</span></h4>
                         <span class="live-data-badge" style="display:inline-flex">📡 CANLI</span>
@@ -4662,7 +4845,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Recent Activity + Risk Alerts row -->
-                <div class="widget widget-half" data-widget="activity">
+                <div class="widget widget-half" data-widget="activity" data-dtab="ozet">
                     <div class="widget-header">
                         <h4>Son İşlemler</h4>
                     </div>
@@ -4675,43 +4858,21 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     </div>
                 </div>
 
-                <div class="widget widget-half risk-alerts-widget" data-widget="risk-alerts">
+                <div class="widget widget-half risk-alerts-widget" data-widget="risk-alerts" data-dtab="risk">
                     <div class="widget-header">
                         <h4 data-i18n="risk-alerts">Risk Uyarıları</h4>
                         <span class="elite-badge-sm">ELITE</span>
                     </div>
                     <div class="widget-content">
+                        <!-- Gerçek uyarılar renderRiskAlerts() ile portföy/metrik/journal verisinden üretilir -->
                         <div class="risk-alert-list" id="riskAlerts">
-                            <div class="risk-alert-item">
-                                <div class="ra-icon volatility">🔴</div>
-                                <div class="ra-content">
-                                    <div class="ra-title">Yoğunlaşma Riskiniz Yüksek</div>
-                                    <div class="ra-desc">BTC+ETH toplam portföyün %40'ını oluşturuyor</div>
-                                </div>
-                                <span class="ra-severity high">KRİTİK</span>
-                            </div>
-                            <div class="risk-alert-item">
-                                <div class="ra-icon correlation">🟡</div>
-                                <div class="ra-content">
-                                    <div class="ra-title">Korelasyon Uyarısı</div>
-                                    <div class="ra-desc">Kripto varlıklar arası korelasyon >0.70</div>
-                                </div>
-                                <span class="ra-severity medium">ORTA</span>
-                            </div>
-                            <div class="risk-alert-item">
-                                <div class="ra-icon drawdown">🔵</div>
-                                <div class="ra-content">
-                                    <div class="ra-title">Likidite Riski</div>
-                                    <div class="ra-desc">THYAO pozisyonu düşük hacimli</div>
-                                </div>
-                                <span class="ra-severity low">DÜŞÜK</span>
-                            </div>
+                            <div style="padding:16px 6px;text-align:center;color:var(--text-muted);font-size:0.82rem">Risk uyarıları hesaplanıyor…</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Crypto Market Indicators Widget -->
-                <div class="widget widget-medium" data-widget="crypto-indicators">
+                <div class="widget widget-medium" data-widget="crypto-indicators" data-dtab="piyasa">
                     <div class="widget-header">
                         <h4 data-i18n="crypto-widget-title">Kripto Piyasa Göstergeleri</h4>
                         <span class="live-dot"><span class="dot-pulse"></span><span data-i18n="live">Canlı</span></span>
@@ -4756,7 +4917,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Slippage Widget -->
-                <div class="widget widget-medium slippage-widget" data-widget="slippage">
+                <div class="widget widget-medium slippage-widget" data-widget="slippage" data-dtab="backtest">
                     <div class="widget-header">
                         <h4 data-i18n="slip-title">💧 Likidite & Kayma Analizi</h4>
                         <span class="elite-badge-sm">ELITE</span>
@@ -4772,7 +4933,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
 
                 <!-- Monte Carlo Simulation Widget -->
-                <div class="widget widget-full mc-widget" id="monteCarloWidget" data-widget="montecarlo">
+                <div class="widget widget-full mc-widget" id="monteCarloWidget" data-widget="montecarlo" data-dtab="sim">
                     <div class="widget-header mc-header">
                         <div class="mc-header-left">
                             <div class="mc-title-row">
@@ -5034,7 +5195,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     </section>
 
     <!-- Macro Shock Engine -->
-    <section class="section section-macro" id="macro-engine">
+    <section class="section section-macro" id="macro-engine" data-dtab="sim">
         <div class="container">
             <div class="section-header">
                 <span class="section-badge badge-pro">PRO / ELITE</span>
@@ -5220,7 +5381,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
     </section>
 
     <!-- Trading Journal Section -->
-    <section class="section section-journal" id="journal">
+    <section class="section section-journal" id="journal" data-dtab="gunluk">
         <div class="container">
             <div class="section-header">
                 <span class="section-badge badge-green" data-i18n="badge-free-module">ÜCRETSİZ MODÜL</span>
@@ -5709,8 +5870,8 @@ body.overlay-open .mobile-bottom-nav { display: none; }
         <div class="container">
             <div class="section-header">
                 <span class="section-badge" data-i18n="pricing-badge">LANSMAN TEKLİFİ</span>
-                <h2 class="section-title" data-i18n="pricing-title">İlk 500 Kullanıcı <span class="gradient-text">Ömür Boyu Ücretsiz</span></h2>
-                <p class="section-desc" data-i18n="pricing-desc">Şimdi üye olun, tüm özellikler hesabınızda kalıcı olarak ücretsiz kalsın. Kredi kartı gerekmez.</p>
+                <h2 class="section-title" data-i18n="pricing-title">İlk 1000 Kullanıcı <span class="gradient-text">1 Yıl Ücretsiz</span></h2>
+                <p class="section-desc" data-i18n="pricing-desc">Şimdi üye olun, ilk bir yıl boyunca tüm özellikleri ücretsiz kullanın. Kredi kartı gerekmez.</p>
             </div>
             <div class="pricing-grid" style="max-width:560px;margin:0 auto;grid-template-columns:1fr;">
                 <div class="pricing-card popular">
@@ -5718,12 +5879,12 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="pricing-header" style="padding:24px 24px 16px">
                         <h3 data-i18n="pricing-plan">Kurucu Üye Paketi</h3>
                         <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center">
-                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.12);color:#10b981;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600" data-i18n="pricing-pill1">♾️ Ömür Boyu Ücretsiz</span>
-                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.12);color:#3b82f6;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600" data-i18n="pricing-pill2">🎯 İlk 500 Kullanıcı</span>
+                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.12);color:#10b981;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600" data-i18n="pricing-pill1">🎁 1 Yıl Ücretsiz</span>
+                            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.12);color:#3b82f6;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600" data-i18n="pricing-pill2">🎯 İlk 1000 Kullanıcı</span>
                         </div>
                         <div class="pricing-price" style="margin-top:16px">
                             <span class="price-amount">0</span>
-                            <div class="price-meta"><span class="price-currency">TL</span><span class="price-period" data-i18n="pricing-period">/ ömür boyu</span></div>
+                            <div class="price-meta"><span class="price-currency">TL</span><span class="price-period" data-i18n="pricing-period">/ ilk 1 yıl</span></div>
                         </div>
                         <p class="pricing-subtitle" data-i18n="pricing-sub">Tüm özellikler dahil — kredi kartı gerekmez</p>
                     </div>
@@ -5737,7 +5898,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                             <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span data-i18n="pf-6">Watchlist, fiyat alarmları, AI Copilot</span></li>
                             <li class="yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span data-i18n="pf-7">Cihazlar arası senkron + tüm veriler indirilebilir</span></li>
                         </ul>
-                        <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:8px;" data-i18n="pricing-note">Kurucu üyelik kontenjanı dolduktan sonra ücretli planlar duyurulacaktır. Şu an ödeme alınmamaktadır.</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:8px;" data-i18n="pricing-note">İlk 1000 kurucu üye kontenjanı dolduktan sonra ücretli planlar duyurulacaktır. Şu an ödeme alınmamaktadır.</div>
                         <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="openAuthModal();switchAuthTab('register')" data-i18n="pricing-cta">Ücretsiz Üye Ol</button>
                     </div>
                 </div>
@@ -5796,7 +5957,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                         <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="faq-answer">
-                        <p data-i18n="faq-a5">İlk 500 kurucu üye <strong>tüm özellikleri ömür boyu ücretsiz</strong> kullanır: yatırımcı profili testi, sınırsız işlem günlüğü, risk dashboard'u, Monte Carlo, backtest, makro şok testleri, watchlist ve alarmlar. Kredi kartı gerekmez, şu anda ödeme alınmıyor.</p>
+                        <p data-i18n="faq-a5">İlk 1000 kurucu üye <strong>tüm özellikleri bir yıl boyunca ücretsiz</strong> kullanır: yatırımcı profili testi, sınırsız işlem günlüğü, risk dashboard'u, Monte Carlo, backtest, makro şok testleri, watchlist ve alarmlar. Kredi kartı gerekmez, şu anda ödeme alınmıyor.</p>
                     </div>
                 </div>
                 <div class="faq-item" onclick="toggleFaq(this)">
@@ -5900,8 +6061,8 @@ body.overlay-open .mobile-bottom-nav { display: none; }
             <h3 class="faqp-cat" data-i18n="faqp-cat4">💳 Üyelik</h3>
             <div class="faq-container">
                 <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question"><span data-i18n="fq15">"İlk 500 kullanıcı ömür boyu ücretsiz" ne demek?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-                    <div class="faq-answer"><p data-i18n="fa15">İlk 500 üye <strong>kurucu üye</strong> sayılır ve mevcut tüm özellikleri hesabı açık kaldığı sürece ücretsiz kullanır. Kontenjan dolduktan sonra ücretli planlar duyurulacak; kurucu üyeler bundan etkilenmez. Şu anda hiçbir ödeme alınmamaktadır.</p></div>
+                    <button class="faq-question"><span data-i18n="fq15">"İlk 1000 kullanıcı 1 yıl ücretsiz" ne demek?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    <div class="faq-answer"><p data-i18n="fa15">İlk 1000 üye <strong>kurucu üye</strong> sayılır ve mevcut tüm özellikleri kayıt tarihinden itibaren <strong>bir yıl boyunca</strong> ücretsiz kullanır. Kontenjan dolduktan sonra ücretli planlar duyurulacak; kurucu üyeler ilk yıl boyunca bundan etkilenmez ve sonrasında indirimli geçiş hakkı kazanır. Şu anda hiçbir ödeme alınmamaktadır.</p></div>
                 </div>
                 <div class="faq-item" onclick="toggleFaq(this)">
                     <button class="faq-question"><span data-i18n="fq16">Üye olmadan kullanabilir miyim?</span><svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
@@ -6089,7 +6250,7 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <div class="footer-links">
                     <h4 data-i18n="footer-membership">Üyelik</h4>
                     <a href="javascript:void(0)" onclick="openAuthModal();switchAuthTab('register')" data-i18n="footer-signup">Ücretsiz Üye Ol</a>
-                    <a href="#pricing" data-i18n="footer-lifetime">İlk 500 Kullanıcı Ömür Boyu Ücretsiz</a>
+                    <a href="#pricing" data-i18n="footer-lifetime">İlk 1000 Kullanıcı 1 Yıl Ücretsiz</a>
                     <a href="#risk-test" data-i18n="footer-risktest">Yatırımcı Profili Testi</a>
                 </div>
                 <div class="footer-links">
@@ -6145,6 +6306,75 @@ body.overlay-open .mobile-bottom-nav { display: none; }
         </a>
     </nav>
 
+    <!-- Setup Kütüphanesi: kullanıcının kendi işlem kurulumlarını tanımladığı yer -->
+    <div class="modal-overlay" id="setupLibOverlay" onclick="if(event.target===this)closeSetupLibrary()" role="dialog" aria-modal="true" aria-label="Setup Kütüphanesi">
+        <div class="modal" id="setupLibModal" style="max-width:640px">
+            <div class="modal-header">
+                <h3>🎯 Setup Kütüphanem</h3>
+                <button class="modal-close" onclick="closeSetupLibrary()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin-bottom:14px">
+                    Bir <strong>setup</strong>, işleme girme kurallarınızın yazılı halidir. Tanımladıktan sonra her işlemi
+                    bir setup'a bağlarsınız; sistem hangi kurulumun gerçekten kazandırdığını ve
+                    <strong>kurallarınıza uyduğunuzda performansınızın ne kadar değiştiğini</strong> ölçer.
+                </p>
+                <div id="setupLibList"></div>
+                <button class="btn btn-outline btn-full" onclick="openSetupEditor()" style="margin-top:12px">+ Yeni Setup Oluştur</button>
+
+                <!-- Setup düzenleyici -->
+                <div id="setupEditor" style="display:none;margin-top:16px;padding:16px;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-lg)">
+                    <input type="hidden" id="setupEditId">
+                    <div class="form-group">
+                        <label>Setup adı *</label>
+                        <input type="text" id="setupName" placeholder="ör. EMA20 geri çekilme alımı" maxlength="60">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Yön</label>
+                            <select id="setupDir">
+                                <option value="both">Her iki yön</option>
+                                <option value="long">Sadece Long</option>
+                                <option value="short">Sadece Short</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Zaman dilimi</label>
+                            <input type="text" id="setupTf" placeholder="ör. 4H / 1D" maxlength="20">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>İşlem başına maks. risk (%)</label>
+                            <input type="number" id="setupMaxRisk" placeholder="1" step="0.1" min="0.1" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label>Minimum R:R</label>
+                            <input type="number" id="setupMinRR" placeholder="2" step="0.1" min="0.1" max="20">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Giriş kuralları — her satıra bir kural *</label>
+                        <textarea id="setupRules" rows="6" placeholder="Fiyat EMA20 üzerinde&#10;Geri çekilme EMA20'ye dokundu&#10;Hacim ortalamanın üzerinde&#10;Üst zaman diliminde trend yukarı&#10;Stop, son swing altında"></textarea>
+                        <small style="font-size:0.72rem;color:var(--text-muted)">İşlem girerken bu kurallar onay listesi olarak çıkar; disiplininizi ölçmek için kullanılır.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Not (opsiyonel)</label>
+                        <textarea id="setupNote" rows="2" placeholder="Bu setup hangi piyasa koşulunda çalışır, nelerden kaçınmalısın..."></textarea>
+                    </div>
+                    <div style="display:flex;gap:8px">
+                        <button class="btn btn-primary" onclick="saveSetup()">Kaydet</button>
+                        <button class="btn btn-outline" onclick="closeSetupEditor()">İptal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Trade Modal -->
     <div class="modal-overlay" id="tradeModalOverlay" onclick="closeTradeModal(event)" role="dialog" aria-modal="true" aria-label="İşlem Ekle">
         <div class="modal" id="tradeModal">
@@ -6199,6 +6429,24 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                     <div class="form-group">
                         <label>Take Profit</label>
                         <input type="number" id="tradeTp" placeholder="ör. 100000" step="any">
+                    </div>
+                </div>
+                <!-- Setup seçimi: hangi kuruluma göre girdin + kurallarına uydun mu -->
+                <div class="form-group">
+                    <label style="display:flex;align-items:center;gap:8px">
+                        <span>🎯 Setup</span>
+                        <button type="button" class="notif-link" onclick="openSetupLibrary()" style="margin-left:auto">Setup'larımı yönet</button>
+                    </label>
+                    <select id="tradeSetup" onchange="renderSetupChecklist()">
+                        <option value="">(Setup seçilmedi)</option>
+                    </select>
+                    <div id="setupChecklistBox" class="setup-check-box" style="display:none">
+                        <div class="setup-check-head">
+                            <span>Giriş kurallarınız</span>
+                            <span class="setup-check-score" id="setupCheckScore">0/0</span>
+                        </div>
+                        <div id="setupChecklist"></div>
+                        <div class="setup-check-note">Dürüst işaretleyin — kurala uyduğunuz ve uymadığınız işlemlerin performansı ayrı ayrı ölçülür.</div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -6282,6 +6530,18 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 </div>
                 <div class="auth-error" id="authError"></div>
 
+                <!-- Google ile giriş (her iki sekme için ortak) -->
+                <button type="button" class="auth-google" onclick="googleAuth()">
+                    <svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true">
+                        <path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2.1 5-4.4 6.5v5.4h7.1c4.2-3.8 6.6-9.5 6.6-15.9z"/>
+                        <path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.4c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.4 15.4 46 24 46z"/>
+                        <path fill="#FBBC05" d="M11.8 28.4c-.4-1.3-.7-2.7-.7-4.4s.3-3.1.7-4.4v-5.7H4.5C2.9 17 2 20.4 2 24s.9 7 2.5 10.1l7.3-5.7z"/>
+                        <path fill="#EA4335" d="M24 10.3c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 3.9 29.9 2 24 2 15.4 2 8.1 6.6 4.5 13.9l7.3 5.7c1.7-5.2 6.5-9.3 12.2-9.3z"/>
+                    </svg>
+                    <span data-i18n="auth-google">Google ile devam et</span>
+                </button>
+                <div class="auth-divider"><span data-i18n="auth-or-email">ya da e-posta ile</span></div>
+
                 <!-- Login Form -->
                 <form class="auth-form" id="authLoginForm" onsubmit="authLogin(event)" style="display:block">
                     <label class="auth-label" for="authLoginEmail" data-i18n="auth-email">E-posta</label>
@@ -6292,8 +6552,6 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                         <button type="button" class="auth-eye" onclick="toggleAuthPass('authLoginPassword',this)" aria-label="Şifreyi göster">👁</button>
                     </div>
                     <button type="submit" class="btn btn-primary btn-full auth-submit" data-orig-text="Giriş Yap" data-i18n="auth-cta-login">Giriş Yap</button>
-                    <div class="auth-divider"><span data-i18n="auth-or">veya</span></div>
-                    <button type="button" class="btn btn-outline btn-full" onclick="demoLogin()" data-i18n="auth-demo">🚀 Demo hesapla hızlı bak</button>
                     <p class="auth-switch-hint">
                         <span data-i18n="auth-no-account">Hesabınız yok mu?</span>
                         <a href="javascript:void(0)" onclick="switchAuthTab('register')" data-i18n="auth-goto-register">Ücretsiz üye olun</a>
@@ -6304,25 +6562,47 @@ body.overlay-open .mobile-bottom-nav { display: none; }
                 <form class="auth-form" id="authRegisterForm" onsubmit="authRegister(event)" style="display:none">
                     <div class="auth-perk">
                         <span class="auth-perk-badge" data-i18n="auth-perk-badge">KURUCU ÜYE</span>
-                        <span data-i18n="auth-perk-text">İlk 500 üye tüm özellikleri ömür boyu ücretsiz kullanır. Kredi kartı gerekmez.</span>
+                        <span data-i18n="auth-perk-text">İlk 1000 üye tüm özellikleri 1 yıl boyunca ücretsiz kullanır. Kredi kartı gerekmez.</span>
                     </div>
-                    <label class="auth-label" for="authRegName" data-i18n="auth-name">Adınız</label>
-                    <input type="text" id="authRegName" autocomplete="name" placeholder="Ad Soyad" required>
+                    <div class="auth-grid2">
+                        <div>
+                            <label class="auth-label" for="authRegName" data-i18n="auth-name">Adınız</label>
+                            <input type="text" id="authRegName" autocomplete="name" placeholder="Ad Soyad" required>
+                        </div>
+                        <div>
+                            <label class="auth-label" for="authRegUsername" data-i18n="auth-username">Kullanıcı adı</label>
+                            <div class="auth-uname-wrap">
+                                <span class="auth-uname-at">@</span>
+                                <input type="text" id="authRegUsername" autocomplete="username" placeholder="kullaniciadi" required minlength="3" maxlength="20" oninput="checkUsernameInput(this.value)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="auth-uname-note" id="authUnameNote" data-i18n="auth-username-note">3–20 karakter; küçük harf, rakam ve alt çizgi. Forumda bu adla görünürsünüz.</div>
                     <label class="auth-label" for="authRegEmail" data-i18n="auth-email">E-posta</label>
                     <input type="email" id="authRegEmail" autocomplete="email" placeholder="ornek@eposta.com" required>
-                    <label class="auth-label" for="authRegPassword" data-i18n="auth-password">Şifre</label>
-                    <div class="auth-pass-wrap">
-                        <input type="password" id="authRegPassword" autocomplete="new-password" placeholder="En az 6 karakter" required minlength="6" oninput="updatePassStrength(this.value)">
-                        <button type="button" class="auth-eye" onclick="toggleAuthPass('authRegPassword',this)" aria-label="Şifreyi göster">👁</button>
+                    <div class="auth-grid2">
+                        <div>
+                            <label class="auth-label" for="authRegPassword" data-i18n="auth-password">Şifre</label>
+                            <div class="auth-pass-wrap">
+                                <input type="password" id="authRegPassword" autocomplete="new-password" placeholder="En az 6 karakter" required minlength="6" oninput="updatePassStrength(this.value)">
+                                <button type="button" class="auth-eye" onclick="toggleAuthPass('authRegPassword',this)" aria-label="Şifreyi göster">👁</button>
+                            </div>
+                            <div class="pass-strength" id="passStrength"><div class="pass-strength-bar" id="passStrengthBar"></div></div>
+                        </div>
+                        <div>
+                            <label class="auth-label" for="authRegConfirm" data-i18n="auth-password-again">Şifre (tekrar)</label>
+                            <div class="auth-pass-wrap">
+                                <input type="password" id="authRegConfirm" autocomplete="new-password" placeholder="••••••••" required minlength="6">
+                                <button type="button" class="auth-eye" onclick="toggleAuthPass('authRegConfirm',this)" aria-label="Şifreyi göster">👁</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="pass-strength" id="passStrength"><div class="pass-strength-bar" id="passStrengthBar"></div></div>
                     <div class="pass-hint" id="passHint" data-i18n="auth-pass-rule">En az 6 karakter, bir büyük harf ve bir rakam</div>
-                    <label class="auth-label" for="authRegConfirm" data-i18n="auth-password-again">Şifre (tekrar)</label>
-                    <div class="auth-pass-wrap">
-                        <input type="password" id="authRegConfirm" autocomplete="new-password" placeholder="••••••••" required minlength="6">
-                        <button type="button" class="auth-eye" onclick="toggleAuthPass('authRegConfirm',this)" aria-label="Şifreyi göster">👁</button>
-                    </div>
                     <button type="submit" class="btn btn-primary btn-full auth-submit" data-orig-text="Hesap Oluştur" data-i18n="auth-cta-register">Ücretsiz Hesap Oluştur</button>
+                    <div class="auth-privacy">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                        <span data-i18n="auth-privacy">Portföyünüz, işlem günlüğünüz ve analizleriniz yalnızca kendi hesabınızda saklanır; başka üyeler göremez ve kayıtlarınız silinmez.</span>
+                    </div>
                     <p class="auth-legal">
                         <span data-i18n="auth-legal">Üye olarak</span>
                         <a href="javascript:void(0)" onclick="closeAuthModal();openOverlayPage('kvkkPage')" data-i18n="auth-legal-link">KVKK &amp; Gizlilik</a>
@@ -7892,24 +8172,12 @@ window.addEventListener('resize', () => { if (document.getElementById('portfolio
 function initHeatmap() {
     const container = document.getElementById('heatmapCalendar');
     if (!container) return;
-    // Seed demo journal data if none exists so heatmap isn't empty
+    /* NOT: Burada eskiden journal boşsa 60 günlük RASTGELE demo işlem localStorage'a
+       yazılıyordu. Bu, kullanıcının gerçek işlem günlüğünü kirletiyor ve kazanma oranı /
+       profit factor gibi istatistikleri anlamsız hale getiriyordu. Artık boş journal boş
+       kalır — ısı haritası nötr görünür ve kullanıcı kendi işlemini girdiğinde dolar. */
     let journal = [];
     try { journal = JSON.parse(localStorage.getItem('equilyze-journal') || '[]'); } catch {}
-    if (journal.length === 0) {
-        const now = new Date();
-        const demoData = [];
-        for (let i = 0; i < 60; i++) {
-            const d = new Date(now);
-            d.setDate(d.getDate() - i);
-            demoData.push({
-                date: d.toISOString().split('T')[0],
-                pnl: Math.round((Math.random() - 0.45) * 12000),
-                symbol: 'DEMO',
-                type: 'crypto'
-            });
-        }
-        try { localStorage.setItem('equilyze-journal', JSON.stringify(demoData)); journal = demoData; } catch {}
-    }
     const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
     const now = new Date();
     const dailyPnL = {};
@@ -7949,6 +8217,10 @@ function initHeatmap() {
         if (el('hmBestDay')) el('hmBestDay').textContent = fmt(best);
         if (el('hmWorstDay')) el('hmWorstDay').textContent = fmt(worst);
         if (el('hmWinDays')) el('hmWinDays').textContent = '%' + winRate;
+    } else {
+        // Henüz kapatılmış işlem yok — sahte veri göstermek yerine dürüst boş durum
+        const el = id => document.getElementById(id);
+        ['hmMonthPnL', 'hmBestDay', 'hmWorstDay', 'hmWinDays'].forEach(id => { if (el(id)) el(id).textContent = '—'; });
     }
 }
 
@@ -8192,6 +8464,7 @@ function saveTrade() {
     const sentimentEl = document.querySelector('.sentiment-option.selected input');
     const sentiment = sentimentEl ? sentimentEl.value : null;
     const screenshot = document.getElementById('tradeScreenshotData')?.value || null;
+    const setupState = getSetupCheckState();   // setupId + kaç kurala uyuldu
 
     if (!sym || !date || isNaN(size) || isNaN(entry)) {
         showToast('Lütfen zorunlu alanları doldurun', 'error');
@@ -8238,17 +8511,21 @@ function saveTrade() {
     if (editingId !== null) {
         const idx = trades.findIndex(t => t.id === editingId);
         if (idx !== -1) {
-            trades[idx] = { ...trades[idx], sym, date, type, size, entry, exit, stop, tp, pnl, rr, note, tags: selectedTags, sentiment, screenshot };
+            trades[idx] = { ...trades[idx], sym, date, type, size, entry, exit, stop, tp, pnl, rr, note, tags: selectedTags, sentiment, screenshot,
+                            setupId: setupState.setupId, rulesFollowed: setupState.rulesFollowed, rulesTotal: setupState.rulesTotal, rulesChecked: setupState.rulesChecked };
         }
         editingId = null;
         showToast('İşlem güncellendi', 'success');
     } else {
-        trades.unshift({ id: Date.now(), sym, date, type, size, entry, exit, stop, tp, pnl, rr, note, tags: selectedTags, sentiment, screenshot });
+        trades.unshift({ id: Date.now(), sym, date, type, size, entry, exit, stop, tp, pnl, rr, note, tags: selectedTags, sentiment, screenshot,
+                         setupId: setupState.setupId, rulesFollowed: setupState.rulesFollowed, rulesTotal: setupState.rulesTotal, rulesChecked: setupState.rulesChecked });
         showToast('İşlem kaydedildi', 'success');
     }
 
     localStorage.setItem('equilyze-journal', JSON.stringify(trades));
     sbSyncUpDebounced();
+    // Yeni işlem davranış uyarılarını değiştirebilir (kayıp serisi, R:R, aşırı işlem)
+    try { computeRiskNotifications(); } catch (e) {}
     closeTradeModal();
     updateJournalStats();
     filterJournal();
@@ -8307,6 +8584,10 @@ function editTrade(id) {
     const ssField = document.getElementById('tradeScreenshotData');
     if (ssField) ssField.value = t.screenshot || '';
     renderScreenshotPreview(t.screenshot || null);
+    // Setup ve işaretlenen kuralları geri yükle
+    populateSetupSelect();
+    const setupSel = document.getElementById('tradeSetup');
+    if (setupSel) { setupSel.value = t.setupId || ''; renderSetupChecklist(t.rulesChecked || []); }
     openTradeModal();
 }
 
@@ -8367,33 +8648,249 @@ function updateJournalStats() {
     if (typeof renderPsychReport === 'function') renderPsychReport();
 }
 
-/* ── Setup/etiket bazlı performans: her etiket için işlem sayısı, kazanma oranı, net K/Z ── */
+/* ══════════════════════════════════════════════════════════════════════
+   SETUP KÜTÜPHANESİ (Setup Creator)
+   Kullanıcı kendi işlem kurulumunu ve giriş kurallarını yazılı tanımlar.
+   Her işlem bir setup'a bağlanır ve kaç kurala uyulduğu kaydedilir →
+   hangi kurulumun kazandırdığı VE disiplinin performansa etkisi ölçülebilir.
+   ══════════════════════════════════════════════════════════════════════ */
+function getSetups() { try { return JSON.parse(localStorage.getItem('equilyze-setups') || '[]'); } catch { return []; } }
+function saveSetups(list) {
+    try { localStorage.setItem('equilyze-setups', JSON.stringify(list)); } catch {}
+    if (typeof sbSyncUpDebounced === 'function') sbSyncUpDebounced();
+}
+function openSetupLibrary() {
+    document.getElementById('setupLibOverlay').classList.add('open');
+    renderSetupLib();
+}
+function closeSetupLibrary() {
+    document.getElementById('setupLibOverlay').classList.remove('open');
+    closeSetupEditor();
+    populateSetupSelect();
+}
+function renderSetupLib() {
+    const box = document.getElementById('setupLibList');
+    if (!box) return;
+    const setups = getSetups();
+    if (!setups.length) {
+        box.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.83rem;line-height:1.6;background:var(--bg-secondary);border-radius:10px">
+            Henüz setup tanımlamadınız.<br><span style="font-size:0.76rem">İlk setup'ınızı oluşturun — kurallarınız yazılı hale geldiğinde disiplininizi ölçebiliriz.</span></div>`;
+        return;
+    }
+    const dirLabel = { both: 'Her iki yön', long: 'Long', short: 'Short' };
+    box.innerHTML = setups.map(s => `
+        <div class="setup-card">
+            <div class="setup-card-head">
+                <strong>${escHtml(s.name)}</strong>
+                <span class="setup-badge">${dirLabel[s.dir] || 'Her iki yön'}</span>
+                ${s.tf ? `<span class="setup-badge">${escHtml(s.tf)}</span>` : ''}
+                <div class="setup-card-actions">
+                    <button onclick="openSetupEditor('${s.id}')">Düzenle</button>
+                    <button onclick="deleteSetup('${s.id}')">Sil</button>
+                </div>
+            </div>
+            <div class="setup-card-meta">
+                ${(s.rules || []).length} kural
+                ${s.maxRiskPct ? ` · maks. risk %${s.maxRiskPct}` : ''}
+                ${s.minRR ? ` · min R:R ${s.minRR}` : ''}
+                ${s.note ? `<br>${escHtml(s.note)}` : ''}
+            </div>
+        </div>`).join('');
+}
+function openSetupEditor(id) {
+    const ed = document.getElementById('setupEditor');
+    if (!ed) return;
+    ed.style.display = 'block';
+    const s = id ? getSetups().find(x => x.id === id) : null;
+    document.getElementById('setupEditId').value = s ? s.id : '';
+    document.getElementById('setupName').value = s ? s.name : '';
+    document.getElementById('setupDir').value = s ? (s.dir || 'both') : 'both';
+    document.getElementById('setupTf').value = s ? (s.tf || '') : '';
+    document.getElementById('setupMaxRisk').value = s && s.maxRiskPct ? s.maxRiskPct : '';
+    document.getElementById('setupMinRR').value = s && s.minRR ? s.minRR : '';
+    document.getElementById('setupRules').value = s ? (s.rules || []).join('\n') : '';
+    document.getElementById('setupNote').value = s ? (s.note || '') : '';
+    ed.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function closeSetupEditor() { const ed = document.getElementById('setupEditor'); if (ed) ed.style.display = 'none'; }
+function saveSetup() {
+    const name = document.getElementById('setupName').value.trim();
+    const rules = document.getElementById('setupRules').value.split('\n').map(r => r.trim()).filter(Boolean);
+    if (name.length < 3) { showToast('Setup adı en az 3 karakter olmalı.', 'error'); return; }
+    if (!rules.length) { showToast('En az bir giriş kuralı yazın — setup’ın değeri kurallarında.', 'error'); return; }
+    const id = document.getElementById('setupEditId').value;
+    const obj = {
+        id: id || ('s' + Date.now()),
+        name,
+        dir: document.getElementById('setupDir').value,
+        tf: document.getElementById('setupTf').value.trim(),
+        maxRiskPct: parseFloat(document.getElementById('setupMaxRisk').value) || null,
+        minRR: parseFloat(document.getElementById('setupMinRR').value) || null,
+        rules,
+        note: document.getElementById('setupNote').value.trim(),
+        createdAt: new Date().toISOString()
+    };
+    const list = getSetups();
+    const i = list.findIndex(x => x.id === obj.id);
+    if (i >= 0) { obj.createdAt = list[i].createdAt || obj.createdAt; list[i] = obj; } else { list.push(obj); }
+    saveSetups(list);
+    closeSetupEditor();
+    renderSetupLib();
+    populateSetupSelect();
+    showToast(i >= 0 ? 'Setup güncellendi.' : 'Setup oluşturuldu. Artık işlemlerinizi bu kuruluma bağlayabilirsiniz.', 'success');
+}
+function deleteSetup(id) {
+    const s = getSetups().find(x => x.id === id);
+    if (!s) return;
+    if (!confirm(`"${s.name}" setup'ını silmek istiyor musunuz? Geçmiş işlemlerdeki kayıtlar korunur.`)) return;
+    saveSetups(getSetups().filter(x => x.id !== id));
+    renderSetupLib();
+    populateSetupSelect();
+    showToast('Setup silindi.', 'info');
+}
+/* İşlem modalındaki setup seçicisini doldur */
+function populateSetupSelect() {
+    const sel = document.getElementById('tradeSetup');
+    if (!sel) return;
+    const cur = sel.value;
+    const setups = getSetups();
+    sel.innerHTML = '<option value="">(Setup seçilmedi)</option>' +
+        setups.map(s => `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
+    if (cur && setups.some(s => s.id === cur)) sel.value = cur;
+    renderSetupChecklist();
+}
+/* Seçilen setup'ın kurallarını onay listesi olarak göster */
+function renderSetupChecklist(checkedIdx) {
+    const sel = document.getElementById('tradeSetup');
+    const box = document.getElementById('setupChecklistBox');
+    const list = document.getElementById('setupChecklist');
+    if (!sel || !box || !list) return;
+    const s = getSetups().find(x => x.id === sel.value);
+    if (!s || !(s.rules || []).length) { box.style.display = 'none'; list.innerHTML = ''; updateSetupCheckScore(); return; }
+    box.style.display = 'block';
+    list.innerHTML = s.rules.map((r, i) => `
+        <label class="setup-rule">
+            <input type="checkbox" class="setup-rule-chk" value="${i}" ${checkedIdx && checkedIdx.includes(i) ? 'checked' : ''} onchange="updateSetupCheckScore()">
+            <span>${escHtml(r)}</span>
+        </label>`).join('');
+    if (s.maxRiskPct || s.minRR) {
+        list.innerHTML += `<div class="setup-check-note">Kendi kuralınız: ${s.maxRiskPct ? `işlem başına en fazla %${s.maxRiskPct} risk` : ''}${s.maxRiskPct && s.minRR ? ' · ' : ''}${s.minRR ? `en az ${s.minRR} R:R` : ''}</div>`;
+    }
+    updateSetupCheckScore();
+}
+function updateSetupCheckScore() {
+    const chks = [...document.querySelectorAll('.setup-rule-chk')];
+    const el = document.getElementById('setupCheckScore');
+    if (!el) return;
+    const done = chks.filter(c => c.checked).length;
+    el.textContent = done + '/' + chks.length;
+    el.style.color = chks.length && done === chks.length ? 'var(--color-success)'
+                   : done >= chks.length * 0.6 ? 'var(--color-warning)' : 'var(--color-danger)';
+}
+function getSetupCheckState() {
+    const chks = [...document.querySelectorAll('.setup-rule-chk')];
+    return {
+        setupId: (document.getElementById('tradeSetup') || {}).value || null,
+        rulesFollowed: chks.filter(c => c.checked).length,
+        rulesTotal: chks.length,
+        rulesChecked: chks.filter(c => c.checked).map(c => parseInt(c.value, 10))
+    };
+}
+
+/* ── Setup performansı: expectancy, profit factor, R ve disiplin etkisi ── */
 function renderSetupPerformance(closedTrades) {
     const wrap = document.getElementById('setupPerfWrap');
     const list = document.getElementById('setupPerfList');
     if (!wrap || !list) return;
-    const byTag = {};
+    const setups = getSetups();
+    const setupName = (id) => (setups.find(s => s.id === id) || {}).name;
+
+    // Gruplama: setup'a bağlı işlemler setup adıyla, bağlı olmayanlar etiketiyle
+    const groups = {};
+    const push = (key, t) => { (groups[key] = groups[key] || []).push(t); };
     closedTrades.forEach(t => {
-        (t.tags && t.tags.length ? t.tags : ['(etiketsiz)']).forEach(tag => {
-            if (!byTag[tag]) byTag[tag] = { n: 0, wins: 0, pnl: 0 };
-            byTag[tag].n++;
-            if (t.pnl > 0) byTag[tag].wins++;
-            byTag[tag].pnl += t.pnl;
-        });
+        const nm = t.setupId && setupName(t.setupId);
+        if (nm) push('🎯 ' + nm, t);
+        else if (t.tags && t.tags.length) t.tags.forEach(tag => push(tag, t));
+        else push('(setup/etiket yok)', t);
     });
-    const rows = Object.entries(byTag).map(([tag, s]) => ({ tag, ...s, wr: s.n ? s.wins / s.n * 100 : 0 }))
-        .sort((a, b) => b.pnl - a.pnl);
-    if (rows.length === 0) { wrap.style.display = 'none'; return; }
+
+    const keys = Object.keys(groups);
+    if (!keys.length) { wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
-    const fmt = (n) => (n >= 0 ? '+' : '-') + '₺' + Math.abs(n).toLocaleString('tr-TR', { maximumFractionDigits: 0 });
+
+    const fmt = (n) => (n >= 0 ? '+' : '-') + '₺' + Math.abs(Math.round(n)).toLocaleString('tr-TR');
+    const rMultiple = (t) => {
+        if (t.stop == null || t.entry == null || !t.size || t.pnl == null) return null;
+        const risk = Math.abs(t.entry - t.stop) * t.size;
+        return risk > 0 ? t.pnl / risk : null;
+    };
+
+    const rows = keys.map(k => {
+        const ts = groups[k];
+        const n = ts.length;
+        const wins = ts.filter(t => t.pnl > 0);
+        const losses = ts.filter(t => t.pnl <= 0);
+        const wr = n ? wins.length / n : 0;
+        const grossWin = wins.reduce((a, t) => a + t.pnl, 0);
+        const grossLoss = Math.abs(losses.reduce((a, t) => a + t.pnl, 0));
+        const avgWin = wins.length ? grossWin / wins.length : 0;
+        const avgLoss = losses.length ? grossLoss / losses.length : 0;
+        const pf = grossLoss > 0 ? grossWin / grossLoss : (grossWin > 0 ? Infinity : 0);
+        const expectancy = wr * avgWin - (1 - wr) * avgLoss;
+        const rs = ts.map(rMultiple).filter(v => v !== null && isFinite(v));
+        const avgR = rs.length ? rs.reduce((a, b) => a + b, 0) / rs.length : null;
+        const totalPnl = ts.reduce((a, t) => a + t.pnl, 0);
+        // En uzun kayıp serisi — çağıran tarafın sıralamasına güvenmeyip
+        // işlemleri kendimiz kronolojik sıraya koyuyoruz (aksi halde metrik yanlış çıkar).
+        let streak = 0, maxStreak = 0;
+        ts.slice()
+          .sort((a, b) => (new Date(a.date) - new Date(b.date)) || ((a.id || 0) - (b.id || 0)))
+          .forEach(t => { if (t.pnl <= 0) { streak++; maxStreak = Math.max(maxStreak, streak); } else streak = 0; });
+        // disiplin: kurala tam uyulan vs uyulmayan
+        const withRules = ts.filter(t => t.rulesTotal > 0);
+        let disc = null;
+        if (withRules.length >= 4) {
+            const full = withRules.filter(t => t.rulesFollowed >= t.rulesTotal);
+            const partial = withRules.filter(t => t.rulesFollowed < t.rulesTotal);
+            const stat = (arr) => arr.length ? {
+                n: arr.length,
+                wr: arr.filter(t => t.pnl > 0).length / arr.length * 100,
+                avg: arr.reduce((a, t) => a + t.pnl, 0) / arr.length
+            } : null;
+            disc = { full: stat(full), partial: stat(partial), compliance: withRules.reduce((a, t) => a + t.rulesFollowed / t.rulesTotal, 0) / withRules.length * 100 };
+        }
+        let verdict, vClass;
+        if (n < 10) { verdict = 'VERİ YETERSİZ'; vClass = 'thin'; }
+        else if (expectancy > 0 && pf >= 1.3) { verdict = 'ÇALIŞIYOR'; vClass = 'good'; }
+        else if (expectancy <= 0) { verdict = 'ZARAR ÜRETİYOR'; vClass = 'bad'; }
+        else { verdict = 'SINIRDA'; vClass = 'thin'; }
+        return { k, n, wr: wr * 100, totalPnl, avgWin, avgLoss, pf, expectancy, avgR, maxStreak, disc, verdict, vClass };
+    }).sort((a, b) => b.totalPnl - a.totalPnl);
+
     list.innerHTML = rows.map(r => {
-        const wrColor = r.wr >= 50 ? 'var(--color-success)' : 'var(--color-danger)';
-        const pnlColor = r.pnl >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
-        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-subtle)">
-            <span style="flex:1;font-weight:600;font-size:0.85rem">${r.tag}</span>
-            <span style="font-size:0.75rem;color:var(--text-secondary)">${r.n} işlem</span>
-            <span style="font-size:0.8rem;font-family:var(--font-mono);color:${wrColor};min-width:52px;text-align:right">%${r.wr.toFixed(0)}</span>
-            <span style="font-size:0.8rem;font-family:var(--font-mono);color:${pnlColor};min-width:88px;text-align:right">${fmt(r.pnl)}</span>
+        const c = (v) => v >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
+        return `<div class="sp-row">
+            <div class="sp-row-top">
+                <span class="sp-name">${escHtml(r.k)}</span>
+                <span class="sp-verdict ${r.vClass}">${r.verdict}</span>
+                <span style="margin-left:auto;font-family:var(--font-mono);font-weight:800;color:${c(r.totalPnl)}">${fmt(r.totalPnl)}</span>
+            </div>
+            <div class="sp-metrics">
+                <div class="sp-metric"><div class="sp-metric-l">İşlem</div><div class="sp-metric-v">${r.n}</div></div>
+                <div class="sp-metric"><div class="sp-metric-l">Kazanma</div><div class="sp-metric-v" style="color:${r.wr >= 50 ? 'var(--color-success)' : 'var(--color-warning)'}">%${r.wr.toFixed(0)}</div></div>
+                <div class="sp-metric"><div class="sp-metric-l">Beklenti/işlem</div><div class="sp-metric-v" style="color:${c(r.expectancy)}">${fmt(r.expectancy)}</div></div>
+                <div class="sp-metric"><div class="sp-metric-l">Profit factor</div><div class="sp-metric-v" style="color:${r.pf >= 1.3 ? 'var(--color-success)' : 'var(--color-danger)'}">${isFinite(r.pf) ? r.pf.toFixed(2) : '∞'}</div></div>
+                ${r.avgR !== null ? `<div class="sp-metric"><div class="sp-metric-l">Ort. R</div><div class="sp-metric-v" style="color:${c(r.avgR)}">${r.avgR.toFixed(2)}R</div></div>` : ''}
+                <div class="sp-metric"><div class="sp-metric-l">Maks. kayıp serisi</div><div class="sp-metric-v">${r.maxStreak}</div></div>
+            </div>
+            ${r.disc && r.disc.full && r.disc.partial ? `<div class="sp-discipline">
+                🧠 <strong>Disiplin etkisi:</strong> kurallarınızın tamamına uyduğunuz ${r.disc.full.n} işlemde kazanma oranı
+                <strong>%${r.disc.full.wr.toFixed(0)}</strong> (ortalama ${fmt(r.disc.full.avg)}), uymadığınız ${r.disc.partial.n} işlemde
+                <strong>%${r.disc.partial.wr.toFixed(0)}</strong> (ortalama ${fmt(r.disc.partial.avg)}).
+                ${r.disc.full.avg > r.disc.partial.avg ? 'Kurala uymak ölçülebilir şekilde kazandırıyor.' : 'Bu örneklemde fark kurala uymak lehine değil — kuralları gözden geçirmek gerekebilir.'}
+                Ortalama kural uyumu: <strong>%${r.disc.compliance.toFixed(0)}</strong>.
+            </div>` : (r.disc ? `<div class="sp-discipline">🧠 Ortalama kural uyumunuz <strong>%${r.disc.compliance.toFixed(0)}</strong>. Karşılaştırma için hem kurala uyulan hem uyulmayan işlem gerekiyor.</div>` : '')}
         </div>`;
     }).join('');
 }
@@ -8554,6 +9051,10 @@ function openTradeModal() {
         const pf = resolvePortfolio();
         const dl = document.getElementById('portfolioSymbols');
         dl.innerHTML = pf.positions.map(p => `<option value="${p.symbol}">`).join('');
+        // Setup seçicisini doldur, seçimi ve kural işaretlerini sıfırla
+        const _ss = document.getElementById('tradeSetup');
+        if (_ss) _ss.value = '';
+        populateSetupSelect();
         setTodayDate();
     }
     document.getElementById('tradeModalOverlay').classList.add('open');
@@ -10420,8 +10921,8 @@ async function _sbAuth(path, body) {
     if (!r.ok) throw new Error(data.error_description || data.msg || data.error || ('HTTP ' + r.status));
     return data;
 }
-async function sbSignUp(email, password, name) {
-    const data = await _sbAuth('signup', { email, password, data: { name } });
+async function sbSignUp(email, password, name, username) {
+    const data = await _sbAuth('signup', { email, password, data: { name, username } });
     if (data.access_token && data.user) sbSetSession({ token: data.access_token, refresh: data.refresh_token, uid: data.user.id, email });
     return data;
 }
@@ -10441,6 +10942,9 @@ async function sbSyncUp() {
         riskProfile: rd('equilyze-risk-profile', 'null'),
         watchlist: rd('equilyze-watchlist', 'null'),
         alerts: rd('equilyze-alerts', '[]'),
+        notifs: rd('equilyze-notifs-' + s.email, '[]'),
+        setups: rd('equilyze-setups', '[]'),
+        profile: (() => { try { const u = getUsers()[s.email]; return u ? { name: u.name, username: u.username || null, provider: u.provider || 'email' } : null; } catch { return null; } })(),
     };
     await fetch(`${SUPABASE_URL}/rest/v1/equilyze_data`, {
         method: 'POST',
@@ -10466,6 +10970,19 @@ async function sbSyncDown() {
             if (d.riskProfile) localStorage.setItem('equilyze-risk-profile', JSON.stringify(d.riskProfile));
             if (d.watchlist) localStorage.setItem('equilyze-watchlist', JSON.stringify(d.watchlist));
             if (d.alerts) localStorage.setItem('equilyze-alerts', JSON.stringify(d.alerts));
+            if (d.notifs) localStorage.setItem('equilyze-notifs-' + s.email, JSON.stringify(d.notifs));
+            if (d.setups) localStorage.setItem('equilyze-setups', JSON.stringify(d.setups));
+            // Kullanıcı adı buluttan gelir: başka cihazda aynı forum kimliği kullanılır
+            if (d.profile && d.profile.username) {
+                try {
+                    const users = getUsers();
+                    if (users[s.email] && !users[s.email].username) {
+                        users[s.email].username = d.profile.username;
+                        saveUsers(users);
+                    }
+                } catch {}
+            }
+            try { updateNotifBadge(); } catch {}
         }
     } catch {}
 }
@@ -10483,6 +11000,8 @@ function clearSession() { localStorage.removeItem('equilyze-session'); }
 function hashPass(p) { let h = 0; for (let i = 0; i < p.length; i++) { h = ((h << 5) - h) + p.charCodeAt(i); h |= 0; } return 'h' + Math.abs(h).toString(36); }
 
 function authInit() {
+    // Google OAuth dönüşü varsa önce onu işle (hash'te access_token gelir)
+    try { handleOAuthRedirect(); } catch {}
     const session = getSession();
     if (session && getUsers()[session.email]) {
         applyAuthState(session.email);
@@ -10501,6 +11020,20 @@ function openAuthModal() {
     document.getElementById('authModalOverlay').classList.add('open');
     document.getElementById('authError').textContent = '';
     switchAuthTab('login');
+    initAuthScrollHint();
+}
+/* Modal gövdesi kaydırılabilir olduğunda alt kenarda solma ipucu göster */
+let _authScrollBound = false;
+function initAuthScrollHint() {
+    const modal = document.querySelector('.auth-modal');
+    const body = modal && modal.querySelector('.modal-body');
+    if (!body) return;
+    const upd = () => {
+        const atEnd = body.scrollHeight - body.scrollTop - body.clientHeight < 8;
+        modal.classList.toggle('at-end', atEnd);
+    };
+    if (!_authScrollBound) { body.addEventListener('scroll', upd, { passive: true }); _authScrollBound = true; }
+    requestAnimationFrame(upd);
 }
 function closeAuthModal() {
     document.getElementById('authModalOverlay').classList.remove('open');
@@ -10510,6 +11043,9 @@ function switchAuthTab(tab) {
     document.getElementById('authLoginForm').style.display = tab === 'login' ? 'block' : 'none';
     document.getElementById('authRegisterForm').style.display = tab === 'register' ? 'block' : 'none';
     document.getElementById('authError').textContent = '';
+    // Sekme değişince gövdeyi başa al ve kaydırma ipucunu yenile
+    const _ab = document.querySelector('.auth-modal .modal-body');
+    if (_ab) { _ab.scrollTop = 0; initAuthScrollHint(); }
     // Başlık/alt başlığı sekmeye göre güncelle (dile duyarlı)
     const en = (typeof isEnLang === 'function') && isEnLang();
     const t = document.getElementById('authModalTitle');
@@ -10554,12 +11090,15 @@ function setAuthLoading(loading) {
 function authRegister(event) {
     event.preventDefault();
     const name = document.getElementById('authRegName').value.trim();
+    const username = normalizeUsername(document.getElementById('authRegUsername').value);
     const email = document.getElementById('authRegEmail').value.trim().toLowerCase();
     const pass = document.getElementById('authRegPassword').value;
     const confirm = document.getElementById('authRegConfirm').value;
     const errEl = document.getElementById('authError');
 
     if (!name || name.length < 2) { errEl.textContent = 'Ad en az 2 karakter olmalıdır.'; return; }
+    const uv = validateUsername(username);
+    if (!uv.ok) { errEl.textContent = 'Kullanıcı adı: ' + uv.msg; return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = 'Geçerli bir e-posta adresi girin.'; return; }
     if (pass.length < 6) { errEl.textContent = 'Şifre en az 6 karakter olmalıdır.'; return; }
     if (!/[A-Z]/.test(pass)) { errEl.textContent = 'Şifre en az bir büyük harf içermelidir.'; return; }
@@ -10568,10 +11107,10 @@ function authRegister(event) {
     setAuthLoading(true);
     const users = getUsers();
     if (users[email]) { setAuthLoading(false); errEl.textContent = 'Bu e-posta zaten kayıtlı.'; return; }
-    users[email] = { name, email, password: hashPass(pass), registeredAt: new Date().toISOString(), riskProfile: null };
+    users[email] = { name, username, email, password: hashPass(pass), registeredAt: new Date().toISOString(), riskProfile: null };
     saveUsers(users);
-    notifyRegistration('üye kaydı', { name, email }); // yedek + (endpoint varsa) email
-    if (sbEnabled()) sbSignUp(email, pass, name).then(() => sbSyncUp()).catch(() => {}); // bulut kaydı
+    notifyRegistration('üye kaydı', { name, username, email }); // yedek + (endpoint varsa) email
+    if (sbEnabled()) sbSignUp(email, pass, name, username).then(() => sbSyncUp()).catch(() => {}); // bulut kaydı
     setSession(email);
     applyAuthState(email);
     closeAuthModal();
@@ -10602,18 +11141,116 @@ function authLogin(event) {
     showToast('✅ Giriş yapıldı! Hoş geldiniz, ' + users[email].name, 'success');
     resumePendingTarget();
 }
-function demoLogin() {
-    const email = 'demo@equilyze.com';
+/* ── Kullanıcı adı (forum kimliği) ──
+   Kurallar: 3–20 karakter, küçük harf + rakam + alt çizgi, harfle başlar, benzersiz. */
+const USERNAME_RE = /^[a-z][a-z0-9_]{2,19}$/;
+const RESERVED_USERNAMES = ['admin', 'equilyze', 'moderator', 'mod', 'destek', 'support', 'system', 'root', 'null', 'undefined'];
+function normalizeUsername(v) {
+    return String(v || '').toLowerCase().trim()
+        .replace(/[ğ]/g, 'g').replace(/[ü]/g, 'u').replace(/[ş]/g, 's')
+        .replace(/[ı]/g, 'i').replace(/[ö]/g, 'o').replace(/[ç]/g, 'c')
+        .replace(/[^a-z0-9_]/g, '');
+}
+function isUsernameTaken(uname, exceptEmail) {
     const users = getUsers();
-    if (!users[email]) {
-        users[email] = { name: 'Demo Kullanıcı', email, password: hashPass('demo123'), registeredAt: new Date().toISOString(), riskProfile: null };
-        saveUsers(users);
+    return Object.values(users).some(u => u.username && u.username === uname && u.email !== exceptEmail);
+}
+function validateUsername(uname) {
+    if (!uname) return { ok: false, msg: 'Kullanıcı adı gerekli.' };
+    if (uname.length < 3) return { ok: false, msg: 'En az 3 karakter olmalı.' };
+    if (uname.length > 20) return { ok: false, msg: 'En fazla 20 karakter olabilir.' };
+    if (!USERNAME_RE.test(uname)) return { ok: false, msg: 'Harfle başlamalı; yalnızca küçük harf, rakam ve alt çizgi.' };
+    if (RESERVED_USERNAMES.includes(uname)) return { ok: false, msg: 'Bu kullanıcı adı ayrılmış, başka bir tane seçin.' };
+    if (isUsernameTaken(uname)) return { ok: false, msg: 'Bu kullanıcı adı alınmış.' };
+    return { ok: true, msg: 'Kullanıcı adı uygun.' };
+}
+function checkUsernameInput(v) {
+    const inp = document.getElementById('authRegUsername');
+    const note = document.getElementById('authUnameNote');
+    if (!inp || !note) return;
+    const clean = normalizeUsername(v);
+    if (clean !== v) inp.value = clean;      // Türkçe karakter/boşluk otomatik dönüştür
+    if (!clean) {
+        note.className = 'auth-uname-note';
+        note.textContent = isEnLang()
+            ? '3–20 characters; lowercase letters, digits and underscore. This is your forum name.'
+            : '3–20 karakter; küçük harf, rakam ve alt çizgi. Forumda bu adla görünürsünüz.';
+        return;
     }
-    setSession(email);
-    applyAuthState(email);
-    closeAuthModal();
-    if (metricsEngine) recreateEnginesWithPortfolio(resolvePortfolio());
-    showToast('✅ Demo hesaba giriş yapıldı!', 'success');
+    const r = validateUsername(clean);
+    note.className = 'auth-uname-note ' + (r.ok ? 'ok' : 'bad');
+    note.textContent = (r.ok ? '✓ @' + clean + ' — ' : '✕ ') + r.msg;
+}
+/* E-postadan otomatik kullanıcı adı türet (Google girişi için) */
+function suggestUsername(email, name) {
+    let base = normalizeUsername((name || '').split(' ')[0]) || normalizeUsername((email || '').split('@')[0]) || 'uye';
+    if (base.length < 3) base = (base + 'uye').slice(0, 6);
+    if (!/^[a-z]/.test(base)) base = 'u' + base;
+    base = base.slice(0, 16);
+    let cand = base, i = 1;
+    while (isUsernameTaken(cand) || RESERVED_USERNAMES.includes(cand)) { cand = base + (++i); }
+    return cand;
+}
+
+/* ── Google ile giriş (Supabase OAuth) ──
+   Supabase panelinde Authentication → Providers → Google etkin olmalı.
+   Dönüşte access_token URL hash'inde gelir; handleOAuthRedirect() yakalar. */
+function googleAuth() {
+    const errEl = document.getElementById('authError');
+    if (!sbEnabled()) {
+        if (errEl) errEl.textContent = 'Google girişi için bulut bağlantısı gerekli. Lütfen e-posta ile devam edin.';
+        return;
+    }
+    try { sessionStorage.setItem('equilyze-oauth-pending', '1'); } catch {}
+    const redirect = location.origin + location.pathname;
+    location.href = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirect)}`;
+}
+async function handleOAuthRedirect() {
+    const raw = location.hash.startsWith('#') ? location.hash.slice(1) : '';
+    if (!raw || raw.indexOf('access_token') === -1 && raw.indexOf('error') === -1) return false;
+    const p = new URLSearchParams(raw);
+    const err = p.get('error_description') || p.get('error');
+    const token = p.get('access_token');
+    history.replaceState(null, '', location.pathname + location.search);
+    try { sessionStorage.removeItem('equilyze-oauth-pending'); } catch {}
+    if (err) { showToast('Google girişi tamamlanamadı: ' + decodeURIComponent(err), 'error'); return false; }
+    if (!token) return false;
+    try {
+        const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const u = await r.json();
+        const email = (u.email || '').toLowerCase();
+        if (!email) throw new Error('E-posta alınamadı');
+        const meta = u.user_metadata || {};
+        const name = meta.full_name || meta.name || email.split('@')[0];
+        sbSetSession({ token, refresh: p.get('refresh_token') || '', uid: u.id, email });
+        const users = getUsers();
+        if (!users[email]) {
+            users[email] = {
+                name, email, password: null, provider: 'google',
+                username: suggestUsername(email, name),
+                registeredAt: new Date().toISOString(), riskProfile: null
+            };
+            saveUsers(users);
+            notifyRegistration('Google ile üye kaydı', { name, email });
+        } else if (!users[email].username) {
+            users[email].username = suggestUsername(email, name);
+            saveUsers(users);
+        }
+        setSession(email);
+        applyAuthState(email);
+        closeAuthModal();
+        await sbSyncDown().catch(() => {});
+        if (metricsEngine) recreateEnginesWithPortfolio(resolvePortfolio());
+        showToast('✅ Google ile giriş yapıldı. Hoş geldiniz, ' + users[email].name, 'success');
+        resumePendingTarget();
+        return true;
+    } catch (e) {
+        showToast('Google girişi başarısız: ' + e.message, 'error');
+        return false;
+    }
 }
 function authLogout() {
     clearSession();
@@ -10637,6 +11274,8 @@ function authLogout() {
     if (mbnLabel) mbnLabel.textContent = 'Giriş';
     const mbnItem = document.getElementById('mbnLogin');
     if (mbnItem) mbnItem.href = '#';
+    closeNotifPanel();
+    updateNotifBadge();      // zil gizlenir (bildirimler hesapta kalır, silinmez)
     showToast('Çıkış yapıldı.', 'info');
 }
 
@@ -10978,8 +11617,12 @@ function applyAuthState(email) {
     const initial = (user.name || 'K')[0].toUpperCase();
     card.innerHTML = `
         <div class="auth-avatar">${initial}</div>
-        <span class="auth-user-name">${user.name}</span>
+        <span class="auth-user-name">${escHtml(user.name)}</span>
         <div class="auth-user-dropdown">
+            <div style="padding:9px 12px;border-bottom:1px solid var(--border-subtle);margin-bottom:4px">
+                <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary)">${escHtml(user.name)}</div>
+                <div style="font-size:0.72rem;color:var(--color-primary);font-family:var(--font-mono)">@${escHtml(user.username || 'kullanici')}</div>
+            </div>
             <button class="auth-dropdown-item" onclick="openUserPage();event.stopPropagation();">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 Profilim
@@ -11006,6 +11649,9 @@ function applyAuthState(email) {
     if (mbnLogin) mbnLogin.textContent = user.name.split(' ')[0];
     const mbnItem = document.getElementById('mbnLogin');
     if (mbnItem) mbnItem.href = '#';
+    // Bildirim zilini göster ve risk uyarılarını hesapla
+    updateNotifBadge();
+    setTimeout(() => { try { computeRiskNotifications(); } catch (e) {} }, 900);
 }
 function openUserPage() {
     const session = getSession();
@@ -11128,6 +11774,7 @@ function openDashboardPage() {
     document.body.classList.remove('user-page-open');
     document.getElementById('userPage')?.classList.remove('open');
     document.body.classList.add('dashboard-open');
+    switchDashTab(getDashTab(), { scroll: false });   // son kullanılan sekmeyi geri yükle
     const backBtn = document.getElementById('dashboardBackBtn');
     if (backBtn) backBtn.style.display = 'inline-flex';
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -11142,6 +11789,8 @@ function openDashboardPage() {
     if (typeof renderSlippage === 'function') renderSlippage().catch(() => {});
     if (typeof renderPsychReport === 'function') renderPsychReport();
     if (typeof maybeAutoDailyBrief === 'function') setTimeout(maybeAutoDailyBrief, 400);
+    // Risk uyarılarını yeniden hesapla (bildirim merkezi + Risk sekmesi rozeti)
+    setTimeout(() => { try { computeRiskNotifications(); } catch (e) {} }, 500);
     // Grafikleri yeniden çiz: dashboard artık görünür (gizliyken çizilirse canvas 0px kalır)
     setTimeout(() => {
         try { if (document.getElementById('portfolioChart') && typeof drawChart === 'function') drawChart(generatePortfolioChartData(typeof currentTf !== 'undefined' ? currentTf : '1H')); } catch (e) {}
@@ -11237,12 +11886,440 @@ function refreshDashboard() {
     try { if (document.getElementById('portfolioChart') && typeof drawChart === 'function') drawChart(generatePortfolioChartData(typeof currentTf !== 'undefined' ? currentTf : '1H')); } catch (e) {}
     try { if (document.getElementById('benchmarkChart') && typeof drawBenchmarkChart === 'function') drawBenchmarkChart(generateBenchData(typeof currentBenchTf !== 'undefined' ? currentBenchTf : '1M')); } catch (e) {}
     try { if (typeof drawCorrTimeseries === 'function') drawCorrTimeseries(); } catch (e) {}
+    try { computeRiskNotifications(); } catch (e) {}
     showToast('Dashboard yenilendi', 'success');
+}
+/* ══════════════════════════════════════════════════════════════════════
+   BİLDİRİM SİSTEMİ — portföy ve davranış verisinden otomatik risk uyarıları
+   • Bildirimler kullanıcı hesabına yazılır (e-posta bazlı anahtar), başka
+     üye göremez; Supabase blob'una senkronlanır ve silinmez.
+   • Aynı uyarı NOTIF_COOLDOWN_MS içinde tekrar bildirim üretmez, yalnızca
+     metni güncellenir → bildirim yorgunluğu olmaz.
+   • "high" seviyesi izin verilmişse tarayıcı bildirimi de gönderir.
+   ══════════════════════════════════════════════════════════════════════ */
+const NOTIF_COOLDOWN_MS = 12 * 60 * 60 * 1000;   // aynı uyarı 12 saatte bir
+const NOTIF_MAX = 60;
+const NOTIF_ICONS = { risk: '⚠️', profile: '🎯', behavior: '🧠', setup: '🚀', price: '📈', system: 'ℹ️' };
+
+function notifKey() { const s = getSession(); return 'equilyze-notifs-' + (s ? s.email : 'guest'); }
+function getNotifs() { try { return JSON.parse(localStorage.getItem(notifKey())) || []; } catch { return []; } }
+function saveNotifs(list) {
+    try { localStorage.setItem(notifKey(), JSON.stringify(list.slice(0, NOTIF_MAX))); } catch {}
+    if (typeof sbSyncUpDebounced === 'function') sbSyncUpDebounced();
+}
+function unreadNotifCount() { return getNotifs().filter(n => !n.read).length; }
+
+/* Bildirim ekle. Aynı key cooldown içindeyse yeni bildirim sayılmaz, metni güncellenir. */
+function pushNotif(n) {
+    const list = getNotifs();
+    const now = Date.now();
+    const prev = list.find(x => x.key === n.key);
+    if (prev && (now - prev.at) < NOTIF_COOLDOWN_MS) {
+        prev.title = n.title; prev.desc = n.desc; prev.severity = n.severity;
+        saveNotifs(list);
+        return false;
+    }
+    if (prev) list.splice(list.indexOf(prev), 1);
+    list.unshift({
+        id: 'n' + now + Math.random().toString(36).slice(2, 6),
+        key: n.key, type: n.type || 'risk', severity: n.severity || 'info',
+        title: n.title, desc: n.desc, target: n.target || null, at: now, read: false
+    });
+    saveNotifs(list);
+    if (n.severity === 'high') sendBrowserNotif(n.title, n.desc);
+    return true;
+}
+
+/* ── Kural motoru: gerçek portföy + metrik + journal verisinden uyarı üretir ── */
+function computeRiskNotifications() {
+    const s = getSession();
+    if (!s) return 0;                            // yalnızca üyeler
+    let added = 0;
+    const add = (n) => { if (pushNotif(n)) added++; };
+    const pf = resolvePortfolio();
+    const ownPf = !!getUserPortfolio(s.email);
+    const tl = (v) => Math.round(v).toLocaleString('tr-TR');
+
+    /* 1 — Kurulum: kendi portföyü yok */
+    if (!ownPf) add({
+        key: 'no-portfolio', type: 'setup', severity: 'info',
+        title: 'Kendi portföyünüzü ekleyin',
+        desc: 'Şu anda örnek portföy üzerinden hesaplama yapılıyor. Pozisyonlarınızı girdiğinizde VaR, korelasyon ve hayatta kalma skoru size özel hesaplanır.',
+        target: 'portfolio-modal'
+    });
+
+    /* 2 — Kurulum: risk testi çözülmemiş */
+    let rp = null;
+    try { rp = JSON.parse(localStorage.getItem('equilyze-risk-profile') || 'null'); } catch {}
+    if (!rp) add({
+        key: 'no-risktest', type: 'setup', severity: 'info',
+        title: 'Yatırımcı profili testini çözün',
+        desc: '20 soruluk test risk toleransınızı, risk kapasitenizi ve yatırımcı olgunluğunuzu ayrı ayrı ölçer. Sonuç, portföy uyumluluğu uyarılarında kullanılır.',
+        target: 'risk-test'
+    });
+
+    /* 3 — Yoğunlaşma riski */
+    const pos = (pf.positions || []).slice().sort((a, b) => b.weight - a.weight);
+    if (pos.length) {
+        const top = pos[0];
+        if (top.weight >= 0.35) add({
+            key: 'concentration-' + top.symbol, type: 'risk', severity: top.weight >= 0.5 ? 'high' : 'medium',
+            title: 'Yoğunlaşma riski: ' + top.symbol,
+            desc: `${top.symbol} portföyün %${Math.round(top.weight * 100)}'ini oluşturuyor. Tek varlığa bağlı kayıp riski yüksek — bu oranı %25 altına çekmek çeşitlendirmeyi belirgin iyileştirir.`,
+            target: 'positions'
+        });
+        if (pos.length > 2) {
+            const top2 = pos[0].weight + pos[1].weight;
+            if (top2 >= 0.60) add({
+                key: 'concentration-top2', type: 'risk', severity: 'medium',
+                title: 'İlk iki pozisyon portföyün çoğunluğu',
+                desc: `${pos[0].symbol} + ${pos[1].symbol} toplam %${Math.round(top2 * 100)}. Bu iki varlık birlikte düşerse portföyün büyük kısmı aynı anda etkilenir.`,
+                target: 'positions'
+            });
+        }
+        /* 4 — Profil–portföy uyumsuzluğu (risk testi ile gerçek portföy çelişiyor) */
+        const cryptoW = pos.filter(p => p.type === 'crypto').reduce((a, b) => a + b.weight, 0);
+        if (rp && typeof rp.score === 'number') {
+            if (rp.score <= 35 && cryptoW > 0.40) add({
+                key: 'profile-mismatch-conservative', type: 'profile', severity: 'high',
+                title: 'Profil–portföy uyumsuzluğu',
+                desc: `Testiniz düşük risk toleransı gösteriyor (skor ${rp.score}) ama portföyünüzün %${Math.round(cryptoW * 100)}'i kripto. Taşıdığınız risk, beyan ettiğiniz toleransın üzerinde.`,
+                target: 'risk'
+            });
+            if (rp.score >= 73 && cryptoW < 0.10 && pos.filter(p => p.type === 'bond').reduce((a, b) => a + b.weight, 0) > 0.60) add({
+                key: 'profile-mismatch-aggressive', type: 'profile', severity: 'low',
+                title: 'Profilinizden daha temkinli duruyorsunuz',
+                desc: `Test sonucunuz yüksek risk toleransı gösteriyor (skor ${rp.score}) ama portföyünüz ağırlıklı olarak sabit getirili. Bu bir hata değil; sadece hedeflerinizle uyumlu olup olmadığını gözden geçirin.`,
+                target: 'risk'
+            });
+        }
+    }
+
+    /* 5 — Metrik eşikleri */
+    let m = null;
+    try {
+        if (typeof metricsEngine !== 'undefined' && metricsEngine) {
+            m = metricsEngine.calculateAll();
+            m.survivalScore = metricsEngine.calculateSurvivalScore(m);
+        }
+    } catch {}
+    if (m) {
+        const varPct = Math.abs(m.var95) * 100;
+        if (varPct >= 5) add({
+            key: 'var-high', type: 'risk', severity: varPct >= 8 ? 'high' : 'medium',
+            title: `Günlük VaR %${varPct.toFixed(1)}`,
+            desc: `%95 güvenle günlük kayıp eşiğiniz portföyün %${varPct.toFixed(1)}'i (₺${tl(m.var95Dollar || 0)}). ${varPct >= 8 ? 'Bu seviye agresif profiller için bile yüksek — pozisyon boyutunu küçültmek en hızlı çözüm.' : 'Pozisyon boyutlarınızı gözden geçirin.'}`,
+            target: 'risk'
+        });
+        if (m.maxDrawdown >= 20) add({
+            key: 'dd-high', type: 'risk', severity: m.maxDrawdown >= 30 ? 'high' : 'medium',
+            title: `Maksimum düşüş %${m.maxDrawdown.toFixed(1)}`,
+            desc: `Tarihsel en derin düşüşünüz %${m.maxDrawdown.toFixed(1)}. %30 üzeri bir düşüşü telafi etmek için %43 getiri gerekir — bu yüzden kayıp sınırlamak, kazanç aramaktan önce gelir.`,
+            target: 'risk'
+        });
+        if (m.avgCorrelation >= 0.70) add({
+            key: 'corr-high', type: 'risk', severity: m.avgCorrelation >= 0.85 ? 'high' : 'medium',
+            title: `Ortalama korelasyon ${m.avgCorrelation.toFixed(2)}`,
+            desc: `Varlıklarınız birlikte hareket ediyor (${m.avgCorrelation.toFixed(2)}). Çeşitlendirme görünürde var ama gerçekte tek bir riske maruzsunuz — kriz anında hepsi aynı yöne düşer.`,
+            target: 'correlation'
+        });
+        if (m.survivalScore && m.survivalScore < 55) add({
+            key: 'survival-low', type: 'risk', severity: m.survivalScore < 40 ? 'high' : 'medium',
+            title: `Hayatta kalma skoru ${m.survivalScore}/100`,
+            desc: `Monte Carlo ve Black Swan senaryolarının ortalamasına göre portföyünüz sert bir şokta ${m.survivalScore < 40 ? 'ciddi hasar alır' : 'zorlanır'}. Simülasyon sekmesinden senaryoları çalıştırıp en kötü durumu görebilirsiniz.`,
+            target: 'monteCarloWidget'
+        });
+        if (typeof m.sharpe === 'number' && m.sharpe < 0) add({
+            key: 'sharpe-neg', type: 'risk', severity: 'medium',
+            title: `Sharpe oranı negatif (${m.sharpe.toFixed(2)})`,
+            desc: 'Aldığınız risk karşılığında risksiz getirinin altında kalıyorsunuz. Bu tabloda pozisyon eklemek değil, risk kaynağını bulmak gerekir.',
+            target: 'risk'
+        });
+    }
+
+    /* 6 — Davranışsal uyarılar (işlem günlüğünden) */
+    let tr = [];
+    try { tr = JSON.parse(localStorage.getItem('equilyze-journal') || '[]'); } catch {}
+    const closed = tr.filter(t => t && t.pnl !== null && t.pnl !== undefined);
+    if (closed.length >= 3) {
+        const last3 = closed.slice(0, 3);
+        if (last3.every(t => t.pnl < 0)) add({
+            key: 'loss-streak', type: 'behavior', severity: 'high',
+            title: 'Üst üste 3 zararlı işlem',
+            desc: 'Kayıp serisinde pozisyon büyütmek (revenge trading) sermaye kaybının en sık nedenidir. Sonraki işlemde riskinizi yarıya indirmeyi ve giriş kuralınızı yazılı hale getirmeyi düşünün.',
+            target: 'journal'
+        });
+        const rrs = closed.map(t => t.rr).filter(v => v !== null && v !== undefined && isFinite(v) && v > 0);
+        if (rrs.length >= 5) {
+            const avgRR = rrs.reduce((a, b) => a + b, 0) / rrs.length;
+            if (avgRR < 1) add({
+                key: 'rr-low', type: 'behavior', severity: 'medium',
+                title: `Ortalama risk/ödül ${avgRR.toFixed(2)}`,
+                desc: `Kazandığınızda aldığınız, kaybettiğinizde verdiğinizden az. R:R 1 altında kaldığında kazanma oranınız %50 üzerinde olsa bile uzun vadede zarar üretir.`,
+                target: 'journal'
+            });
+        }
+        const wkCount = closed.filter(t => {
+            const d = new Date(t.date).getTime();
+            return isFinite(d) && (Date.now() - d) < 7 * 864e5;
+        }).length;
+        if (wkCount >= 20) add({
+            key: 'overtrading', type: 'behavior', severity: 'medium',
+            title: `Son 7 günde ${wkCount} işlem`,
+            desc: 'Yüksek işlem frekansı komisyon ve kayma maliyetini büyütür, karar kalitesini düşürür. İşlem sayısını değil, kurala uyan işlem oranını hedefleyin.',
+            target: 'journal'
+        });
+        const wins = closed.filter(t => t.pnl > 0).length;
+        const wr = wins / closed.length;
+        if (closed.length >= 10 && wr < 0.35) add({
+            key: 'winrate-low', type: 'behavior', severity: 'medium',
+            title: `Kazanma oranı %${Math.round(wr * 100)}`,
+            desc: `${closed.length} işlemin ${wins} tanesi kârda kapandı. Düşük kazanma oranı yüksek R:R ile sürdürülebilir; R:R oranınız 2 altındaysa stratejiyi backtest sekmesinde test etmekte fayda var.`,
+            target: 'realBacktestWidget'
+        });
+    }
+
+    updateNotifBadge();
+    renderRiskAlerts();
+    return added;
+}
+
+/* ── Risk Uyarıları widget'ı: statik HTML yerine gerçek uyarılar ── */
+function renderRiskAlerts() {
+    const box = document.getElementById('riskAlerts');
+    if (!box) return;
+    const items = getNotifs().filter(n => ['risk', 'profile', 'behavior'].includes(n.type));
+    const rank = { high: 0, medium: 1, low: 2, info: 3 };
+    items.sort((a, b) => (rank[a.severity] ?? 3) - (rank[b.severity] ?? 3));
+    const badge = document.getElementById('dtRiskBadge');
+    const critical = items.filter(n => n.severity === 'high').length;
+    if (badge) { badge.textContent = critical ? String(critical) : ''; badge.setAttribute('data-n', String(critical)); }
+    if (!items.length) {
+        box.innerHTML = `<div style="padding:18px 6px;text-align:center;color:var(--text-secondary);font-size:0.84rem;line-height:1.6">
+            ✅ Şu an aktif risk uyarınız yok.<br><span style="color:var(--text-muted);font-size:0.78rem">Portföyünüz, metrikleriniz ve işlem günlüğünüz eşiklerin içinde.</span></div>`;
+        return;
+    }
+    const sevLabel = { high: 'KRİTİK', medium: 'ORTA', low: 'DÜŞÜK', info: 'BİLGİ' };
+    const dot = { high: '🔴', medium: '🟡', low: '🔵', info: '🟣' };
+    box.innerHTML = items.slice(0, 6).map(n => `
+        <div class="risk-alert-item" ${n.target ? `onclick="openNotifTarget('${n.target}')" style="cursor:pointer"` : ''}>
+            <div class="ra-icon volatility">${dot[n.severity] || '🔵'}</div>
+            <div class="ra-content">
+                <div class="ra-title">${escHtml(n.title)}</div>
+                <div class="ra-desc">${escHtml(n.desc)}</div>
+            </div>
+            <span class="ra-severity ${n.severity === 'high' ? 'high' : n.severity === 'medium' ? 'medium' : 'low'}">${sevLabel[n.severity] || ''}</span>
+        </div>`).join('');
+}
+function escHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+/* ── Bildirim paneli UI ── */
+function toggleNotifPanel(ev) {
+    if (ev) ev.stopPropagation();
+    const p = document.getElementById('notifPanel');
+    if (!p) return;
+    const open = p.classList.toggle('open');
+    if (open) { renderNotifPanel(); updatePushStateLabel(); }
+}
+function closeNotifPanel() { document.getElementById('notifPanel')?.classList.remove('open'); }
+function renderNotifPanel() {
+    const list = document.getElementById('notifList');
+    if (!list) return;
+    const items = getNotifs();
+    if (!items.length) {
+        list.innerHTML = `<div class="notif-empty">Henüz bildiriminiz yok.<br><span style="font-size:0.76rem">Portföyünüz risk eşiklerini aştığında, işlem davranışınızda bir kalıp belirdiğinde veya fiyat alarmınız tetiklendiğinde burada göreceksiniz.</span></div>`;
+        return;
+    }
+    const sevLabel = { high: 'KRİTİK', medium: 'ORTA', low: 'DÜŞÜK', info: 'BİLGİ' };
+    list.innerHTML = items.map(n => `
+        <div class="notif-item ${n.read ? '' : 'unread'}" onclick="openNotif('${n.id}')">
+            <div class="notif-ico ${n.severity}">${NOTIF_ICONS[n.type] || '⚠️'}</div>
+            <div class="notif-body">
+                <div class="notif-title">${escHtml(n.title)}</div>
+                <div class="notif-desc">${escHtml(n.desc)}</div>
+                <div class="notif-meta">
+                    <span class="notif-sev ${n.severity}">${sevLabel[n.severity] || ''}</span>
+                    <span>${notifAgo(n.at)}</span>
+                </div>
+            </div>
+        </div>`).join('');
+}
+function notifAgo(ts) {
+    const d = Date.now() - ts;
+    if (d < 60000) return 'şimdi';
+    if (d < 3600000) return Math.floor(d / 60000) + ' dk önce';
+    if (d < 86400000) return Math.floor(d / 3600000) + ' saat önce';
+    const days = Math.floor(d / 86400000);
+    return days === 1 ? 'dün' : days + ' gün önce';
+}
+function openNotif(id) {
+    const list = getNotifs();
+    const n = list.find(x => x.id === id);
+    if (!n) return;
+    n.read = true;
+    saveNotifs(list);
+    updateNotifBadge();
+    renderNotifPanel();
+    if (n.target) { closeNotifPanel(); openNotifTarget(n.target); }
+}
+function openNotifTarget(target) {
+    closeNotifPanel();
+    if (target === 'portfolio-modal') { openToolInDashboard(''); setTimeout(openPortfolioModal, 420); return; }
+    if (target === 'risk-test') {
+        document.body.classList.remove('dashboard-open', 'user-page-open', 'overlay-open');
+        document.querySelectorAll('.overlay-page').forEach(p => p.classList.remove('open'));
+        const el = document.getElementById('risk-test');
+        if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+        return;
+    }
+    openToolInDashboard(target);
+}
+function markAllNotifsRead() {
+    const list = getNotifs();
+    list.forEach(n => n.read = true);
+    saveNotifs(list);
+    updateNotifBadge();
+    renderNotifPanel();
+}
+function clearNotifs() {
+    if (!confirm('Tüm bildirimleri temizlemek istiyor musunuz?')) return;
+    saveNotifs([]);
+    updateNotifBadge();
+    renderNotifPanel();
+    renderRiskAlerts();
+}
+function updateNotifBadge() {
+    const btn = document.getElementById('notifBtn');
+    const cnt = document.getElementById('notifCount');
+    if (!btn || !cnt) return;
+    const loggedIn = !!getSession();
+    btn.classList.toggle('visible', loggedIn);
+    if (!loggedIn) { cnt.classList.remove('on'); return; }
+    const n = unreadNotifCount();
+    cnt.textContent = n > 9 ? '9+' : String(n);
+    cnt.classList.toggle('on', n > 0);
+    btn.classList.toggle('has-unread', n > 0);
+    if (n > 0) { btn.classList.add('notif-bell-ring'); setTimeout(() => btn.classList.remove('notif-bell-ring'), 800); }
+}
+
+/* ── Tarayıcı bildirimleri (izin kullanıcıdan alınır) ── */
+function pushEnabled() { try { return localStorage.getItem('equilyze-push') === '1' && 'Notification' in window && Notification.permission === 'granted'; } catch { return false; } }
+function updatePushStateLabel() {
+    const lbl = document.getElementById('notifPushState');
+    const btn = document.getElementById('notifPushBtn');
+    if (!lbl || !btn) return;
+    const en = isEnLang();
+    if (!('Notification' in window)) {
+        lbl.textContent = en ? 'Browser notifications not supported' : 'Tarayıcı bildirimleri desteklenmiyor';
+        btn.style.display = 'none'; return;
+    }
+    if (pushEnabled()) {
+        lbl.textContent = en ? '🔔 Browser notifications on' : '🔔 Tarayıcı bildirimleri açık';
+        btn.textContent = en ? 'Turn off' : 'Kapat';
+        btn.onclick = disablePushNotifs;
+    } else {
+        lbl.textContent = en ? 'Browser notifications off' : 'Tarayıcı bildirimleri kapalı';
+        btn.textContent = en ? 'Turn on' : 'Aç';
+        btn.onclick = enablePushNotifs;
+    }
+    btn.style.display = '';
+}
+async function enablePushNotifs() {
+    if (!('Notification' in window)) { showToast('Tarayıcınız bildirim desteklemiyor.', 'error'); return; }
+    try {
+        const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+        if (perm !== 'granted') { showToast('Bildirim izni verilmedi.', 'info'); return; }
+        localStorage.setItem('equilyze-push', '1');
+        updatePushStateLabel();
+        showToast('🔔 Kritik risk uyarıları artık bildirim olarak gelecek.', 'success');
+        sendBrowserNotif('Equilyze bildirimleri açık', 'Portföyünüz kritik bir risk eşiğini aştığında burada haber vereceğiz.');
+    } catch { showToast('Bildirim izni alınamadı.', 'error'); }
+}
+function disablePushNotifs() {
+    try { localStorage.setItem('equilyze-push', '0'); } catch {}
+    updatePushStateLabel();
+    showToast('Tarayıcı bildirimleri kapatıldı. Uyarılar zil simgesinde görünmeye devam eder.', 'info');
+}
+function sendBrowserNotif(title, body) {
+    if (!pushEnabled()) return;
+    try { new Notification(title, { body: (body || '').slice(0, 180), tag: 'equilyze', icon: './manifest.webmanifest' }); } catch {}
+}
+
+/* Panel dışına tıklayınca kapat */
+document.addEventListener('click', (e) => {
+    const p = document.getElementById('notifPanel');
+    if (!p || !p.classList.contains('open')) return;
+    if (p.contains(e.target) || document.getElementById('notifBtn')?.contains(e.target)) return;
+    closeNotifPanel();
+});
+
+/* ══ Dashboard sekmeleri ══
+   Araçlar 6 kategoriye ayrıldı; tek sayfada yığılmıyor.
+   Sekme durumu body[data-dtab] ile CSS'e aktarılır, seçim localStorage'da kalır. */
+const DASH_TABS = ['ozet', 'risk', 'gunluk', 'sim', 'backtest', 'piyasa'];
+function getDashTab() {
+    try { const t = localStorage.getItem('equilyze-dash-tab'); return DASH_TABS.includes(t) ? t : 'ozet'; } catch { return 'ozet'; }
+}
+function switchDashTab(tab, opts) {
+    if (!DASH_TABS.includes(tab)) tab = 'ozet';
+    document.body.setAttribute('data-dtab', tab);
+    try { localStorage.setItem('equilyze-dash-tab', tab); } catch {}
+    document.querySelectorAll('.dash-tab').forEach(b => {
+        const on = b.dataset.dt === tab;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    if (!opts || opts.scroll !== false) window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Gizliyken çizilen canvas 0px kalır → sekme görünür olunca yeniden çiz
+    setTimeout(() => redrawTabContent(tab), 90);
+}
+function redrawTabContent(tab) {
+    try { window.dispatchEvent(new Event('resize')); } catch {}
+    const safe = (fn) => { try { fn(); } catch (e) {} };
+    if (tab === 'ozet') {
+        safe(() => { if (document.getElementById('portfolioChart') && typeof drawChart === 'function') drawChart(generatePortfolioChartData(typeof currentTf !== 'undefined' ? currentTf : '1H')); });
+        safe(() => { if (typeof initHeatmap === 'function') initHeatmap(); });
+        safe(() => { if (typeof renderPositionsList === 'function') renderPositionsList(); });
+        safe(() => { if (typeof renderActivityList === 'function') renderActivityList(); });
+        safe(() => { if (typeof renderAnalysisResults === 'function') renderAnalysisResults(); });
+    } else if (tab === 'risk') {
+        safe(() => { if (document.getElementById('benchmarkChart') && typeof drawBenchmarkChart === 'function') drawBenchmarkChart(generateBenchData(typeof currentBenchTf !== 'undefined' ? currentBenchTf : '1M')); });
+        safe(() => { if (typeof drawCorrTimeseries === 'function') drawCorrTimeseries(); });
+        safe(() => { if (typeof renderRiskAlerts === 'function') renderRiskAlerts(); });
+    } else if (tab === 'gunluk') {
+        safe(() => { if (typeof renderJournalTable === 'function') renderJournalTable(); });
+    } else if (tab === 'backtest') {
+        safe(() => { if (typeof renderSlippage === 'function') renderSlippage().catch(() => {}); });
+    } else if (tab === 'piyasa') {
+        safe(() => { if (typeof renderWatchlist === 'function') renderWatchlist(); });
+        safe(() => { if (typeof renderConnectedExchanges === 'function') renderConnectedExchanges(); });
+        safe(() => { if (typeof marketEngine !== 'undefined' && marketEngine) marketEngine.updateMarketWidget().catch(() => {}); });
+    }
+}
+/* Bir öğenin hangi sekmeye ait olduğunu bul (kendisi veya en yakın data-dtab atası) */
+function tabOfTarget(el) {
+    let n = el;
+    while (n && n !== document.body) {
+        if (n.getAttribute && n.getAttribute('data-dtab')) return n.getAttribute('data-dtab').split(' ')[0];
+        n = n.parentElement;
+    }
+    return null;
 }
 function scrollToWidget(key) {
     const el = document.getElementById(key) || document.querySelector('[data-widget="' + key + '"]');
     if (!el) return;
-    const y = el.getBoundingClientRect().top + window.scrollY - 120; // sticky toolbar payı
+    // Hedef başka bir sekmedeyse önce o sekmeyi aç, sonra kaydır
+    if (document.body.classList.contains('dashboard-open')) {
+        const tab = tabOfTarget(el);
+        if (tab && document.body.getAttribute('data-dtab') !== tab) {
+            switchDashTab(tab, { scroll: false });
+            setTimeout(() => scrollToWidget(key), 150);
+            return;
+        }
+    }
+    const y = el.getBoundingClientRect().top + window.scrollY - 120; // sticky sekme çubuğu payı
     window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     el.classList.add('widget-flash');
     setTimeout(() => el.classList.remove('widget-flash'), 1300);
@@ -11263,6 +12340,7 @@ function openJournalWorkspace() {
     document.querySelectorAll('.overlay-page').forEach(p => p.classList.remove('open'));
     const up = document.getElementById('userPage'); if (up) { up.classList.remove('open'); up.style.display = 'none'; }
     openDashboardPage();
+    switchDashTab('gunluk', { scroll: false });   // Günlük sekmesini aç
     setTimeout(() => {
         const el = document.getElementById('journal');
         if (el) {
@@ -11904,7 +12982,7 @@ const translations = {
         'faq-q4': 'What is Monte Carlo simulation?',
         'faq-a4': 'Monte Carlo simulation calculates the possible future values of your portfolio across thousands of different scenarios. It uses the Geometric Brownian Motion model to compute VaR (Value at Risk), CVaR and probability distributions.',
         'faq-q5': 'What\'s included in the free plan?',
-        'faq-a5': 'The free plan includes Risk Profile Test, Trading Journal (up to 50 trades), basic dashboard, and weekly P&L chart. No credit card required.',
+        'faq-a5': 'The first 1000 founding members use <strong>every feature free for one year</strong>: investor profile test, unlimited trading journal, risk dashboard, Monte Carlo, backtest, macro shock tests, watchlist and alerts. No credit card required and no payments are being collected right now.',
         'faq-q6': 'Is it suitable for crypto and stock investors?',
         'faq-a6': 'Absolutely! Equilyze is designed for both crypto (Bitcoin, Ethereum, etc.) and traditional market (BIST, forex) investors. You can analyze all asset types in a single panel.',
         // Security (Layer 4)
@@ -12000,11 +13078,25 @@ const translations = {
         'auth-tab-login': 'Sign In', 'auth-tab-register': 'Sign Up',
         'auth-email': 'Email', 'auth-password': 'Password', 'auth-password-again': 'Password (again)', 'auth-name': 'Your name',
         'auth-cta-login': 'Sign In', 'auth-cta-register': 'Create Free Account',
-        'auth-or': 'or', 'auth-demo': '🚀 Take a quick look with a demo account',
+        'auth-or': 'or', 'auth-or-email': 'or with e-mail', 'auth-google': 'Continue with Google',
+        'auth-username': 'Username', 'auth-username-note': '3-20 characters; lowercase letters, digits and underscore. This is your forum name.',
+        'auth-privacy': 'Your portfolio, trading journal and analyses are stored only in your own account; other members cannot see them and your records are never deleted.',
         'auth-no-account': 'Don\'t have an account?', 'auth-goto-register': 'Sign up free',
         'auth-have-account': 'Already have an account?', 'auth-goto-login': 'Sign in',
-        'auth-perk-badge': 'FOUNDING MEMBER', 'auth-perk-text': 'The first 500 members use every feature free for life. No credit card required.',
+        'auth-perk-badge': 'FOUNDING MEMBER', 'auth-perk-text': 'The first 1000 members use every feature free for 1 year. No credit card required.',
         'auth-pass-rule': 'At least 6 characters, one uppercase letter and one number',
+        /* Dashboard sekmeleri */
+        'dt-ozet': '📊 Overview', 'dt-risk': '🎯 Risk', 'dt-gunluk': '📓 Journal',
+        'dt-sim': '🎲 Simulation', 'dt-backtest': '🔬 Backtest', 'dt-piyasa': '📡 Market',
+        'dth-ozet-t': 'Portfolio Overview', 'dth-ozet-s': 'Value, positions, performance and recent activity',
+        'dth-risk-t': 'Risk Analysis', 'dth-risk-s': 'VaR, risk contribution, correlation and alerts',
+        'dth-gunluk-t': 'Trading Journal', 'dth-gunluk-s': 'Log your trades, measure your statistics',
+        'dth-sim-t': 'Simulations', 'dth-sim-s': 'Monte Carlo models the future, macro shocks test the extremes',
+        'dth-backtest-t': 'Backtest & Trading Cost', 'dth-backtest-s': 'Test your strategy on real data, see the liquidity cost',
+        'dth-piyasa-t': 'Market & Connections', 'dth-piyasa-s': 'Watchlist, alerts, indicators, calendar and exchange links',
+        /* Bildirimler */
+        'notif-title': '🔔 Notifications', 'notif-readall': 'Mark all as read',
+        'notif-push-off': 'Browser notifications off', 'notif-push-enable': 'Turn on',
         'auth-legal': 'By signing up you accept our', 'auth-legal-link': 'Privacy & Data Protection', 'auth-legal2': 'terms.',
         /* FAQ page */
         'faqp-badge': 'HELP CENTER', 'faqp-title': 'Frequently Asked <span class="gradient-text">Questions</span>',
@@ -12042,8 +13134,8 @@ const translations = {
         'fa13': 'The AI feature only works when you connect <strong>your own API key</strong>. The request goes directly from your browser to the AI provider; your key is stored only on your device and is never sent to our servers. If you don\'t connect a key, no data leaves the app.',
         'fq14': 'Can I download or delete my data?',
         'fa14': 'Yes. From <strong>Profile → Download Center</strong> you can download your portfolio, trading journal, risk metrics and profile report as JSON/CSV/PDF. To request full deletion of your account, just write to us.',
-        'fq15': 'What does "first 500 users free for life" mean?',
-        'fa15': 'The first 500 members are considered <strong>founding members</strong> and use all current features free for as long as their account stays open. Once the quota is filled, paid plans will be announced; founding members are unaffected. No payments are being collected at this time.',
+        'fq15': 'What does "first 1000 users free for 1 year" mean?',
+        'fa15': 'The first 1000 members are considered <strong>founding members</strong> and use all current features free for <strong>one year</strong> from signup. Once the quota is filled, paid plans will be announced; founding members are unaffected during their first year and get discounted access afterwards. No payments are being collected at this time.',
         'fq16': 'Can I use it without signing up?',
         'fa16': 'You can browse the landing page and the demo account without membership. However the dashboard, trading journal and personal analyses require an account, because that data is tied to your profile and synced across devices.',
         'fq17': 'Do you ask for credit card details?',
@@ -12118,20 +13210,20 @@ const translations = {
         'f8-1': 'Personal analysis on your real data', 'f8-2': 'Daily AI brief', 'f8-3': 'Scenario questions ("What if the Fed hikes?")', 'f8-4': 'With your own API key, private',
         'badge-free': 'FREE',
         /* Pricing */
-        'pricing-badge': 'LAUNCH OFFER', 'pricing-title': 'First 500 Users <span class="gradient-text">Free For Life</span>',
-        'pricing-desc': 'Sign up now and keep every feature free on your account, permanently. No credit card required.',
+        'pricing-badge': 'LAUNCH OFFER', 'pricing-title': 'First 1000 Users <span class="gradient-text">Free For 1 Year</span>',
+        'pricing-desc': 'Sign up now and use every feature free for your first year. No credit card required.',
         'pricing-popular': '🎯 Founding Member', 'pricing-plan': 'Founding Member Plan',
-        'pricing-pill1': '♾️ Free For Life', 'pricing-pill2': '🎯 First 500 Users',
-        'pricing-period': '/ lifetime', 'pricing-sub': 'All features included — no credit card required',
+        'pricing-pill1': '🎁 Free For 1 Year', 'pricing-pill2': '🎯 First 1000 Users',
+        'pricing-period': '/ first year', 'pricing-sub': 'All features included — no credit card required',
         'pf-1': 'Investor Profile Test (20 questions)', 'pf-2': 'Live risk dashboard (VaR, Sharpe, Component VaR)',
         'pf-3': 'Trading Journal + position sizing', 'pf-4': 'Monte Carlo & strategy backtest',
         'pf-5': 'Macro shock & Black Swan tests', 'pf-6': 'Watchlist, price alerts, AI Copilot',
         'pf-7': 'Cross-device sync + all data downloadable',
-        'pricing-note': 'Paid plans will be announced once founding-member spots are filled. No payments are being collected at this time.',
+        'pricing-note': 'Paid plans will be announced once the first 1000 founding-member spots are filled. No payments are being collected at this time.',
         'pricing-cta': 'Sign Up Free',
         /* Footer */
         'footer-membership': 'Membership', 'footer-signup': 'Sign Up Free',
-        'footer-lifetime': 'First 500 Users Free For Life', 'footer-risktest': 'Investor Profile Test',
+        'footer-lifetime': 'First 1000 Users Free For 1 Year', 'footer-risktest': 'Investor Profile Test',
         /* Roadmap */
         'roadmap-desc': 'What is already live and what comes next.',
         'rm-done': '✓ Live', 'rm-1-tag': 'COMPLETED', 'rm-2-tag': 'COMPLETED', 'rm-3-tag': 'COMPLETED',
@@ -12306,6 +13398,20 @@ const TEXT_MAP_EN = {
     'Risk-per-trade → pozisyon boyutu → R-multiple': 'Risk-per-trade → position size → R-multiple',
     '🎯 Setup / Etiket Performansı': '🎯 Setup / Tag Performance',
     'Hangi setup kazandırıyor?': 'Which setup pays off?',
+    /* Setup kütüphanesi */
+    '🎯 Setup Kütüphanem': '🎯 My Setup Library',
+    'Setup adı *': 'Setup name *',
+    'Yön': 'Direction',
+    'Zaman dilimi': 'Timeframe',
+    'İşlem başına maks. risk (%)': 'Max risk per trade (%)',
+    'Minimum R:R': 'Minimum R:R',
+    'Giriş kuralları — her satıra bir kural *': 'Entry rules — one rule per line *',
+    'Not (opsiyonel)': 'Note (optional)',
+    '+ Yeni Setup Oluştur': '+ Create New Setup',
+    'Setup\'larımı yönet': 'Manage my setups',
+    'Giriş kurallarınız': 'Your entry rules',
+    'Dürüst işaretleyin — kurala uyduğunuz ve uymadığınız işlemlerin performansı ayrı ayrı ölçülür.': 'Be honest — performance is measured separately for trades where you followed the rules and where you did not.',
+    'İşlem girerken bu kurallar onay listesi olarak çıkar; disiplininizi ölçmek için kullanılır.': 'These rules appear as a checklist when logging a trade; they are used to measure your discipline.',
     'CSV Dışa Aktar': 'Export CSV', 'CSV İçe Aktar': 'Import CSV',
     'İşlem Ekle': 'Add Trade', 'İlk İşlemi Ekle': 'Add Your First Trade',
     'Henüz işlem kaydı yok.': 'No trades recorded yet.',
